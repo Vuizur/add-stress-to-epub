@@ -6,7 +6,9 @@ Right now the program stresses most words, although sometimes the stress is omit
 
 ### Installation
 
-You should install Python 3 and the required libraries:
+First you should download the dictionary database: https://mega.nz/file/LZ9CEICL#3rcqvbmLAnWvqYZIKrYKNFGYF-gycRdDag7qChCE4Js (unfortunately too large for Github) and put it into this folder.
+
+Afterwards should install Python 3 and the required libraries:
 
 ```
 pip install -r requirements.txt
