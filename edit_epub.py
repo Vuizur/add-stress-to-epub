@@ -6,8 +6,8 @@ import shutil
 import russian_dictionary
 import sys
 
-FILE_NAME = "Amuliet Samarkanda - Dzhonatan Straud.epub"
-OUTPUT_FILE = "samarkand.epub"
+FILE_NAME = "input.epub"
+OUTPUT_FILE = "output.epub"
 
 extract_dir = "extract_dir_9580"
 with open("test.txt", "w") as f:
@@ -48,7 +48,7 @@ for filename in os.listdir(extract_dir):
     else:
         continue
 
-#filename = "Rifmatist_out.epub"
+
 shutil.make_archive(OUTPUT_FILE, "zip", extract_dir)
 try:
     os.remove(OUTPUT_FILE)
