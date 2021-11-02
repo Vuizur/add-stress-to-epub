@@ -22,6 +22,11 @@ rd = russian_dictionary.RussianDictionary()
 nlp = spacy.load("ru_core_news_sm")
 nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
+if not os.path.isfile("/words4.db"):
+    print("Unpacking db...")
+    with zipfile.ZipFile("words4.zip", "r") as dbfile:
+        dbfile.extractall()
+
 with zipfile.ZipFile(FILE_NAME, "r") as zip_ref:
     zip_ref.extractall(extract_dir)
 

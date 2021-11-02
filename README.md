@@ -2,13 +2,13 @@
 
 The aim of this program is to stress entire Russian ebooks and to add the dots over the ё. If your ebook is not in the epub format, I would recommend to use Calibre to convert it beforehand.
 
-Right now the program stresses most words, although sometimes the stress is omitted because a) there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or b) simply because they don't appear in my current data source (English Wiktionary). The latter is the case for some short forms of adjectives, I'll try to find a solution to that.
+Right now the program stresses most words, although sometimes the stress is omitted because a) there are multiple options the word could be stressed depending on the context or case (in the case of замок or все vs всё) or b) simply because they don't appear in my current data source, which can be the case for very rare words
 
 ### Installation
 
-First you should download the Github repository and the dictionary database: https://mega.nz/file/LZ9CEICL#3rcqvbmLAnWvqYZIKrYKNFGYF-gycRdDag7qChCE4Js (unfortunately too large for Github) and put it into the repository folder.
+First you should download the Github repository.
 
-Afterwards should install Python 3 and the required libraries:
+Afterwards should install Python 3 and the required libraries by executing following command in the command line:
 
 ```
 pip install -r requirements.txt
