@@ -1,0 +1,7 @@
+*.spec
+*.epub
+*.db
+build/*
+__pycache__/*
+extract_dir
+launch.json
