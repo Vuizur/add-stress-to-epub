@@ -10,9 +10,9 @@ FILE_NAME = "input.epub"
 OUTPUT_FILE = "output.epub"
 
 extract_dir = "extract_dir_9580"
-with open("test.txt", "w") as f:
-    for a in sys.argv:
-        f.write(a)
+#with open("test.txt", "w") as f:
+#    for a in sys.argv:
+#        f.write(a)
 
 def is_unimportant(token):
     return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-" or token.pos_ == "NUM"

@@ -170,6 +170,3 @@ ON
             return word
         else:
             return self.get_stressed_word(word_with_yo)
-
-rd = RussianDictionary()
-print(rd.get_stressed_word_and_set_yo("пес"))
