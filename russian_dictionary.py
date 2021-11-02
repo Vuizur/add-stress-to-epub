@@ -1,6 +1,7 @@
 from os import replace, stat
 import sqlite3
 import re
+from typing import Tuple
 
 class RussianDictionary:
     _con = sqlite3.connect("words4.db")
@@ -97,18 +98,35 @@ ON
         #fixed_dict = {k[0]:list(v.values()) for (k,v) in res_dict.items()}
             
         return fixed_res_dict
-    def get_correct_yo_form(self, word: str) -> str:
+    #Returns (result_word, bool: true if is_unique/not_in_database) 
+    def get_correct_yo_form(self, word: str) -> Tuple[str, bool]:
         
         #is the word lowercased in the dictionary
         word_lower = word.lower()
-        word_in_dict = self._cur.execute("SELECT * FROM word w WHERE w.word_lowercase = ?",(word_lower,)).fetchone()
-        if word_in_dict != None:
-            return word
+        #word_in_dict = self._cur.execute("SELECT * FROM word w WHERE w.word_lowercase = ?",(word_lower,)).fetchone()
+        #TODO: Fix all of this, I am too tired
+        #if word_in_dict != None:
+        #    return word
+        #else:
+        words_with_possibly_written_yo = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ?", 
+            (word_lower,)).fetchall()
+        if words_with_possibly_written_yo == []:
+            return (word, False)
         else:
-            word_with_written_yo = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ?", (word_lower,)).fetchone()
-            if word_with_written_yo != None:
+            has_word_without_yo = False
+            has_word_with_yo = False
+            for wrd in words_with_possibly_written_yo:
+                if "ё" in wrd[0]:
+                    has_word_with_yo = True
+                else:
+                    has_word_without_yo = True
+            if has_word_without_yo and has_word_with_yo:
+                return(word, False)
+            elif has_word_without_yo == True:
+                return(word, True)
+            else: #word must be written with a ё
                 indices_of_yo = set()
-                for i, char in enumerate(word_with_written_yo[0]):
+                for i, char in enumerate(words_with_possibly_written_yo[0][0]):
                     if char == "ё" or char == "Ё":
                         indices_of_yo.add(i)
                 wordlist = list(word)
@@ -117,11 +135,7 @@ ON
                         wordlist[i] = "Ё"
                     else:
                         wordlist[i] = "ё"
-                return "".join(wordlist)
-            else:
-                return word
-
-        #TODO: finish
+                return ("".join(wordlist), True)
 
     #Returns the word unstressed if stress is unclear
     def get_stressed_word(self, word: str) -> str:
@@ -151,5 +165,11 @@ ON
         return result_word
     
     def get_stressed_word_and_set_yo(self, word: str) -> str:
-        word_with_yo = self.get_correct_yo_form(word)
-        return self.get_stressed_word(word_with_yo)
+        word_with_yo, is_unique = self.get_correct_yo_form(word)
+        if not is_unique:
+            return word
+        else:
+            return self.get_stressed_word(word_with_yo)
+
+rd = RussianDictionary()
+print(rd.get_stressed_word_and_set_yo("пес"))
