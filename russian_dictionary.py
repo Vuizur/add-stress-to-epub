@@ -1,4 +1,3 @@
-from os import replace, stat
 import sqlite3
 import re
 from typing import Tuple

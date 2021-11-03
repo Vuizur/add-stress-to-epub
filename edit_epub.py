@@ -4,10 +4,23 @@ import spacy
 import zipfile
 import shutil
 import russian_dictionary
-import sys
+import argparse
 
-FILE_NAME = "input.epub"
-OUTPUT_FILE = "output.epub"
+parser = argparse.ArgumentParser(description='Add stress to Russian ebooks.')
+parser.add_argument('-input', type=str,
+                   help='the input file')
+parser.add_argument('-output', type=str, help='the output file', default="output.epub")
+
+args = parser.parse_args()
+print(args.input)
+print(args.output)
+
+if args.input == None:
+    print("Please provide an input file!")
+    quit()
+
+FILE_NAME = args.input
+OUTPUT_FILE = args.output
 
 extract_dir = "extract_dir_9580"
 #with open("test.txt", "w") as f:
