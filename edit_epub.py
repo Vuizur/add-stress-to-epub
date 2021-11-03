@@ -1,12 +1,21 @@
-import os
-import bs4
-import spacy
-import zipfile
-import shutil
-import russian_dictionary
-import argparse
+#import os
+#import bs4
+#import spacy
+#import zipfile
+#import shutil
+#import russian_dictionary
+#import argparse
+from russian_dictionary import RussianDictionary
+from os import path, listdir, remove, rename
+from os.path import isfile
+from spacy import load
+from argparse import ArgumentParser
+from zipfile import ZipFile
+from bs4 import BeautifulSoup
+from shutil import make_archive, rmtree
 
-parser = argparse.ArgumentParser(description='Add stress to Russian ebooks.')
+
+parser = ArgumentParser(description='Add stress to Russian ebooks.')
 parser.add_argument('-input', type=str,
                    help='the input file')
 parser.add_argument('-output', type=str, help='the output file', default="output.epub")
@@ -30,24 +39,24 @@ extract_dir = "extract_dir_9580"
 def is_unimportant(token):
     return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-" or token.pos_ == "NUM"
 
-rd = russian_dictionary.RussianDictionary()
-
-nlp = spacy.load("ru_core_news_sm")
+nlp = load("ru_core_news_sm")
 nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
-if not os.path.isfile("/words4.db"):
+if not isfile("words4.db"):
     print("Unpacking db...")
-    with zipfile.ZipFile("words4.zip", "r") as dbfile:
+    with ZipFile("words4.zip", "r") as dbfile:
         dbfile.extractall()
 
-with zipfile.ZipFile(FILE_NAME, "r") as zip_ref:
+rd = RussianDictionary()
+
+with ZipFile(FILE_NAME, "r") as zip_ref:
     zip_ref.extractall(extract_dir)
 
-for filename in os.listdir(extract_dir):
+for filename in listdir(extract_dir):
     if filename.endswith(".xhtml"): 
         print(filename)
-        with open(os.path.join(extract_dir, filename), "r", encoding="utf-8") as f:
-            soup = bs4.BeautifulSoup(f.read(), "lxml")
+        with open(path.join(extract_dir, filename), "r", encoding="utf-8") as f:
+            soup = BeautifulSoup(f.read(), "lxml")
             for text_object in soup.find_all(text=True):
                 text: str = text_object.text.strip()
                 if len(text) > 0:
@@ -55,22 +64,26 @@ for filename in os.listdir(extract_dir):
                     doc = nlp(text)
                     for token in doc:
                         if is_unimportant(token):
-                            result_text += token.text
+                            result_text += token.text_with_ws
                         else:
-                            result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
+                            #these get pronounced wrongly due to Spacy's tokenization
+                            if token.text == "моему" or token.text == "твоему":
+                                result_text += token.text_with_ws
+                            else:
+                                result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
                     text_object.string.replace_with(result_text)
 
-        with open(os.path.join(extract_dir, filename), "w+", encoding="utf-8") as f:
+        with open(path.join(extract_dir, filename), "w+", encoding="utf-8") as f:
             f.write(str(soup))
         continue
     else:
         continue
 
 
-shutil.make_archive(OUTPUT_FILE, "zip", extract_dir)
+make_archive(OUTPUT_FILE, "zip", extract_dir)
 try:
-    os.remove(OUTPUT_FILE)
+    remove(OUTPUT_FILE)
 except:
     pass
-os.rename(OUTPUT_FILE + ".zip", OUTPUT_FILE)
-shutil.rmtree(extract_dir)
+rename(OUTPUT_FILE + ".zip", OUTPUT_FILE)
+rmtree(extract_dir)
