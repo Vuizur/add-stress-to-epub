@@ -2,7 +2,7 @@
 
 The aim of this program is to stress entire Russian ebooks and to add the dots over the ё. If your ebook is not in the epub format, I would recommend to use Calibre to convert it beforehand.
 
-Right now the program stresses most words, although sometimes the stress is omitted because a) there are multiple options the word could be stressed depending on the context or case (in the case of замок or все vs всё) or b) simply because they don't appear in my current data source, which can be the case for very rare words. The goal of this tool is that you can be sure - if a word is stressed - that it will be pronounced that way.
+Right now the program stresses the large majority of words, although sometimes the stress is omitted because a) there are multiple options the word could be stressed depending on the context or case (in the case of замок or все vs всё or чем vs чём) or b) simply because they don't appear in my current data source, which can be the case for very rare words. The goal of this tool is that you can be sure - if a word is stressed - that it will be pronounced that way.
 
 ### Installation
 
