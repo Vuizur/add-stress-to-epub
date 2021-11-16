@@ -169,3 +169,4 @@ ON
             return word
         else:
             return self.get_stressed_word(word_with_yo)
+

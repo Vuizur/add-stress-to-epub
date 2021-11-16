@@ -23,4 +23,4 @@ python edit_epub.py -input "input.epub" -output "output.epub"
 ### Acknowledgements
 The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project.
 
-If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left.
+If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is not being stressed - even when the stress is not ambiguous - and it is on Wiktionary/OpenRussian then please open an issue.

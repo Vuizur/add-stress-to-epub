@@ -58,7 +58,7 @@ for filename in listdir(extract_dir):
         with open(path.join(extract_dir, filename), "r", encoding="utf-8") as f:
             soup = BeautifulSoup(f.read(), "lxml")
             for text_object in soup.find_all(text=True):
-                text: str = text_object.text.strip()
+                text: str = text_object.text#.strip() - maybe commenting this out causes unnecessary calls of nlp
                 if len(text) > 0:
                     result_text = ""
                     doc = nlp(text)
