@@ -24,3 +24,16 @@ python edit_epub.py -input "input.epub" -output "output.epub"
 The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project.
 
 If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is not being stressed - even when the stress is not ambiguous - and it is on Wiktionary/OpenRussian then please open an issue.
+
+### The future
+I so far have not found a good source for the Russian Wiktionary data and use the English data instead. The Wiktextract project will likely try to extract Russian entries somewhere in the next months or so, so I'll add this data once it is available.
+
+There is the possibility to add grammatical analysis to detect the case of the word and then to select the correct stress based on it. The problem is that this is a lot of work and I am not sure if I have enough time, but maybe I'll do it.
+
+### Similar projects
+
+* Someone who implemented a similar program, but never published it: https://www.reddit.com/r/russian/comments/8akdm4/reading_and_the_problem_of_stress/ 
+
+* Russiangram, closed source, but performs a grammatical analysis (I think) unlike my program: https://russiangram.com/
+
+* https://morpher.ru/accentizer/, which is very similar to Russiangram and maybe was the inspiration
