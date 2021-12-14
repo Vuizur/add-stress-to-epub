@@ -42,9 +42,9 @@ def is_unimportant(token):
 nlp = load("ru_core_news_sm")
 nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
-if not isfile("/words4.db"):
+if not isfile("/russian_dict.db"):
     print("Unpacking db...")
-    with ZipFile("words4.zip", "r") as dbfile:
+    with ZipFile("russian_dict.zip", "r") as dbfile:
         dbfile.extractall()
 
 rd = RussianDictionary()
