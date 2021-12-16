@@ -3,7 +3,7 @@ import re
 from typing import Tuple
 
 class RussianDictionary:
-    _con = sqlite3.connect("words4.db")
+    _con = sqlite3.connect("russian_dict.db")
     _cur = _con.cursor()
 
     @staticmethod
@@ -169,4 +169,3 @@ ON
             return word
         else:
             return self.get_stressed_word(word_with_yo)
-
