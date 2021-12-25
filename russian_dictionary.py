@@ -179,7 +179,7 @@ ON
                     print(pos)
                     return (word, True) #TODO: Check if true
                 elif len(pos_filtered) == 1:
-                    return self.write_word_with_yo(word, pos_filtered[0])
+                    return self.write_word_with_yo(word, pos_filtered[0][0])
                 else:
                     tagged_results = self._cur.execute("""
 SELECT w.canonical_form, fow.form_of_word_id, tag_text
@@ -283,7 +283,7 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                     plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
                     fitting_word_candidates = set()
                     for fow_key, tag_set in grouped_forms.items():
-                        if case in tag_set and plurality in tag_set:
+                        if (case in tag_set and plurality in tag_set) or ("locative" in tag_set and morph_dict["Case"] == "Loc"):
                             fitting_word_candidates.add(fow_canonical_form_mapping[fow_key])
                     if len(fitting_word_candidates) == 1:
                         return self.write_stressed_word(word, fitting_word_candidates.pop())

@@ -41,6 +41,12 @@ extract_dir = "extract_dir_9580"
 def is_unimportant(token):
     return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-"
 
+def is_accented(phrase: str):
+    for char in phrase:
+        if char == u'\u0301':
+            return True
+    return False
+
 nlp = load("ru_core_news_sm")
 if not ANALYZE_GRAMMAR:
     nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
@@ -65,19 +71,27 @@ for filename in listdir(extract_dir):
                 if len(text) > 0:
                     result_text = ""
                     doc = nlp(text)
-                    for token in doc:
+                    skip_elements = 0
+                    for i, token in enumerate(doc):
+                        if skip_elements > 0:
+                            skip_elements -= 1
+                            continue
                         if is_unimportant(token):
                             result_text += token.text_with_ws
                         else:
-                            #these get pronounced wrongly due to Spacy's tokenization
-                            if token.text == "моему" or token.text == "твоему":
-                                result_text += token.text_with_ws
+                            if len(doc) >= i + 3 and doc[i + 1].text == "-" and token.whitespace_ == "" and doc[i + 1].whitespace_ == "":
+                                fusion_str = token.text + doc[i + 1].text + doc[i + 2].text
+                                fusion_str_stressed = rd.get_stressed_word_and_set_yo(fusion_str)
+                                if is_accented(fusion_str_stressed):
+                                    result_text += fusion_str_stressed + doc[i + 2].whitespace_
+                                    skip_elements = 2
+                                    continue                              
+
+                            if not ANALYZE_GRAMMAR:
+                                result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
                             else:
-                                if not ANALYZE_GRAMMAR:
-                                    result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
-                                else:
-                                    str_wrd = rd.get_stressed_word_and_set_yo(token.text, token.pos_, token.morph)
-                                    result_text += str_wrd + token.whitespace_
+                                str_wrd = rd.get_stressed_word_and_set_yo(token.text, token.pos_, token.morph)
+                                result_text += str_wrd + token.whitespace_
 
                     text_object.string.replace_with(result_text)
 
