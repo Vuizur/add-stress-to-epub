@@ -6,6 +6,8 @@ Right now the program stresses the large majority of words, although sometimes t
 
 ### Installation
 
+First you need to download the dictionary zip file from the releases section.
+
 First you should download the Github repository (the Code -> Download ZIP button).
 
 Afterwards should install Python 3 (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):

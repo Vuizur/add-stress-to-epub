@@ -31,16 +31,19 @@ if args.input == None:
 FILE_NAME = args.input
 OUTPUT_FILE = args.output
 
+ANALYZE_GRAMMAR = True
+
 extract_dir = "extract_dir_9580"
 #with open("test.txt", "w") as f:
 #    for a in sys.argv:
 #        f.write(a)
 
 def is_unimportant(token):
-    return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-" or token.pos_ == "NUM"
+    return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-"
 
 nlp = load("ru_core_news_sm")
-nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
+if not ANALYZE_GRAMMAR:
+    nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
 if not isfile("/russian_dict.db"):
     print("Unpacking db...")
@@ -70,7 +73,12 @@ for filename in listdir(extract_dir):
                             if token.text == "моему" or token.text == "твоему":
                                 result_text += token.text_with_ws
                             else:
-                                result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
+                                if not ANALYZE_GRAMMAR:
+                                    result_text += rd.get_stressed_word_and_set_yo(token.text) + token.whitespace_
+                                else:
+                                    str_wrd = rd.get_stressed_word_and_set_yo(token.text, token.pos_, token.morph)
+                                    result_text += str_wrd + token.whitespace_
+
                     text_object.string.replace_with(result_text)
 
         with open(path.join(extract_dir, filename), "w+", encoding="utf-8") as f:

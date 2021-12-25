@@ -2,12 +2,10 @@ import sqlite3
 import re
 from typing import Tuple
 
-from numpy import number
-
 spacy_wiktionary_pos_mapping = {
     "NOUN": "noun",
     "VERB": "verb",
-    "PROPN": "name",
+    "PROPN": "name", #here it could also make sense to search nouns
     "ADV": "adv",
     "SCONJ": "conj",
     "ADP": "prep", #not sure, fits for за
@@ -16,7 +14,10 @@ spacy_wiktionary_pos_mapping = {
     "PRON": "pron",
     "CCONJ": "conj",
     "PART": "particle",
-    "DET": "pron" #fits for какими
+    "DET": "pron", #fits for какими
+    "INTJ": "intj",
+    "NUM": "num"
+    #Maybe num -> adv (больше)
 }
 spacy_wiktionary_number_mapping = {
     "Sing": "singular",
@@ -31,7 +32,8 @@ spacy_wiktionary_case_mapping = {
     "Dat": "dative",
     "Acc": "accusative",
     "Ins": "instrumental",
-    "Loc": "prepositional"
+    "Loc": "prepositional",
+    "Par": "partitive"
 }
 
 class RussianDictionary:
@@ -155,15 +157,27 @@ ON
             (word_lower,)).fetchall()
         if words_with_possibly_written_yo == []:
             return (word, False)
-        else:
+        #elif len(set(words_with_possibly_written_yo)) == 1:
+        #    return self.write_word_with_yo(word, words_with_possibly_written_yo[0])
+        has_word_without_yo = False
+        has_word_with_yo = False
+        for wrd in words_with_possibly_written_yo:
+            if "ё" in wrd[0]:
+                has_word_with_yo = True
+            else:
+                has_word_without_yo = True
+        if has_word_without_yo and has_word_with_yo:
             #try to find form according to morph
             if pos != None:
                 pos = spacy_wiktionary_pos_mapping[pos]
                 pos_filtered = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = ? GROUP BY w.word", (word_lower, pos)).fetchall()
+                #if len(pos_filtered) == 0 and pos == "name":
+                #    pos_filtered = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = \"noun\" GROUP BY w.word", (word_lower,)).fetchall()
                 if len(pos_filtered) == 0:
                     print("Apparently wrong POS detected")
                     print(word)
-                    return word
+                    print(pos)
+                    return (word, True) #TODO: Check if true
                 elif len(pos_filtered) == 1:
                     return self.write_word_with_yo(word, pos_filtered[0])
                 else:
@@ -185,7 +199,7 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
                         else:
                             grouped_forms[form_of_word_id].add(tag_text)
 
-                    if pos == "noun" or pos == "adj":
+                    if pos == "noun" or pos == "adj" and "Case" in morph_dict:
                         case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
                         plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
                         fitting_word_candidates = set()
@@ -194,21 +208,11 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
                                 fitting_word_candidates.add(fow_canonical_form_mapping[fow_key])
                         if len(fitting_word_candidates) == 1:
                             return self.write_word_with_yo(word, fitting_word_candidates.pop())
-
-            #Could not manage to resolve the disambiguity
-            has_word_without_yo = False
-            has_word_with_yo = False
-            for wrd in words_with_possibly_written_yo:
-                if "ё" in wrd[0]:
-                    has_word_with_yo = True
-                else:
-                    has_word_without_yo = True
-            if has_word_without_yo and has_word_with_yo:
-                return(word, False)
-            elif has_word_without_yo == True:
-                return(word, True)
-            else: #word must be written with a ё
-                return self.write_word_with_yo(word, words_with_possibly_written_yo[0][0])
+            return(word, False)
+        elif has_word_without_yo == True:
+            return(word, True)
+        else: #word must be written with a ё
+            return self.write_word_with_yo(word, words_with_possibly_written_yo[0][0])            
 
 
     def write_stressed_word(self, word, stressed_dict_word):
@@ -243,14 +247,19 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             #Try to resolve ambiguities
             pos = spacy_wiktionary_pos_mapping[pos]
             pos_filtered = self._cur.execute("SELECT w.canonical_form FROM word w WHERE w.word_lowercase = ? AND w.pos = ?", (word_lower, pos)).fetchall()
-            canonical_list: list[str] = [wrd[0] for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())]
+            canonical_list: set[str] = {wrd[0] for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+
+            if len(canonical_list) == 0 and pos == "name":
+                pos_filtered = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = \"noun\" GROUP BY w.word", (word_lower,)).fetchall()
+                canonical_list: set[str] = {wrd[0] for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
 
             if len(canonical_list) == 0:
                 print("Apparently wrong POS detected")
                 print(word)
+                print(pos)
                 return word
             elif len(canonical_list) == 1:
-                return self.write_stressed_word(word, canonical_list[0])
+                return self.write_stressed_word(word, canonical_list.pop())
             else:
                 tagged_results = self._cur.execute("""
 SELECT w.canonical_form, fow.form_of_word_id, tag_text
@@ -269,7 +278,7 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                         grouped_forms[form_of_word_id] = {tag_text}
                     else:
                         grouped_forms[form_of_word_id].add(tag_text)
-                if pos == "noun" or pos == "adj":
+                if pos == "noun" or pos == "adj" and "Case" in morph_dict:
                     case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
                     plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
                     fitting_word_candidates = set()
@@ -278,6 +287,10 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                             fitting_word_candidates.add(fow_canonical_form_mapping[fow_key])
                     if len(fitting_word_candidates) == 1:
                         return self.write_stressed_word(word, fitting_word_candidates.pop())
+                    else:
+                        return word
+                else:
+                    return word
     
     def get_stressed_word_and_set_yo(self, word: str, pos = None, morph = None) -> str:
         if pos == "PUNCT":
