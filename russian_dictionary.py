@@ -2,6 +2,35 @@ import sqlite3
 import re
 from typing import Tuple
 
+spacy_wiktionary_pos_mapping = {
+    "NOUN": "noun",
+    "PROPN": "name",
+    "ADV": "adv",
+    "SCONJ": "conj",
+    "ADP": "prep", #not sure, fits for за
+    "ADJ": "adj",
+    "ADV": "adv",
+    "PRON": "pron",
+    "CCONJ": "conj",
+    "PART": "particle",
+    "DET": "pron" #fits for какими
+}
+spacy_wiktionary_number_mapping = {
+    "Sing": "singular",
+    "Plur": "plural"
+}
+spacy_wiktionary_tense_mapping = {
+
+}
+spacy_wiktionary_case_mapping = {
+    "Nom": "nominative",
+    "Gen": "genitive",
+    "Dat": "dative",
+    "Acc": "accusative",
+    "Ins": "instrumental",
+    "Loc": "prepositional"
+}
+
 class RussianDictionary:
     _con = sqlite3.connect("russian_dict.db")
     _cur = _con.cursor()
@@ -98,7 +127,7 @@ ON
             
         return fixed_res_dict
     #Returns (result_word, bool: true if is_unique/not_in_database) 
-    def get_correct_yo_form(self, word: str) -> Tuple[str, bool]:
+    def get_correct_yo_form(self, word: str, morph = None) -> Tuple[str, bool]:
         
         #is the word lowercased in the dictionary
         word_lower = word.lower()
@@ -107,11 +136,20 @@ ON
         #if word_in_dict != None:
         #    return word
         #else:
+
+        #TODO: Fix this and use GROUP BY
+
         words_with_possibly_written_yo = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ?", 
             (word_lower,)).fetchall()
         if words_with_possibly_written_yo == []:
             return (word, False)
         else:
+            #try to find form according to morph
+            #if 
+
+            #
+
+            #
             has_word_without_yo = False
             has_word_with_yo = False
             for wrd in words_with_possibly_written_yo:
@@ -137,7 +175,7 @@ ON
                 return ("".join(wordlist), True)
 
     #Returns the word unstressed if stress is unclear
-    def get_stressed_word(self, word: str) -> str:
+    def get_stressed_word(self, word: str, morph = None) -> str:
         if word.islower():
             is_lower = True
         else:
@@ -163,7 +201,7 @@ ON
             
         return result_word
     
-    def get_stressed_word_and_set_yo(self, word: str) -> str:
+    def get_stressed_word_and_set_yo(self, word: str, morph = None) -> str:
         word_with_yo, is_unique = self.get_correct_yo_form(word)
         if not is_unique:
             return word
