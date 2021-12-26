@@ -36,6 +36,8 @@ spacy_wiktionary_case_mapping = {
     "Par": "partitive"
 }
 
+VERY_OFTEN_WRONG_WORDS = ["замер"]
+
 class RussianDictionary:
     _con = sqlite3.connect("russian_dict.db")
     _cur = _con.cursor()
@@ -177,7 +179,7 @@ ON
                     print("Apparently wrong POS detected")
                     print(word)
                     print(pos)
-                    return (word, True) #TODO: Check if true
+                    return (word, False)
                 elif len(pos_filtered) == 1:
                     return self.write_word_with_yo(word, pos_filtered[0][0])
                 else:
@@ -293,6 +295,8 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                     return word
     
     def get_stressed_word_and_set_yo(self, word: str, pos = None, morph = None) -> str:
+        if word.lower() in VERY_OFTEN_WRONG_WORDS:
+            return word
         if pos == "PUNCT":
             return word
         word_with_yo, is_unique = self.get_correct_yo_form(word, pos, morph)

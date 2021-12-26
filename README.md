@@ -27,10 +27,10 @@ Then you should put you ebook in this folder and start the program with followin
 python edit_epub.py -input "input.epub" -output "output.epub"
 ```
 
+If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is being stressed incorrectly or if a word is on (English) Wiktionary but still not being stressed, then open an issue. I will maybe maintain a list of words that confuse the algorithm (pretty rare but happens), so that there is rather no stress than a wrong one.
+
 ### Acknowledgements
 The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project.
-
-If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is not being stressed - even when the stress is not ambiguous - and it is on Wiktionary/OpenRussian then please open an issue.
 
 ### The future
 I so far have not found a good source for the Russian Wiktionary data and use the English Wiktionary data instead. The Wiktextract project will likely try to extract Russian entries somewhere in the next months or so, so I'll add this data once it is available.
@@ -39,6 +39,6 @@ I so far have not found a good source for the Russian Wiktionary data and use th
 
 * Someone who implemented a similar program (without grammar analysis AFAIK), but never published it: https://www.reddit.com/r/russian/comments/8akdm4/reading_and_the_problem_of_stress/ 
 
-* Russiangram, closed source, also performs a grammatical analysis: https://russiangram.com/
+* Russiangram, closed source, also performs a grammatical analysis, I don't know if it also uses Wiktionary or another data source: https://russiangram.com/. I did not benchmark mine against it, but in some cases mine seems to give better results, for example when копье is in prepositional case or also for the word дверном.
 
 * https://morpher.ru/accentizer/, closed source and connected to a paid program, which is very similar to Russiangram and maybe was the inspiration for it
