@@ -39,8 +39,9 @@ spacy_wiktionary_case_mapping = {
 VERY_OFTEN_WRONG_WORDS = ["замер"]
 
 class RussianDictionary:
-    _con = sqlite3.connect("russian_dict.db")
-    _cur = _con.cursor()
+    def __init__(self) -> None:
+        self._con = sqlite3.connect("russian_dict.db")
+        self._cur = self._con.cursor()
 
     @staticmethod
     def _replacenth(string, sub, wanted, n):
@@ -201,12 +202,14 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
                         else:
                             grouped_forms[form_of_word_id].add(tag_text)
 
-                    if pos == "noun" or pos == "adj" and "Case" in morph_dict:
+                    if (pos == "noun" or pos == "adj" or pos == "name" or pos == "pron") and "Case" in morph_dict:
                         case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
-                        plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
+                        plurality = None
+                        if "Number" in morph_dict:
+                            plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
                         fitting_word_candidates = set()
                         for fow_key, tag_set in grouped_forms.items():
-                            if case in tag_set and plurality in tag_set:
+                            if case in tag_set and (plurality in tag_set or plurality == None):
                                 fitting_word_candidates.add(fow_canonical_form_mapping[fow_key])
                         if len(fitting_word_candidates) == 1:
                             return self.write_word_with_yo(word, fitting_word_candidates.pop())
@@ -280,12 +283,14 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                         grouped_forms[form_of_word_id] = {tag_text}
                     else:
                         grouped_forms[form_of_word_id].add(tag_text)
-                if pos == "noun" or pos == "adj" and "Case" in morph_dict:
+                if (pos == "noun" or pos == "adj" or pos == "name" or pos == "pron") and "Case" in morph_dict:
                     case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
-                    plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
+                    plurality = None
+                    if "Number" in morph_dict:
+                        plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
                     fitting_word_candidates = set()
                     for fow_key, tag_set in grouped_forms.items():
-                        if (case in tag_set and plurality in tag_set) or ("locative" in tag_set and morph_dict["Case"] == "Loc"):
+                        if (case in tag_set and (plurality in tag_set or plurality == None)) or ("locative" in tag_set and morph_dict["Case"] == "Loc"):
                             fitting_word_candidates.add(fow_canonical_form_mapping[fow_key])
                     if len(fitting_word_candidates) == 1:
                         return self.write_stressed_word(word, fitting_word_candidates.pop())

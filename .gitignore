@@ -5,3 +5,4 @@ __pycache__/*
 extract_dir
 launch.json
 dist/*
+russian_dict.zip

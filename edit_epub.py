@@ -5,6 +5,7 @@
 #import shutil
 #import russian_dictionary
 #import argparse
+import unicodedata
 from russian_dictionary import RussianDictionary
 from os import path, listdir, remove, rename
 from os.path import isfile
@@ -47,11 +48,54 @@ def is_accented(phrase: str):
             return True
     return False
 
+ACCENT_MAPPING = {
+        '́': '',
+        '̀': '',
+        'а́': 'а',
+        'а̀': 'а',
+        'е́': 'е',
+        'ѐ': 'е',
+        'и́': 'и',
+        'ѝ': 'и',
+        'о́': 'о',
+        'о̀': 'о',
+        'у́': 'у',
+        'у̀': 'у',
+        'ы́': 'ы',
+        'ы̀': 'ы',
+        'э́': 'э',
+        'э̀': 'э',
+        'ю́': 'ю',
+        '̀ю': 'ю',
+        'я́́': 'я',
+        'я̀': 'я',
+    }
+
+ACCENT_MAPPING = {unicodedata.normalize('NFKC', i): j for i, j in ACCENT_MAPPING.items()}
+
+def unaccentify( s):
+    source = unicodedata.normalize('NFKC', s)
+    for old, new in ACCENT_MAPPING.items():
+        source = source.replace(old, new)
+    return source
+
+def remove_accent_if_only_one_syllable(s: str):
+    s_unaccented = unaccentify(s)
+    s_unaccented_lower = s_unaccented.lower()
+    vowels = 0
+    for char in s_unaccented_lower:
+        if char in "аоэуыяеюи":
+            vowels += 1
+    if vowels <= 1:
+        return s_unaccented
+    else:
+        return s
+
 nlp = load("ru_core_news_sm")
 if not ANALYZE_GRAMMAR:
     nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
-if not isfile("/russian_dict.db"):
+if not isfile("russian_dict.db"):
     print("Unpacking db...")
     with ZipFile("russian_dict.zip", "r") as dbfile:
         dbfile.extractall()
@@ -83,7 +127,10 @@ for filename in listdir(extract_dir):
                                 fusion_str = token.text + doc[i + 1].text + doc[i + 2].text
                                 fusion_str_stressed = rd.get_stressed_word_and_set_yo(fusion_str)
                                 if is_accented(fusion_str_stressed):
+                                    #spl_str = fusion_str_stressed.split("-")
+                                    #fusion_str_stressed = remove_accent_if_only_one_syllable(spl_str[0]) + "-" + remove_accent_if_only_one_syllable(spl_str[1])
                                     result_text += fusion_str_stressed + doc[i + 2].whitespace_
+                                    print(fusion_str_stressed)
                                     skip_elements = 2
                                     continue                              
 

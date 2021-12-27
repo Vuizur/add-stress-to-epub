@@ -6,7 +6,7 @@ To reach the best results, it analyzes the case and part of speech of every word
 
 (If your ebook is not in the epub format, I would recommend to use Calibre to convert it beforehand.)
 
-In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or b) simply because they don't appear in my current data source, which can be the case for very rare words. 
+In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or simply because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
 
 ### Installation
@@ -37,8 +37,6 @@ I so far have not found a good source for the Russian Wiktionary data and use th
 
 ### Similar projects
 
-* Someone who implemented a similar program (without grammar analysis AFAIK), but never published it: https://www.reddit.com/r/russian/comments/8akdm4/reading_and_the_problem_of_stress/ 
+* Russiangram/Morpher(https://russiangram.com/, https://morpher.ru/accentizer/), closed source and connected to a paid program, also performs a grammatical analysis, I don't know if it also uses Wiktionary or another data source. I did not benchmark mine thoroughly against it, but in some cases mine seems to give better results, for example when копье is in prepositional case or also for the word дверном. Maybe Russiangram has a larger vocabulary though.
 
-* Russiangram, closed source, also performs a grammatical analysis, I don't know if it also uses Wiktionary or another data source: https://russiangram.com/. I did not benchmark mine against it, but in some cases mine seems to give better results, for example when копье is in prepositional case or also for the word дверном.
-
-* https://morpher.ru/accentizer/, closed source and connected to a paid program, which is very similar to Russiangram and maybe was the inspiration for it
+* Someone who implemented a similar program (without grammar analysis), but never published it: https://www.reddit.com/r/russian/comments/8akdm4/reading_and_the_problem_of_stress/ 
