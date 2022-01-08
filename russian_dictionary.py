@@ -242,7 +242,7 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             is_lower = False
         word_lower = word.lower()
         words_in_dict = self._cur.execute("SELECT canonical_form FROM word w WHERE w.word_lowercase = ?",(word_lower,)).fetchall()
-        canonical_list: set[str] = {wrd[0] for wrd in words_in_dict if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+        canonical_list: set[str] = {wrd[0].lower() for wrd in words_in_dict if wrd[0] != None and not (is_lower and not wrd[0].islower())}
         if len(canonical_list) == 1:
             canonical_word = canonical_list.pop()
             return self.write_stressed_word(word, canonical_word)
@@ -252,11 +252,11 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             #Try to resolve ambiguities
             pos = spacy_wiktionary_pos_mapping[pos]
             pos_filtered = self._cur.execute("SELECT w.canonical_form FROM word w WHERE w.word_lowercase = ? AND w.pos = ?", (word_lower, pos)).fetchall()
-            canonical_list: set[str] = {wrd[0] for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+            canonical_list: set[str] = {wrd[0].lower() for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
 
             if len(canonical_list) == 0 and pos == "name":
                 pos_filtered = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = \"noun\" GROUP BY w.word", (word_lower,)).fetchall()
-                canonical_list: set[str] = {wrd[0] for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+                canonical_list: set[str] = {wrd[0].lower() for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
 
             if len(canonical_list) == 0:
                 print("Apparently wrong POS detected")

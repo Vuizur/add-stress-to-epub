@@ -1,0 +1,5 @@
+Check words that are the same but have different ё positions
+
+Add derived verb forms to database
+
+Count determiners as pronouns
