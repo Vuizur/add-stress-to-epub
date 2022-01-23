@@ -27,8 +27,13 @@ Then you should put you ebook in this folder and start the program with followin
 python edit_epub.py -input "input.epub" -output "output.epub"
 ```
 
+You can also convert entire folders filled with epub files:
+```
+python edit_epub.py -input_folder "to-convert" -output_folder "was-converted"
+```
 If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is being stressed incorrectly or if a word is on (English) Wiktionary but still not being stressed, then open an issue. I will maybe maintain a list of words that confuse the algorithm (pretty rare but happens), so that there is rather no stress than a wrong one.
 
+If you are interested in modifying the program: The database used in this project has been created using my other project here: https://github.com/Vuizur/ebook_dictionary_creator 
 ### Acknowledgements
 The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project.
 
