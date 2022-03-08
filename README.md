@@ -13,9 +13,9 @@ In some cases the stress is omitted because there are multiple options the word 
 
 ### Installation
 
-First you need to download the dictionary zip file from the releases section.
+First you need to download the [dictionary zip file](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip).
 
-Then you should download the Github repository (the Code -> Download ZIP button).
+Then you should download the Github repository (click the Code -> Download ZIP button) and put the dictionary zip file into this folder.
 
 Afterwards should install [Python 3](https://www.python.org/downloads/) (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):
 
