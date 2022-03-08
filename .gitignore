@@ -1,5 +1,6 @@
 *.epub
 *.db
+*.fb2
 build/*
 __pycache__/*
 extract_dir

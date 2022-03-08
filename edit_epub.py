@@ -5,6 +5,7 @@
 #import shutil
 #import russian_dictionary
 #import argparse
+import subprocess
 import unicodedata
 from russian_dictionary import RussianDictionary
 from os import path, listdir, remove, rename, walk
@@ -68,6 +69,19 @@ def remove_accent_if_only_one_syllable(s: str):
         return s
 
 def convert_book(input_file_path: str, output_file_path: str):
+
+
+    if not input_file_path.lower().endswith(".epub"):
+        output_path = input_file_path.rsplit(".", 1)[0] + ".epub"
+        print("Converting " + input_file_path + " to " + output_path)
+        subprocess.run(["ebook-convert", input_file_path, output_path])
+        input_file_path = output_path
+        #for line in result.stdout.splitlines():
+        #    if "EPUB output written to " in line:
+        #        cal_path = line.removeprefix("EPUB output written to ")
+        #        rename(cal_path, output_path)
+
+
     ANALYZE_GRAMMAR = True
 
     extract_dir = "extract_dir_9580"

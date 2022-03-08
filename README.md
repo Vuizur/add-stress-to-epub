@@ -1,12 +1,14 @@
-# Russian word stresser for ebooks in epub format
+# Russian word stresser for ebooks
 
-The aim of this program is to stress entire Russian ebooks and to add the dots over the ё. This program not only is the most sophisticated open source stress detection tool (that I am aware of), it also allows you to convert entire ebooks!
+(If you want to know how to use this with a dictionary for reading ebooks, [check out my tutorial!](https://github.com/Vuizur/add-stress-to-epub/wiki/How-to-read-books-in-Russian-with-stress-marks-and-interactive-dictionary-lookup))
+
+This program stresses entire Russian ebooks and adds the dots over the ё. It not only is the most sophisticated open source stress detection tool (that I am aware of), it also allows you to convert entire ebooks!
 
 To reach the best results, it analyzes the case and part of speech of every word in order to find the correct stress.
 
-(If your ebook is not in the epub format, I would recommend to use Calibre to convert it beforehand.)
+(If your ebook is not in the epub format, you need to install [Calibre](https://calibre-ebook.com/). If you have it installed, the script will automatically convert the book (for example from FB2) to epub)
 
-In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or simply because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
+In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
 
 ### Installation
@@ -15,7 +17,7 @@ First you need to download the dictionary zip file from the releases section.
 
 Then you should download the Github repository (the Code -> Download ZIP button).
 
-Afterwards should install Python 3 (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):
+Afterwards should install [Python 3](https://www.python.org/downloads/) (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):
 
 ```
 pip install -r requirements.txt
@@ -26,6 +28,8 @@ Then you should put you ebook in this folder and start the program with followin
 ```
 python edit_epub.py -input "input.epub" -output "output.epub"
 ```
+
+That's it!
 
 You can also convert entire folders filled with epub files:
 ```

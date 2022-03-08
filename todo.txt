@@ -3,3 +3,5 @@ Check words that are the same but have different ё positions
 Add derived verb forms to database
 
 Count determiners as pronouns
+
+Add function to add support for using calibre to convert from fb2 for example
