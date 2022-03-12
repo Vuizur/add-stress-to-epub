@@ -72,15 +72,19 @@ test11 = "Оно не двигалось — стояло с клинком на
 
 test11 = "Он стоил на большом стене"
 
-doc = nlp(yo_test1)
+doc = nlp(stress_test1)
 #spacy.displacy.serve(doc, style='dep')
 rd = RussianDictionary()
 
 
-
+sentence = ""
 for token in doc:
     print(token.text)
     print(token.pos_)
     print(token.morph.to_dict())
+    
     stressed_wrd = rd.get_stressed_word_and_set_yo(token.text, token.pos_, token.morph)
+    sentence += stressed_wrd + " "
     print(stressed_wrd)
+    
+print(sentence)
