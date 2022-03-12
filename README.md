@@ -4,7 +4,7 @@
 
 This program stresses entire Russian ebooks and adds the dots over the ё. It not only is the most sophisticated open source stress detection tool (that I am aware of), it also allows you to convert entire ebooks!
 
-To reach the best results, it analyzes the case and part of speech of every word in order to find the correct stress.
+To reach the best results, it analyzes the case and part of speech of every word in order to find the correct stress. So it will stress the word "слова" differently in these two sentences: `В стро́гом смы́сле сло́ва?` vs. `Твои́ слова́ ничего́ не зна́чат.`
 
 (If your ebook is not in the epub format, you need to install [Calibre](https://calibre-ebook.com/). If you have it installed, the script will automatically convert the book (for example from FB2) to epub)
 
@@ -13,9 +13,9 @@ In some cases the stress is omitted because there are multiple options the word 
 
 ### Installation
 
-First you need to download the dictionary zip file from the releases section.
+First you need to download the [dictionary zip file](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip).
 
-Then you should download the Github repository (the Code -> Download ZIP button).
+Then you should download the Github repository (click the Code -> Download ZIP button) and put the dictionary zip file into this folder.
 
 Afterwards should install [Python 3](https://www.python.org/downloads/) (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):
 
