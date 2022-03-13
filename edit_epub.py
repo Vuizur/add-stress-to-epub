@@ -15,6 +15,7 @@ from argparse import ArgumentParser
 from zipfile import ZipFile
 from bs4 import BeautifulSoup
 from shutil import make_archive, rmtree
+from pathlib import Path
 
 def is_unimportant(token):
     return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-"
@@ -85,8 +86,11 @@ def convert_book(input_file_path: str, output_file_path: str):
     ANALYZE_GRAMMAR = True
 
     extract_dir = "extract_dir_9580"
+    bundle_dir = Path(__file__).parent.absolute()
+    #nlp = load("ru_core_news_sm")
+    nlp = load(bundle_dir / "ru_core_news_sm-3.1.0")
 
-    nlp = load("ru_core_news_sm")
+    
     if not ANALYZE_GRAMMAR:
         nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
