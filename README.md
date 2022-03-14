@@ -1,5 +1,5 @@
 # Russian word stresser for ebooks
-
+[Короткие инструкции на русском](README_RU.md)
 <!--![Add stress GUI screenshot](imgs/screenshot.png) ![A stressed ebook](imgs/ebook.png)
 -->
 <p float="left">

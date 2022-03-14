@@ -36,7 +36,7 @@ spacy_wiktionary_case_mapping = {
     "Par": "partitive"
 }
 
-VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа"]
+VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 class RussianDictionary:
     def __init__(self) -> None:
