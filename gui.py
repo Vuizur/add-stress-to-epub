@@ -44,7 +44,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         fileName = QFileDialog.getOpenFileName(self, 'OpenFile')
         print(fileName)
         self.lineEditInput.setText(fileName[0])
+        if fileName[0] == "":
+            return
         input_path_split = fileName[0].rsplit(".", 1)
+        
         if input_path_split[1].lower() != "epub":
             if not is_tool("ebook-convert"):
                 msgBox = QMessageBox()
