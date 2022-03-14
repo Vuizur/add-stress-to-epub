@@ -16,7 +16,7 @@ To reach the best results, it analyzes the case and part of speech of every word
 
 ### Installation
 
-**For windows**, you simply need to download the [executable release](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.1/Stress-Marker-win.zip), unpack the .zip file into a folder and start the program called #Stress marker.exe. This opens up a GUI and you can simply select the ebook you want to convert. Click on the start processing button to start it all.
+**For windows**, you simply need to download the [executable release](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.1/Stress-Marker-win.zip), unpack the .zip file into a folder and start the program called #Stress marker.exe. This opens up a GUI and you can simply select the ebook you want to convert. Click on the "Start stress marking" button to start it all.
 
 (If your ebook is not in the epub format, you need to install [Calibre](https://calibre-ebook.com/). If you have it installed, the script will automatically convert the book (for example from FB2) to epub)
 
