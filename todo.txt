@@ -1,8 +1,16 @@
-Check words that are the same but have different ё positions
+Check words that are the same but have different ё positions so that one version is chosen
+-> "alternative form of" which is equal when ё is converted to е
 
 Add derived verb forms to database
 
 Count determiners as pronouns
 
-Add function to add support for using calibre to convert from fb2 for example
+Add option to convert book back to source format
 
+Check if ner can be disabled
+
+Add algorithm to handle connected color words (with dash)
+
+Write script to publish the program
+
+Add programmatic usage to README
