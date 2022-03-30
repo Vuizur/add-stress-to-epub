@@ -48,13 +48,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         input_path_split = fileName[0].rsplit(".", 1)
         
-        if input_path_split[1].lower() != "epub":
-            if not is_tool("ebook-convert"):
-                msgBox = QMessageBox()
-                msgBox.setTextFormat(QtCore.Qt.TextFormat.RichText); 
-                msgBox.setText("You want to add stress marks to a non-epub book. Please install Calibre from <a href='https://calibre-ebook.com/download'>https://calibre-ebook.com/download</a> first!")
-                msgBox.exec()
-        output_path = input_path_split[0] + "_stressed.epub"
+        if input_path_split[1].lower() == "txt":
+            output_path = input_path_split[0] + "_stressed.txt"
+        else:
+            if input_path_split[1].lower() != "epub":
+                if not is_tool("ebook-convert"):
+                    msgBox = QMessageBox()
+                    msgBox.setTextFormat(QtCore.Qt.TextFormat.RichText); 
+                    msgBox.setText("You want to add stress marks to a non-epub book. Please install Calibre from <a href='https://calibre-ebook.com/download'>https://calibre-ebook.com/download</a> first!")
+                    msgBox.exec()
+            output_path = input_path_split[0] + "_stressed.epub"
         self.lineEditOutput.setText(output_path)
 
     def openOutputFolder(self):

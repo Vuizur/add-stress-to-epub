@@ -10,12 +10,27 @@ from shutil import make_archive, rmtree
 
 from text_stresser import RussianTextStresser
 
-
+def convert_txt(input_txt_path: str, output_txt_path: str):
+    ts = RussianTextStresser()
+    if not input_txt_path.lower().endswith("txt") or not output_txt_path.lower().endswith("txt"):
+        raise ValueError("TXT files should be supplied!")
+    with open(input_txt_path, "r", encoding="utf-8") as input, open(output_txt_path, "w+", encoding="utf-8") as output:
+        text = input.read()
+        stressed_text = ts.stress_text(text)
+        print(stressed_text)
+        output.write(stressed_text)
 
 def convert_book(input_file_path: str, output_file_path: str):
 
-
-    if not input_file_path.lower().endswith(".epub"):
+    if not isfile("russian_dict.db"):
+        print("Unpacking db...")
+        with ZipFile("russian_dict.zip", "r") as dbfile:
+            dbfile.extractall()
+    
+    if input_file_path.lower().endswith(".txt"):
+        convert_txt(input_file_path, output_file_path)
+        return
+    elif not input_file_path.lower().endswith(".epub"):
         output_path = input_file_path.rsplit(".", 1)[0] + ".epub"
         print("Converting " + input_file_path + " to " + output_path)
         subprocess.run(["ebook-convert", input_file_path, output_path])
@@ -27,12 +42,6 @@ def convert_book(input_file_path: str, output_file_path: str):
     
     #if not ANALYZE_GRAMMAR:
     #    nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
-
-    if not isfile("russian_dict.db"):
-        print("Unpacking db...")
-        with ZipFile("russian_dict.zip", "r") as dbfile:
-            dbfile.extractall()
-
     ts = RussianTextStresser()
 
     with ZipFile(input_file_path, "r") as zip_ref:

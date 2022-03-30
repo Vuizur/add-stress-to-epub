@@ -2,9 +2,6 @@
 
 from text_stresser import RussianTextStresser
 
-#con = sqlite3.connect("russian_dict.db.")
-#cur = con.cursor()
-
 def find_hard_to_detect_case_words():
     # Idea: find all words where there are two or more prepositions 
     # https://en.wikibooks.org/wiki/Russian/Prepositions
@@ -70,4 +67,4 @@ if __name__ == "__main__":
     test11 = "Он стоил на большом стене"
 
     ts = RussianTextStresser()
-    print(ts.stress_text(test11))
+    print(ts.stress_text("Твои слова ничего не значат."))

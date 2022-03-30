@@ -14,3 +14,9 @@ Add algorithm to handle connected color words (with dash)
 Write script to publish the program
 
 Add programmatic usage to README
+
+Benchmark over other programs (also with grammar detection vs without)
+
+Detailed error analysis
+
+Add two textfields where simple text can be stressed

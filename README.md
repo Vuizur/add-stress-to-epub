@@ -18,9 +18,9 @@ To reach the best results, it analyzes the case and part of speech of every word
 
 ### Installation
 
-**For windows**, you simply need to download the [executable release](https://github.com/Vuizur/add-stress-to-epub/releases/download/1.2/Stress-Marker-win.zip), unpack the .zip file into a folder and start the program called #Stress marker.exe. This opens up a GUI and you can simply select the ebook you want to convert. Click on the "Start stress marking" button to start it all.
+**For windows**, you simply need to download the [executable release](https://github.com/Vuizur/add-stress-to-epub/releases/download/1.2/Stress-Marker-win.zip), unpack the .zip file into a folder and start the program called #Stress marker.exe. This opens up a GUI and you can simply select the ebook you want to convert. Click on the "Start stress marking" button to start it all. Txt files are also supported.
 
-(If your ebook is not in the epub format, you need to install [Calibre](https://calibre-ebook.com/). If you have it installed, the script will automatically convert the book (for example from FB2) to epub)
+(If your ebook is not in the epub or txt format, you need to install [Calibre](https://calibre-ebook.com/). If you have it installed, the script will automatically convert the book (for example from FB2) to epub)
 
 I did not create executables for Linux or Mac, for these systems you should refer to the steps under "Command line use"
 
@@ -55,10 +55,22 @@ You can also convert entire folders filled with epub files:
 ```
 python edit_epub.py -input_folder "to-convert" -output_folder "was-converted"
 ```
+
+
+### Programmatic usage
+If you want to stress text in python, you can simply write:
+
+```
+ts = RussianTextStresser()
+print(ts.stress_text("Твои слова ничего не значат."))
+```
+This will print `Твои́ слова́ ничего́ не зна́чат.`
+
+### Feedback
+
 If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is being stressed incorrectly or if a word is on (English) Wiktionary but still not being stressed, then open an issue. I will maybe maintain a list of words that confuse the algorithm (pretty rare but happens), so that there is rather no stress than a wrong one.
 
 If you are interested in modifying the program: The database used in this project has been created using my other project here: https://github.com/Vuizur/ebook_dictionary_creator 
-
 ### Limitations
 In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
