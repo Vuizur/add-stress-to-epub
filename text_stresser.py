@@ -4,6 +4,7 @@ from helper_methods import is_accented, is_unimportant
 from russian_dictionary import RussianDictionary
 
 class RussianTextStresser:
+
     def __init__(self) -> None:
         self.rd = RussianDictionary()
         bundle_dir = Path(__file__).parent.absolute()

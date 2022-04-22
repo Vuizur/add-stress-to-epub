@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from helper_methods import unaccentify
 from text_stresser import RussianTextStresser
 
 def find_hard_to_detect_case_words():
@@ -67,4 +68,6 @@ if __name__ == "__main__":
     test11 = "Он стоил на большом стене"
 
     ts = RussianTextStresser()
-    print(ts.stress_text("Твои слова ничего не значат."))
+    print(ts.stress_text(test7))
+    print(ts.stress_text("Ястреб"))
+    print(unaccentify("Я́стреб"))

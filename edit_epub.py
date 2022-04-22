@@ -17,7 +17,6 @@ def convert_txt(input_txt_path: str, output_txt_path: str):
     with open(input_txt_path, "r", encoding="utf-8") as input, open(output_txt_path, "w+", encoding="utf-8") as output:
         text = input.read()
         stressed_text = ts.stress_text(text)
-        print(stressed_text)
         output.write(stressed_text)
 
 def convert_book(input_file_path: str, output_file_path: str):

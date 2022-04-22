@@ -9,14 +9,31 @@ Add option to convert book back to source format
 
 Check if ner can be disabled
 
-Add algorithm to handle connected color words (with dash)
+Add algorithm to handle connected color words (with dash) тёмно-серый
 
-Write script to publish the program
-
-Add programmatic usage to README
+Write script to upload the program
 
 Benchmark over other programs (also with grammar detection vs without)
 
 Detailed error analysis
 
-Add two textfields where simple text can be stressed
+Add two textfields to GUI where simple text can be stressed
+
+Have some books -> convert them to txt (simply while iterating through them print them to a file)
+ ->Then use them as reference data set to make refactorings -> if the output changes, (diff changes), something got changed in the
+ stress placement algorithm
+
+Clean more data to make database "even smaller" (maybe indices and so on)
+-> delete all form_of entries without case_tags
+-> then delete some forms of duplicates (where pos is equal and linkages are equal/one does not have linkages)
+-> check a better form of making linkages:
+    do not make all possible linkages, instead make only one pos-retaining linkages
+    if only non-pos-retaining linkages remain, make all of them
+-> maybe also clean out rows that aren't needed
+-> Benchmark lookup with some indices deleted -> delete the ones that bring the least performance benefit
+
+-> have a simple list of entries that are unambiguous
+
+Compare new to old data (do some words)
+
+load entire database in memory to make the program faster

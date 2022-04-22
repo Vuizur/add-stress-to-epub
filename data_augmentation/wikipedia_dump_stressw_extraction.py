@@ -25,7 +25,8 @@ def get_stressed_words_split(stressed_words: list, text: str):
         return
     for temp_text in text.split(" "):
         if temp_text != None and "\u0301" in temp_text:
-            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0", temp_text):
+            #for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|.|,|\"", temp_text):
+            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|\.|,|\"", temp_text):
                 if "\u0301" in word:
                     stressed_words.append(word)
 dump = mwxml.Dump.from_file(open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding= "utf-8"))
@@ -42,21 +43,27 @@ start = time.time()
 for page in dump.pages:
     
     for revision in page:
-        text: str = revision.text
-        doc = nlp(text)
-        #get_stressed_words_split(stressed_words, revision.text)
-        get_stressed_words_spacy(stressed_words, doc)
+        #text: str = revision.text
+        #doc = nlp(text)
+        get_stressed_words_split(stressed_words, revision.text)
+        #get_stressed_words_spacy(stressed_words, doc)
         
     k+= 1
 
 
-    
-    if k > 10000:
+
+    if k % 10000 == 0:
+        print(k)
         end = time.time()
-        print(stressed_words)
+        #print(stressed_words)
         print(end - start)
+        final_set = set(stressed_words)
+        final_str = "\n".join(final_set)
+        with open("D:/ruwiki_wordlist.txt", "w", encoding="utf-8") as out:
+            out.write(final_str)
         quit()
-        
+
+
         #split_text = text.split("'''")
         #for i in range(1, len(split_text), 2):
         #    if "\u0301" in split_text[i]:
