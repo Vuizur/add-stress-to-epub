@@ -26,57 +26,74 @@ def get_stressed_words_split(stressed_words: list, text: str):
     for temp_text in text.split(" "):
         if temp_text != None and "\u0301" in temp_text:
             #for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|.|,|\"", temp_text):
-            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|\.|,|\"", temp_text):
+            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…", temp_text):
                 if "\u0301" in word:
                     stressed_words.append(word)
-dump = mwxml.Dump.from_file(open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding= "utf-8"))
+def get_words_with_yo(yo_words: list, text: str):
+    if text == None:
+        return
+    for temp_text in text.split(" "):
+        if temp_text != None and "ё" in temp_text or "Ё" in temp_text:
+            #for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|.|,|\"", temp_text):
+            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…|“|„|!|?|_|%|&|[0-9]|\*|\+|@", temp_text):
+                if "ё" in word or "Ё" in word:
+                    yo_words.append(word)
 
-bundle_dir = Path(__file__).parent.parent.absolute()
-nlp = load(bundle_dir / "ru_core_news_sm-3.1.0", exclude=["tok2vec", "morphologizer", "parser", "senter", "attribute_ruler", "lemmatizer", "ner"])
+def extract_spacy():
+    dump = mwxml.Dump.from_file(open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding= "utf-8"))
 
-print(dump.site_info.name, dump.site_info.dbname)
+    bundle_dir = Path(__file__).parent.parent.absolute()
+    nlp = load(bundle_dir / "ru_core_news_sm-3.1.0", exclude=["tok2vec", "morphologizer", "parser", "senter", "attribute_ruler", "lemmatizer", "ner"])
+    start = time.time()
+    stressed_words = []
+    print(dump.site_info.name, dump.site_info.dbname)
+    for page in dump.pages:
+        for revision in page:
+            doc = nlp(revision.text)
+            get_stressed_words_spacy(stressed_words, doc)
 
-stressed_words = []
+        k+= 1
+        if k % 50000 == 0:
+            print(k)
+            end = time.time()
+            
+            print(end - start)
+    final_set = set(stressed_words)
+    final_str = "\n".join(final_set)
+    with open("D:/ruwiki_wordlist.txt", "w", encoding="utf-8") as out:
+        out.write(final_str)
 
-k= 0
-start = time.time()
-for page in dump.pages:
-    
-    for revision in page:
-        #text: str = revision.text
-        #doc = nlp(text)
-        get_stressed_words_split(stressed_words, revision.text)
-        #get_stressed_words_spacy(stressed_words, doc)
-        
-    k+= 1
+def extract_efficient():
+    EXTRACTION_MODE = "YO"
+
+    dump = mwxml.Dump.from_file(open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding= "utf-8"))
+    extracted_words = []
+    k = 0
+    start = time.time()
+    for page in dump.pages:
+        for revision in page:
+            if EXTRACTION_MODE == "STRESS":
+                get_stressed_words_split(extracted_words, revision.text)
+            else:
+                get_words_with_yo(extracted_words, revision.text)
+        k += 1
+        if k % 50000 == 0:
+            print(k)
+            end = time.time()
+            #print(stressed_words)
+            print(end - start)
+    final_set = set(extracted_words)
+    final_str = "\n".join(final_set)
+
+    if EXTRACTION_MODE == "STRESS":
+        filename = "D:/ruwiki_stress_wordlist.txt"
+    else:
+        filename = "D:/ruwiki_yo_wordlist.txt"
+
+    with open(filename, "w", encoding="utf-8") as out:
+        out.write(final_str)
 
 
+if __name__ == "__main__":
+    extract_efficient()
 
-    if k % 10000 == 0:
-        print(k)
-        end = time.time()
-        #print(stressed_words)
-        print(end - start)
-        final_set = set(stressed_words)
-        final_str = "\n".join(final_set)
-        with open("D:/ruwiki_wordlist.txt", "w", encoding="utf-8") as out:
-            out.write(final_str)
-        quit()
-
-
-        #split_text = text.split("'''")
-        #for i in range(1, len(split_text), 2):
-        #    if "\u0301" in split_text[i]:
-        #        stressed_words.append(split_text[i])    
-#        space_split_tokens = text.split(" ")
-#        for word in space_split_tokens:
-#            if "\u0301" in word:
-#                subwords_split_by_non_chars = re.split("'|<|>|[", word)
-#                for subword in subwords_split_by_non_chars:
-#                    if "\u0301" in subword:
-#                        stressed_words.append(subword)
-#    k += 1
-#    if k > 1000:
-#        print(stressed_words)
-#        quit()
-        
