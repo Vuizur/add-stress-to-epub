@@ -3,8 +3,10 @@ from shutil import copy
 import sqlite3
 import subprocess
 
-def update_database(clean_unused_data_for_stress_lookup = True):
-    subprocess.run(["../wiktionary_extract_test/venv/Scripts/python.exe", "../wiktionary_extract_test/update_russian_data.py"])
+
+def update_database(clean_unused_data_for_stress_lookup=True):
+    subprocess.run(["../wiktionary_extract_test/venv/Scripts/python.exe",
+                   "../wiktionary_extract_test/update_russian_data.py"])
     try:
         remove("russian_dict.db")
     except:
