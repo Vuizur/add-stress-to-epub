@@ -37,3 +37,9 @@ Clean more data to make database "even smaller" (maybe indices and so on)
 Compare new to old data (do some words)
 
 load entire database in memory to make the program faster
+
+Add direct FB2 support
+
+disable NER
+
+Does the lookup work with words without correctly marked ё

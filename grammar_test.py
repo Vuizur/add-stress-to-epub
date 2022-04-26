@@ -1,6 +1,7 @@
 # coding=utf-8
 
-from helper_methods import unaccentify
+from correctness_tests.benchmark_accuracy import benchmark_accuracy
+from helper_methods import remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
 
 def find_hard_to_detect_case_words():
@@ -67,7 +68,10 @@ if __name__ == "__main__":
 
     test11 = "Он стоил на большом стене"
 
-    ts = RussianTextStresser()
-    print(ts.stress_text(test7))
-    print(ts.stress_text("Ястреб"))
-    print(unaccentify("Я́стреб"))
+    #ts = RussianTextStresser()
+    #print(ts.stress_text(test7))
+    #print(ts.stress_text("Ястреб"))
+    #print(unaccentify("Я́стреб"))
+
+    print(remove_accent_if_only_one_syllable("Крикуны́ поко́рно вруча́ли свою́ судьбу́ в ру́ки Баргамо́та, протесту́я ли́шь для поря́дка."))
+    #benchmark_accuracy("correctness_tests/stressed_russian_texts/free/bargamot.txt")

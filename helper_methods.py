@@ -41,6 +41,14 @@ def unaccentify( s):
     return source
 
 def remove_accent_if_only_one_syllable(s: str):
+    """Removes the accent from words like что́. Also works with complete texts (splits by space)"""
+    if " " in s:
+        words = s.split(" ")
+        fixed_words = []
+        for word in words:
+            fixed_words.append(remove_accent_if_only_one_syllable(word))
+        return " ".join(fixed_words)
+
     s_unaccented = unaccentify(s)
     s_unaccented_lower = s_unaccented.lower()
     vowels = 0
@@ -51,3 +59,4 @@ def remove_accent_if_only_one_syllable(s: str):
         return s_unaccented
     else:
         return s
+

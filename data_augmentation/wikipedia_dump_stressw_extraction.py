@@ -4,6 +4,8 @@ import mwxml
 from spacy import load
 import time
 
+FINE_GRAINED_PATTERN = re.compile(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…|“|„|!|\?|_|%|&|[0-9]|\*|\+|@|‎|\/")
+
 def get_stressed_words_spacy(stressed_words: list, doc):
     for token in doc:
             tk_text = token.text
@@ -35,9 +37,23 @@ def get_words_with_yo(yo_words: list, text: str):
     for temp_text in text.split(" "):
         if temp_text != None and "ё" in temp_text or "Ё" in temp_text:
             #for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\\|=|\xa0|’|‘|;|.|,|\"", temp_text):
-            for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…|“|„|!|?|_|%|&|[0-9]|\*|\+|@", temp_text):
+            #for word in re.split(r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…|“|„|!|\?|_|%|&|[0-9]|\*|\+|@|‎|\/", temp_text):
+            for word in re.split(FINE_GRAINED_PATTERN, temp_text):
                 if "ё" in word or "Ё" in word:
                     yo_words.append(word)
+
+def get_words_with_yo_with_stats(already_extracted_yo_set: set[str], yo_word_with_and_without_dict: dict, text: str):
+    yo_dict: dict[str, tuple[int, int]] = {}
+    # First number: with ё, second number: without ё
+
+    if text == None:
+        return
+    for temp_text in text.split(" "):
+        if temp_text != None and ("ё" in temp_text or "Ё" in temp_text or "е" in temp_text or "Е" in temp_text):
+            for word in re.split(FINE_GRAINED_PATTERN, temp_text):
+                if "ё" in word or "Ё" in word or "е" in word or "Е" in word:
+                    yo_words.append(word)
+    
 
 def extract_spacy():
     dump = mwxml.Dump.from_file(open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding= "utf-8"))
