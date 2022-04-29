@@ -42,4 +42,10 @@ Add direct FB2 support
 
 disable NER
 
-Does the lookup work with words without correctly marked ё
+Does the dictionary lookup work with words without correctly marked ё?
+
+Update readme to reflect the new refactored EbookStresser class
+
+Make variables of classes _private
+
+Compare the output of two files by reading them with spacy, then comparing the tokens, and creating an HTML report on the differences

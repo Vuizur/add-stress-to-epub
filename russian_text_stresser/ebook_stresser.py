@@ -7,14 +7,14 @@ from shutil import make_archive, rmtree
 from text_stresser import RussianTextStresser
 
 class EbookStresser:
-    def __init__(self, database_path="russian_dict.db") -> None:
+    def __init__(self) -> None:
         self._extraction_path = "8d9bad5b43259c6ee27d9aadc7b832"
         self._text_stresser = RussianTextStresser()
         #TODO: download the file dynamically and maybe remove this stuff here entirely
-        if not isfile(database_path):
-            print("Unpacking db...")
-            with ZipFile("russian_dict.zip", "r") as dbfile:
-                dbfile.extractall()
+        #if not isfile(database_path):
+        #    print("Unpacking db...")
+        #    with ZipFile("russian_dict.zip", "r") as dbfile:
+        #        dbfile.extractall()
 
     def convert_txt(self, input_txt_path: str, output_txt_path: str):
         if not input_txt_path.lower().endswith("txt") or not output_txt_path.lower().endswith("txt"):

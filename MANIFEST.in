@@ -1,0 +1,2 @@
+recursive-include russian_text_stresser/ru_core_news_sm-3.1.0 *
+include russian_text_stresser/russian_dict.db
