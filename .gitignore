@@ -19,3 +19,4 @@ correctness_tests/create_html_diff/
 correctness_tests/stressed_russian_texts/commercial/
 correctness_tests/results/
 correctness_tests/__pycache__/
+russian_text_stresser/__pycache__/
