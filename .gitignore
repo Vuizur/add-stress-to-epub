@@ -20,3 +20,5 @@ correctness_tests/stressed_russian_texts/commercial/
 correctness_tests/results/
 correctness_tests/__pycache__/
 russian_text_stresser/__pycache__/
+ruwiktionary_extracted_words.json
+ruwiktionary_extracted_words.txt
