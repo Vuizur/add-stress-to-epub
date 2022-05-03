@@ -49,3 +49,17 @@ Update readme to reflect the new refactored EbookStresser class
 Make variables of classes _private
 
 Compare the output of two files by reading them with spacy, then comparing the tokens, and creating an HTML report on the differences
+
+Compare raw_data with post-processed russian kaikki data -> Compare resulting dictionary, maybe with sqldiff
+
+Test pyinstaller
+
+Scrape Wiktionary-russian
+and for adding more:
+http://nskhuman.ru/unislov/udarenija.php?nlet=1
+-> scrape every word that is not in any other sources
+maybe also gde-udarenija
+
+Also add data from https://github.com/Text-extend-tools/python-yoficator
+
+REMOVE unstressed words - especially from OpenRussian (before refusing to add data from Wiktionary out of fear of duplicates)
