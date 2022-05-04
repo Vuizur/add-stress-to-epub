@@ -64,6 +64,8 @@ Also add data from https://github.com/Text-extend-tools/python-yoficator
 
 REMOVE unstressed words - especially from OpenRussian (before refusing to add data from Wiktionary out of fear of duplicates)
 
-Fix the parsing of wiktionary entries with different etymologies
+short the description of the database so that space is saved
 
-short the description of the database so that space is safed
+Add words in other areas from ru-wiktionary
+
+Use frequency data in udar repo
