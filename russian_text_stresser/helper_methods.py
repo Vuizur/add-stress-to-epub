@@ -1,16 +1,27 @@
 import unicodedata
 
-
 def is_unimportant(token):
     return token.pos_ == "PUNCT" or token.pos_ == "SYM" or token.pos_ == "X" or token.pos_ == "SPACE" or token.text == "-"
 
-
-def is_accented(phrase: str):
+def is_acute_accented(phrase: str):
     for char in phrase:
         if char == u'\u0301':
             return True
     return False
 
+def has_acute_accent_or_only_one_syllable(word: str):
+    if is_acute_accented(word):
+        return True
+    else:
+        word_lower = word.lower()
+        vowels = 0
+        for char in word_lower:
+            if char in "аоэуыяеюи":
+                vowels += 1
+        if vowels <= 1:
+            return True
+        else:
+            return False
 
 ACCENT_MAPPING = {
     '́': '',

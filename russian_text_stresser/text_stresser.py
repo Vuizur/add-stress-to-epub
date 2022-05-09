@@ -1,6 +1,6 @@
 from pathlib import Path
 from spacy import load
-from helper_methods import is_accented, is_unimportant
+from helper_methods import is_acute_accented, is_unimportant
 from russian_dictionary import RussianDictionary
 
 class RussianTextStresser:
@@ -26,7 +26,7 @@ class RussianTextStresser:
                         fusion_str = token.text + doc[i + 1].text + doc[i + 2].text
                         fusion_str_stressed = self.rd.get_stressed_word_and_set_yo(fusion_str)
 
-                        if is_accented(fusion_str_stressed):
+                        if is_acute_accented(fusion_str_stressed):
                             result_text += fusion_str_stressed + doc[i + 2].whitespace_
                             skip_elements = 2
                             continue                           
