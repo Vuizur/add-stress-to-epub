@@ -69,3 +69,7 @@ short the description of the database so that space is saved
 Add words in other areas from ru-wiktionary
 
 Use frequency data in udar repo
+
+Report tokenization bug to spacy
+
+Remove un-yoified from words extracted from Wiktionary-RU -> This could also be a source for the yo stuff

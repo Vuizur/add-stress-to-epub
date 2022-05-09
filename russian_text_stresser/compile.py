@@ -12,7 +12,7 @@ def copy_folder(src, dst):
 
 if __name__ == "__main__":
     RELEASE_FOLDER_NAME = "Stress-Marker-win"
-    SPACY_FOLDER_NAME = "ru_core_news_sm-3.1.0"
+    SPACY_FOLDER_NAME = "ru_core_news_sm-3.3.0"
     RUSSIAN_DICT_NAME = "russian_dict.db"
     subprocess.run(["pyinstaller",  "gui.spec", "--noconfirm"])
     try:
