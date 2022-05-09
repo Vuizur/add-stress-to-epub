@@ -1,11 +1,8 @@
 
-from os import path
-import sys
 
 from dataclasses import dataclass
-from pathlib import Path
 from spacy import load
-from helper_methods import has_acute_accent_or_only_one_syllable, is_acute_accented, remove_accent_if_only_one_syllable, unaccentify
+from helper_methods import has_acute_accent_or_only_one_syllable, is_acute_accented, load_spacy_min, remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
 
 @dataclass
@@ -18,11 +15,7 @@ class AnalysisResults:
 
 class AccuracyCalculator:
     def __init__(self) -> None:
-        bundle_dir = Path(__file__).parent.absolute()
-
-        self._nlp = load(bundle_dir / "ru_core_news_sm-3.1.0", exclude=[
-            "tok2vec", "morphologizer", "parser", "senter", "attribute_ruler", "lemmatizer", "ner"])
-
+        self._nlp = load_spacy_min()
     def calc_accuracy(self, orig_stressed_file_path: str, auto_stressed_file_path: str) -> AnalysisResults:
         with open(orig_stressed_file_path, "r", encoding="utf-8") as orig_file, \
                 open(auto_stressed_file_path, "r", encoding="utf-8") as auto_stressed_file:

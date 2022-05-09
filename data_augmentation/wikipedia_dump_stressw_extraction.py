@@ -1,8 +1,8 @@
-from pathlib import Path
 import re
 import mwxml
-from spacy import load
 import time
+
+from helper_methods import load_spacy_min
     # \xa0 is needed explicitly because its the backslash there is not interpreted as a backslash
 
 FINE_GRAINED_PATTERN = re.compile(
@@ -66,9 +66,7 @@ def extract_spacy():
     dump = mwxml.Dump.from_file(
         open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding="utf-8"))
 
-    bundle_dir = Path(__file__).parent.parent.absolute()
-    nlp = load(bundle_dir / "ru_core_news_sm-3.1.0", exclude=[
-               "tok2vec", "morphologizer", "parser", "senter", "attribute_ruler", "lemmatizer", "ner"])
+    nlp = load_spacy_min
     start = time.time()
     stressed_words = []
     print(dump.site_info.name, dump.site_info.dbname)
