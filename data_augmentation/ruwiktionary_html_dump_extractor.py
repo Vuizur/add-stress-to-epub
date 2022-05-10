@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+import dataclasses
 import os
 import json
 from bs4 import BeautifulSoup, PageElement
@@ -31,24 +33,49 @@ def get_morph_table_words(morph_table) -> list[str]:
 
     return [word.replace("буду/будешь… ", "") for word in words if word != "-" and word != "—"]
 
+@dataclass
+class EntryData:
+    """Contains the data of one etymology"""
+    word: str
+    inflections: list[str] = dataclasses.field(default_factory=list)
+    definitions: list[str] = dataclasses.field(default_factory=list)
 
-def extract_stressed_words_from_section(section: PageElement) -> tuple[str, list[str]]:
+def extract_definition_from_section(entry_data: EntryData, section: PageElement):
+    """Updates the entry data with the definitions"""
+    definition_el = section.find("h4", id="Значение")
+    if definition_el == None:
+        return
+    else:
+        ol = definition_el.find_next("ol")
+        for li in ol.children:
+            def_text = li.text
+            if def_text != "" and def_text != "\n":
+                entry_data.definitions.append(li.text)
+
+def extract_stressed_words_from_section(section: PageElement) -> EntryData:
     lemma_p = section.find("p", about=True)
     lemma = get_lemma(lemma_p.b)
+    entry_data = EntryData(lemma)
 
     morpher_table = section.find("table", {"class": "morfotable"})
+
     if morpher_table != None:
-        morph_table_words = get_morph_table_words(morpher_table)
-        # print(morph_table_words)
-        return (lemma, morph_table_words)
-    else:
-        return (lemma, None)
+        entry_data.inflections.extend(get_morph_table_words(morpher_table))
+    for next_sbln in section.next_siblings:
+        if next_sbln.find("h3", id="Семантические_свойства"):
+            extract_definition_from_section(entry_data, next_sbln.find("section"))
+    return entry_data
 
 def section_contains_two_etymologies(section):
     #h2 etc
     return section.find("h2")
 
-def get_stressed_words_from_html(html: str) -> dict[str, list[str]]:
+def append_definition_to_entry_data(entry_data: EntryData, section_containing_lemma: PageElement):
+    for next_sbln in section_containing_lemma.next_siblings:
+        if next_sbln.find("h3", id="Семантические_свойства"):
+            extract_definition_from_section(entry_data, next_sbln.find("section"))
+
+def get_stressed_words_from_html(html: str) -> list[EntryData]:
 
     soup = BeautifulSoup(html, "lxml")
     # Important: The HTML dump pages are structured differently from the online hosted version
@@ -58,22 +85,15 @@ def get_stressed_words_from_html(html: str) -> dict[str, list[str]]:
         for sibling in russian_h1.next_siblings:
             if sibling.name == "section":
                 if not section_contains_two_etymologies(sibling):
-                    section_res = extract_stressed_words_from_section(sibling)
-                    if section_res == None:
-                        return None
-                    else:
-                        lemma, inflections = section_res
-                        inflection_dict[lemma] = inflections
-                        return inflection_dict
+                    entry_data = extract_stressed_words_from_section(sibling)
+                    return [entry_data]
                 else:
+                    entry_data_list: list[EntryData] = []
                     for sibling in russian_h1.next_siblings:
                         if sibling.name == "section":
-                            section_res = extract_stressed_words_from_section(sibling)
-                            if section_res == None:
-                                continue
-                            lemma, inflections = section_res
-                            inflection_dict[lemma] = inflections
-                    return inflection_dict
+                            entry_data = extract_stressed_words_from_section(sibling)
+                            entry_data_list.append(entry_data)
+                    return entry_data_list
     else:
         return None
 
@@ -91,24 +111,23 @@ def extract_words_from_html_dump():
                 name = obj["name"]
                 if can_be_russian(name):
                     try:
-                        lemma_infl_dict = get_stressed_words_from_html(
+                        entry_data_list = get_stressed_words_from_html(
                             obj["article_body"]["html"])
-                        for lemma, inflections in lemma_infl_dict.items():
-                            if lemma != None:
-                                word_set.add(lemma)
-                                if inflections != None:
-                                    word_set.update(inflections)
+                        for entry_data in entry_data_list:
+                            if entry_data.word != None:
+                                word_set.add(entry_data.word)
+                                if entry_data.inflections != None:
+                                    word_set.update(entry_data.inflections)
                     except:
-                        #print(f"PARSE ERROR for the word {name}")
+                        print(f"PARSE ERROR for the word {name}")
                         pass
                     
-                    # if lemma != None:
-                    #    word_dict[lemma] = inflections
-                    # print(name)
                 i += 1
-                if i % 5000 == 0:
-                    print(i)
-        with open("ruwiktionary_extracted_words.txt", "w", encoding="utf-8") as out:
+                if i > 100:
+                    break
+                #if i % 5000 == 0:
+                #    print(i)
+        with open("ruwiktionary_extracted_words_refactored.txt", "w", encoding="utf-8") as out:
             # json.dump(word_dict, out, ensure_ascii=False, indent=0)
             out.write("\n".join(word_set))
 

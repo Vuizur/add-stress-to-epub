@@ -70,6 +70,12 @@ Add words in other areas from ru-wiktionary
 
 Use frequency data in udar repo
 
-Report tokenization bug to spacy
+Remove un-yoified from words extracted from Wiktionary-RU -> This could also be a source for the yoification data
 
-Remove un-yoified from words extracted from Wiktionary-RU -> This could also be a source for the yo stuff
+Сравнительная степень - extract it from Wiktionary
+
+Develop way to find out which stressed form is more common
+
+Develop a second unaccentify method that also removes ё 
+
+Fix the definition extraction for words with 2 etymologies
