@@ -21,19 +21,16 @@ def is_acute_accented(phrase: str):
             return True
     return False
 
+def has_only_one_syllable(word: str):
+    word_lower = word.lower()
+    vowels = 0
+    for char in word_lower:
+        if char in "аоэуыяеёюи":
+            vowels += 1
+    return vowels <= 1
+
 def has_acute_accent_or_only_one_syllable(word: str):
-    if is_acute_accented(word):
-        return True
-    else:
-        word_lower = word.lower()
-        vowels = 0
-        for char in word_lower:
-            if char in "аоэуыяеюи":
-                vowels += 1
-        if vowels <= 1:
-            return True
-        else:
-            return False
+    return is_acute_accented(word) or has_only_one_syllable(word)
 
 ACCENT_MAPPING = {
     '́': '',
@@ -79,12 +76,7 @@ def remove_accent_if_only_one_syllable(s: str):
         return " ".join(fixed_words)
 
     s_unaccented = unaccentify(s)
-    s_unaccented_lower = s_unaccented.lower()
-    vowels = 0
-    for char in s_unaccented_lower:
-        if char in "аоэуыяеюи":
-            vowels += 1
-    if vowels <= 1:
+    if has_only_one_syllable(s_unaccented):
         return s_unaccented
     else:
         return s

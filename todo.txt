@@ -81,3 +81,5 @@ Develop a second unaccentify method that also removes ё
 Fix the definition extraction for words with 2 etymologies
 
 Delete words that don't need context really from DB
+
+Delete all words that only have one syllable and no е/ё

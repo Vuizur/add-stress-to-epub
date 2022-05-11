@@ -10,6 +10,7 @@ class PossibleForms:
     unpronounced_word: dict
 
 def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
+    """This output the words that do not require any context to be stressed correctly"""
     words = cur.execute(
         "SELECT canonical_form, alternative_canonical_form, word_lower_and_without_yo FROM word").fetchall()
                                             #unstressed_word, dict of compatible stressed versions
@@ -37,7 +38,7 @@ def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
         if len(possible_forms) != 1:
             print(f"{word} - {possible_forms}")
 
-    final_unstr_str_mapping = {k: v[0] for k, v in unstressed_stressed_mapping.items()}
+    final_unstr_str_mapping = {k: v[0] for k, v in unstressed_stressed_mapping.items() if not k == v[0]}
     with open("simple_cases.pkl", "wb") as f:
         pickle.dump(final_unstr_str_mapping, f)
         #TODO: delete from DB
