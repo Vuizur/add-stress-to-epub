@@ -25,3 +25,6 @@ ruwiktionary_extracted_words.txt
 russian_text_stresser/__pycache__/
 data_augmentation/opravka.html
 simple_cases.pkl
+.idea/
+data_augmentation/sample_files/
+ruwiktionary_words.json

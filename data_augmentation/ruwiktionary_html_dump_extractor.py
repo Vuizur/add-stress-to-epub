@@ -7,6 +7,7 @@ import re
 
 # has to contain cyrillic, but not the characters only other slavic languages have
 
+
 def can_be_russian(text: str):
     text_lower = text.lower()
     return bool(re.search('[а-яА-Я]', text)) and "ў" not in text_lower and "ї" not in text_lower and "є" not in text_lower and \
@@ -33,12 +34,14 @@ def get_morph_table_words(morph_table) -> list[str]:
 
     return [word.replace("буду/будешь… ", "") for word in words if word != "-" and word != "—"]
 
+
 @dataclass
 class EntryData:
     """Contains the data of one etymology"""
     word: str
     inflections: list[str] = dataclasses.field(default_factory=list)
     definitions: list[str] = dataclasses.field(default_factory=list)
+
 
 def extract_definition_from_section(entry_data: EntryData, section: PageElement):
     """Updates the entry data with the definitions"""
@@ -52,6 +55,7 @@ def extract_definition_from_section(entry_data: EntryData, section: PageElement)
             if def_text != "" and def_text != "\n":
                 entry_data.definitions.append(li.text)
 
+
 def extract_stressed_words_from_section(section: PageElement) -> EntryData:
     lemma_p = section.find("p", about=True)
     lemma = get_lemma(lemma_p.b)
@@ -63,17 +67,22 @@ def extract_stressed_words_from_section(section: PageElement) -> EntryData:
         entry_data.inflections.extend(get_morph_table_words(morpher_table))
     for next_sbln in section.next_siblings:
         if next_sbln.find("h3", id="Семантические_свойства"):
-            extract_definition_from_section(entry_data, next_sbln.find("section"))
+            extract_definition_from_section(
+                entry_data, next_sbln.find("section"))
     return entry_data
 
+
 def section_contains_two_etymologies(section):
-    #h2 etc
+    # h2 etc
     return section.find("h2")
+
 
 def append_definition_to_entry_data(entry_data: EntryData, section_containing_lemma: PageElement):
     for next_sbln in section_containing_lemma.next_siblings:
         if next_sbln.find("h3", id="Семантические_свойства"):
-            extract_definition_from_section(entry_data, next_sbln.find("section"))
+            extract_definition_from_section(
+                entry_data, next_sbln.find("section"))
+
 
 def get_stressed_words_from_html(html: str) -> list[EntryData]:
 
@@ -91,16 +100,29 @@ def get_stressed_words_from_html(html: str) -> list[EntryData]:
                     entry_data_list: list[EntryData] = []
                     for sibling in russian_h1.next_siblings:
                         if sibling.name == "section":
-                            entry_data = extract_stressed_words_from_section(sibling)
+                            entry_data = extract_stressed_words_from_section(
+                                sibling)
                             entry_data_list.append(entry_data)
                     return entry_data_list
     else:
         return None
 
 
-def extract_words_from_html_dump():
-    word_dict: dict[str, list[str]] = {}
-    word_set = set()
+class EnhancedJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if dataclasses.is_dataclass(o):
+            return dataclasses.asdict(o)
+        return super().default(o)
+
+
+def print_entry_data_list_to_json(entry_data_list: list[EntryData], json_file_name: str):
+    with open(json_file_name, "w", encoding="utf-8") as json_file:
+        json.dump(entry_data_list, json_file,
+                  cls=EnhancedJSONEncoder, indent=4, ensure_ascii=False)
+
+
+def extract_words_from_html_dump() -> None:
+    entry_data_all_words: list[EntryData] = []
     i = 0
     for path in os.scandir("D:/ruwiktionary-NS0-20220501-ENTERPRISE-HTML.json"):
         filename = path.path
@@ -113,23 +135,26 @@ def extract_words_from_html_dump():
                     try:
                         entry_data_list = get_stressed_words_from_html(
                             obj["article_body"]["html"])
-                        for entry_data in entry_data_list:
-                            if entry_data.word != None:
-                                word_set.add(entry_data.word)
-                                if entry_data.inflections != None:
-                                    word_set.update(entry_data.inflections)
+                        if entry_data_list != None:
+                            entry_data_all_words.extend(entry_data_list)
+                        # for entry_data in entry_data_list:
+
+                            # if entry_data.word != None:
+                            #    word_set.add(entry_data.word)
+                            #    if entry_data.inflections != None:
+                            #        word_set.update(entry_data.inflections)
                     except:
                         print(f"PARSE ERROR for the word {name}")
                         pass
-                    
+
                 i += 1
                 if i > 100:
                     break
-                #if i % 5000 == 0:
+                # if i % 5000 == 0:
                 #    print(i)
-        with open("ruwiktionary_extracted_words_refactored.txt", "w", encoding="utf-8") as out:
-            # json.dump(word_dict, out, ensure_ascii=False, indent=0)
-            out.write("\n".join(word_set))
+    print_entry_data_list_to_json(
+        entry_data_all_words, "ruwiktionary_words.json")
+
 
 if __name__ == "__main__":
     extract_words_from_html_dump()

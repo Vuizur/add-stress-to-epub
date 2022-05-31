@@ -83,3 +83,5 @@ Fix the definition extraction for words with 2 etymologies
 Delete words that don't need context really from DB
 
 Delete all words that only have one syllable and no е/ё
+
+Fix the definiton extraction of the words that 2 etymologies

@@ -56,7 +56,6 @@ You can also convert entire folders filled with epub files:
 python edit_epub.py -input_folder "to-convert" -output_folder "was-converted"
 ```
 
-
 ### Programmatic usage
 If you want to stress text in python, you can simply write:
 
