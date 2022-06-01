@@ -5,6 +5,9 @@ import json
 from bs4 import BeautifulSoup, PageElement
 import re
 
+from clean_inflections import clean_inflection
+from entry_data import EntryData
+
 # has to contain cyrillic, but not the characters only other slavic languages have
 
 
@@ -35,12 +38,7 @@ def get_morph_table_words(morph_table) -> list[str]:
     return [word.replace("буду/будешь… ", "") for word in words if word != "-" and word != "—"]
 
 
-@dataclass
-class EntryData:
-    """Contains the data of one etymology"""
-    word: str
-    inflections: list[str] = dataclasses.field(default_factory=list)
-    definitions: list[str] = dataclasses.field(default_factory=list)
+
 
 
 def extract_definition_from_section(entry_data: EntryData, section: PageElement):
@@ -137,21 +135,20 @@ def extract_words_from_html_dump() -> None:
                             obj["article_body"]["html"])
                         if entry_data_list != None:
                             entry_data_all_words.extend(entry_data_list)
-                        # for entry_data in entry_data_list:
-
-                            # if entry_data.word != None:
-                            #    word_set.add(entry_data.word)
-                            #    if entry_data.inflections != None:
-                            #        word_set.update(entry_data.inflections)
                     except:
                         print(f"PARSE ERROR for the word {name}")
                         pass
 
                 i += 1
-                if i > 100:
+                if i > 1000:
                     break
                 # if i % 5000 == 0:
                 #    print(i)
+    # Clean up the inflections using clean_inflection
+    for entry_data in entry_data_all_words:
+        entry_data = clean_inflection(entry_data)
+
+
     print_entry_data_list_to_json(
         entry_data_all_words, "ruwiktionary_words.json")
 

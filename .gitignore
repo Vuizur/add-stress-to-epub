@@ -28,3 +28,4 @@ simple_cases.pkl
 .idea/
 data_augmentation/sample_files/
 ruwiktionary_words.json
+data_augmentation/__pycache__/
