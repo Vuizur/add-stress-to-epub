@@ -74,14 +74,18 @@ Remove un-yoified from words extracted from Wiktionary-RU -> This could also be 
 
 Сравнительная степень - extract it from Wiktionary
 
-Develop way to find out which stressed form is more common
-
-Develop a second unaccentify method that also removes ё 
-
-Fix the definition extraction for words with 2 etymologies
+Develop way to find out which stressed form is more common -> Possibly the corpus that I won't get access to.
 
 Delete words that don't need context really from DB
 
 Delete all words that only have one syllable and no е/ё
 
-Fix the definiton extraction of the words that 2 etymologies
+Make experiments that test if GPT-3 can resolve homographs with different stress
+
+Write about future that stress might be detected from audio data.
+
+чебурашки
+
+Write to that silero habr post
+
+Evaluate method that uses AI only for ambiguous words and a word list for the rest

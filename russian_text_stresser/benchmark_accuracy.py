@@ -1,7 +1,8 @@
 
 
 from dataclasses import dataclass
-from helper_methods import has_acute_accent_or_only_one_syllable, load_spacy_min, remove_accent_if_only_one_syllable, unaccentify
+from helper_methods import load_spacy_min
+from stressed_cyrillic_tools import has_acute_accent_or_only_one_syllable, remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
 
 @dataclass

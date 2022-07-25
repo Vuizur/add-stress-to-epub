@@ -3,7 +3,7 @@ import mwxml
 import time
 
 from helper_methods import load_spacy_min
-    # \xa0 is needed explicitly because its the backslash there is not interpreted as a backslash
+    # \xa0 is the no-break space
 
 FINE_GRAINED_PATTERN = re.compile(
     r"'| |<|>|\[|\||\]|\n|\(|\)|»|«|:|\}|\{|\\|=|\xa0|’|‘|;|\.|,|\"|#|…|“|„|!|\?|_|%|&|[0-9]|\*|\+|@|‎|\/")

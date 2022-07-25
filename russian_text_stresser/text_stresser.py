@@ -1,4 +1,5 @@
-from helper_methods import is_acute_accented, is_unimportant, load_spacy_full
+from helper_methods import is_unimportant, load_spacy_full
+from stressed_cyrillic_tools import is_acute_accented
 from russian_dictionary import RussianDictionary
 
 class RussianTextStresser:

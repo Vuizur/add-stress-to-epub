@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+import json
 from os import remove
 import pickle
 from shutil import copy
 import sqlite3
 import subprocess
+from stressed_cyrillic_tools import remove_yo, get_lower_and_without_yo, unaccentify, is_unhelpfully_unstressed
 
 @dataclass
 class PossibleForms:
@@ -44,10 +46,24 @@ def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
         #TODO: delete from DB
 
 
+def delete_unstressed_and_useless_words_from_DB():
+    con = sqlite3.connect("russian_dict.db")
+    cur = con.cursor()
+    cur.execute("PRAGMA foreign_keys = ON;")
+    cur.execute("SELECT word_id, canonical_form FROM word")
+    words = cur.fetchall()
+    for word_id, canonical_form in words:
+        if is_unhelpfully_unstressed(canonical_form):
+            cur.execute("DELETE FROM word WHERE word_id = ?", (word_id,))
+    con.commit()
+
+    con.execute("VACUUM;")
+    cur.close()
+    con.close()
 
 
 def clean_unused_data_for_stress_lookup():
-    con = sqlite3.connect("russian_text_stresser/russian_dict.db")
+    con = sqlite3.connect("russian_dict.db")
     cur = con.cursor()
     find_words_that_only_have_one_meaning(cur)
     quit()
@@ -65,6 +81,45 @@ def clean_unused_data_for_stress_lookup():
     con.close()
 
 
+
+
+def add_word_to_db_if_not_there(canonical_form: str, cur: sqlite3.Cursor):
+    """This is the simplest way to add stress data to the database."""
+    # TODO: FINISH THIS
+    word = unaccentify(canonical_form)
+    word_lower = word.lower()
+    lower_and_without_yo = get_lower_and_without_yo(canonical_form)
+    cur.execute("SELECT * FROM word WHERE word_lower_and_without_yo = ?", (lower_and_without_yo,))
+    
+    if cur.fetchone() == None:
+        #print(f"Inserted {canonical_form}")
+        cur.execute("INSERT INTO word (canonical_form, word, word_lowercase, word_lower_and_without_yo) VALUES (?,?,?,?)", (canonical_form, word, word_lower, lower_and_without_yo))
+
+def add_ruwiktionary_data_to_db(ruwiktionary_json="ruwiktionary_words_fixed.json"):
+    #TODO: Pay attention that some words have also two stress marks.
+    con = sqlite3.connect("russian_dict.db")
+    cur = con.cursor()
+    # Load the list of dictionaries from the json file
+    wordstress_word_mapping: dict[str, set[str]] = {}
+    with open(ruwiktionary_json, "r", encoding="utf-8") as f:
+        ruwiktionary_words = json.load(f)
+        # Insert the data into the database
+        for word in ruwiktionary_words:
+            word_and_inflections: list[str] = [word["word"]] + word["inflections"]
+            for wrd in word_and_inflections:
+                wrd_unaccentified = get_lower_and_without_yo(wrd)
+                # Add word to wordsstress_word_mapping, with an empty set as the value as default
+                if wrd_unaccentified not in wordstress_word_mapping:
+                    wordstress_word_mapping[wrd_unaccentified] = set()
+                # Add the word to the list of words for this word
+                wordstress_word_mapping[wrd_unaccentified].add(wrd.lower())
+    for word, options in wordstress_word_mapping.items():
+        if len(options) == 1:
+            # The word only has one possible option to be accented correctly:
+            # Add the word to the database
+            add_word_to_db_if_not_there(options.pop(), cur)
+    con.commit()
+
 def update_database(clean_unused_data=True):
     subprocess.run(["../wiktionary_extract_test/venv/Scripts/python.exe",
                    "../wiktionary_extract_test/update_russian_data.py"])
@@ -80,4 +135,6 @@ def update_database(clean_unused_data=True):
 
 if __name__ == "__main__":
     #update_database()
-    clean_unused_data_for_stress_lookup()
+    #clean_unused_data_for_stress_lookup()
+    #add_ruwiktionary_data_to_db()
+    delete_unstressed_and_useless_words_from_DB()

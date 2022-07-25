@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from benchmark_accuracy import benchmark_accuracy
-from helper_methods import remove_accent_if_only_one_syllable, unaccentify
+from stressed_cyrillic_tools import remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
 
 def find_hard_to_detect_case_words():
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     text1 = " рекоменду́я подда́ть жару́. Самого́ Баргамота"
     text2 = " рекоменду́я подда́ть жа́ру. Самого́ Баргамо́та"
 
-    tok_exp = ts._nlp.tokenizer.explain(text2)
-    for t in tok_exp:
-        print(t[1], "\t", t[0])
+    text100 = "Чехия предоставила Киеву военную помощь на 8,8 миллиарда рублей."
+
+    print(ts.stress_text(text100))
 
