@@ -11,10 +11,11 @@ def copy_folder(src, dst):
         else: raise
 
 if __name__ == "__main__":
+    STRESSER_FOLDER = "russian_text_stresser"
     RELEASE_FOLDER_NAME = "Stress-Marker-win"
-    SPACY_FOLDER_NAME = "ru_core_news_sm-3.3.0"
-    RUSSIAN_DICT_NAME = "russian_dict.db"
-    subprocess.run(["pyinstaller",  "gui.spec", "--noconfirm"])
+    SPACY_FOLDER_NAME = STRESSER_FOLDER + "/ru_core_news_sm-3.4.0"
+    RUSSIAN_DICT_NAME = STRESSER_FOLDER + "/russian_dict.db"
+    subprocess.run(["pyinstaller",  STRESSER_FOLDER + "/gui.spec", "--noconfirm"])
     try:
         shutil.rmtree(RELEASE_FOLDER_NAME)
     except:

@@ -8,7 +8,7 @@ import pymorphy2_dicts_ru
 pymorph_data = pymorphy2_dicts_ru.get_path()
 
 a = Analysis(['gui.py'],
-             pathex=['C:\\Users\\hanne\\Documents\\Programme\\add-stress-to-epub\\venv\\Lib\\site-packages'],
+             pathex=['C:/Users/hanne/AppData/Local/pypoetry/Cache/virtualenvs/russian-text-stresser-Bfk3BIMz-py3.10'],
              binaries=[],
              datas=[(pymorph_data, 'pymorphy2_dicts_ru/data')],
              hiddenimports=[],

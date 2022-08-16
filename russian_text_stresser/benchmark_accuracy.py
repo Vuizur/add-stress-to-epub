@@ -31,26 +31,26 @@ class AccuracyCalculator:
                     f"Error!\nLength of original document: {num_tokens_in_original}\nLength of automatically stressed document: {num_tokens_in_auto_stressed}")
             num_unstressed_tokens = 0
             num_correctly_stressed_tokens = 0
-            auto_stress_offset = 0
-            skip_next_token = False
+            #auto_stress_offset = 0
+            #skip_next_token = False
             for i, orig_token in enumerate(orig_doc):
-                if skip_next_token:
-                    skip_next_token = False
-                    continue
-                auto_stress_token = auto_stress_doc[i + auto_stress_offset]
+                #if skip_next_token:
+                #    skip_next_token = False
+                #    continue
+                #auto_stress_token = auto_stress_doc[i + auto_stress_offset]
+                auto_stress_token = auto_stress_doc[i]
                 orig_token_text: str = orig_token.text
                 auto_stress_token_text: str = auto_stress_token.text
                 if unaccentify(orig_token_text) != unaccentify(auto_stress_token_text):
-                    # Spacy's tokenization algorithm is buggy so this can happen in some cases, because it does not split the dot when the last character is accented
                     print("Differing words:")
                     print(orig_token.text)
                     print(auto_stress_token.text)
-                    if unaccentify(orig_token_text) < unaccentify(auto_stress_token_text):
-                        # For this we assume that something got split from the original token, but not from the auto stress
-                        skip_next_token = True
-                        auto_stress_offset += -1
-                        # This is according to the one error case
-                        auto_stress_token_text.strip(".")
+                    #if unaccentify(orig_token_text) < unaccentify(auto_stress_token_text):
+                    #    # For this we assume that something got split from the original token, but not from the auto stress
+                    #    skip_next_token = True
+                    #    auto_stress_offset += -1
+                    #    # This is according to the one error case
+                    #    auto_stress_token_text.strip(".")
 
                 if not has_acute_accent_or_only_one_syllable(auto_stress_token_text):
                     num_unstressed_tokens += 1

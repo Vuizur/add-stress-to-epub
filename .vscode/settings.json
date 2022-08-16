@@ -3,5 +3,6 @@
     "python.analysis.extraPaths": [
         "./russian_text_stresser"
     ],
-    "python.linting.mypyEnabled": true
+    "python.linting.mypyEnabled": true,
+    "python.formatting.provider": "black"
 }
