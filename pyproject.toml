@@ -10,11 +10,11 @@ version = "0.1.0"
 PyQt6 = {version = "^6.3.1", optional = true}
 beautifulsoup4 = "^4.11.1"
 lxml = "^4.9.1"
+mwxml = "^0.3.3"
 pymorphy2 = "^0.9.1"
 python = "^3.8,<3.11"
 spacy = "3.4.0"
 stressed-cyrillic-tools = "^0.1.3"
-mwxml = "^0.3.3"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"

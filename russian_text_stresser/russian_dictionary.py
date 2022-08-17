@@ -43,8 +43,7 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 class RussianDictionary:
     def __init__(self) -> None:
-        #dict_path = Path(__file__).parent / "russian_dict.db"
-        dict_path = "russian_dict.db"
+        dict_path = Path(__file__).parent / "russian_dict.db"
         self._con = sqlite3.connect(dict_path)
         self._cur = self._con.cursor()
 
