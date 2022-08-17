@@ -52,9 +52,8 @@ Compare the output of two files by reading them with spacy, then comparing the t
 
 Compare raw_data with post-processed russian kaikki data -> Compare resulting dictionary, maybe with sqldiff
 
-Test pyinstaller
+Fix pyinstaller
 
-Scrape Wiktionary-russian
 and for adding more:
 http://nskhuman.ru/unislov/udarenija.php?nlet=1
 -> scrape every word that is not in any other sources

@@ -2,6 +2,7 @@ from pathlib import Path
 import sqlite3
 import re
 from typing import Tuple
+import importlib.resources as pkg_resources
 
 spacy_wiktionary_pos_mapping = {
     "NOUN": "noun",
@@ -42,7 +43,8 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 class RussianDictionary:
     def __init__(self) -> None:
-        dict_path = Path(__file__).parent / "russian_dict.db"
+        #dict_path = Path(__file__).parent / "russian_dict.db"
+        dict_path = "russian_dict.db"
         self._con = sqlite3.connect(dict_path)
         self._cur = self._con.cursor()
 

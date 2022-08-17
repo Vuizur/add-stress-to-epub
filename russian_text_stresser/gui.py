@@ -2,8 +2,8 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt6 import QtCore
 from PyQt6 import QtGui
-from MainWindow import Ui_MainWindow
-from ebook_stresser import EbookStresser
+from russian_text_stresser.MainWindow import Ui_MainWindow
+from russian_text_stresser.ebook_stresser import EbookStresser
 import os
 import pathlib
 

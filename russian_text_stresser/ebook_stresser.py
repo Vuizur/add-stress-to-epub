@@ -4,7 +4,7 @@ from os.path import isfile
 from zipfile import ZipFile
 from bs4 import BeautifulSoup
 from shutil import make_archive, rmtree
-from text_stresser import RussianTextStresser
+from russian_text_stresser.text_stresser import RussianTextStresser
 
 class EbookStresser:
     def __init__(self) -> None:
