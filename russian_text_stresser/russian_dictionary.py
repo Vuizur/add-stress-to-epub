@@ -2,7 +2,10 @@ from pathlib import Path
 import sqlite3
 import re
 from typing import Tuple
-import importlib.resources as pkg_resources
+import os
+import urllib.request
+import zipfile
+
 
 spacy_wiktionary_pos_mapping = {
     "NOUN": "noun",
@@ -43,9 +46,34 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 class RussianDictionary:
     def __init__(self) -> None:
-        dict_path = Path(__file__).parent / "russian_dict.db"
+        russian_dict_path = Path(__file__).parent / "russian_dict.db"
+        # If russian_dict.db doesn't exist, download it
+        if not russian_dict_path.exists():
+            print("Russian dictionary not found. Downloading...")
+            self.download_data()
+
+        dict_path = russian_dict_path
         self._con = sqlite3.connect(dict_path)
         self._cur = self._con.cursor()
+
+    def download_data(self):
+        # Download the file from the URL https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip
+        
+        url = "https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip"
+        file_name = Path(__file__).parent / "russian_dict.zip"
+        russian_dict_path = Path(__file__).parent
+
+        # Download the file
+        urllib.request.urlretrieve(url, file_name)
+
+        print("Download complete. Extracting...")
+        # Unzip the file
+        with zipfile.ZipFile(file_name, 'r') as zip_ref:
+            zip_ref.extractall(russian_dict_path)
+        # Delete the zip file
+        os.remove(file_name)
+        print("Extraction complete.")
+        
 
     @staticmethod
     def _replacenth(string, sub, wanted, n):
