@@ -26,40 +26,43 @@ I did not create executables for Linux or Mac, for these systems you should refe
 
 ### Command line use
 
-First you need to download the [dictionary zip file](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip).
+You can install the package by running `pip install git+https://github.com/Vuizur/add-stress-to-epub` and then use the library programmatically.
 
-Then you should download the Github repository (click the Code -> Download ZIP button) and put the dictionary zip file into this folder.
+Other option: download the Github repository (click the Code -> Download ZIP button) and put the dictionary zip file into this folder.
 
-Afterwards should install [Python 3](https://www.python.org/downloads/) (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"):
+Afterwards should install [Python 3](https://www.python.org/downloads/) (and check the installer option to add it to PATH). Afterwards install the required libraries by executing following command in the command line (which can be opened in Windows Explorer through the "File" button at the top left and then selecting "Open Windows Powershell"): Then install [poetry](https://github.com/python-poetry/poetry) and run:
 
 ```
-pip install -r requirements.txt
+poetry install
 ```
 
 Then you can simply execute the GUI by calling:
 
 ```
+poetry shell
 pip install PyQt6
-python gui.py
+poetry run python russian_text_stresser/gui.py
 ```
 
 If you want to use the command line utility, you should put you ebook in this folder and start the program with following command (and change input.epub to the file name of the ebook you want to convert):
 
 ```
-python edit_epub.py -input "input.epub" -output "output.epub"
+poetry run python edit_epub.py -input "input.epub" -output "output.epub"
 ```
 
 That's it!
 
 You can also convert entire folders filled with epub files:
 ```
-python edit_epub.py -input_folder "to-convert" -output_folder "was-converted"
+poetry run python edit_epub.py -input_folder "to-convert" -output_folder "was-converted"
 ```
 
 ### Programmatic usage
 If you want to stress text in python, you can simply write:
 
 ```
+from russian_text_stresser.text_stresser import RussianTextStresser
+
 ts = RussianTextStresser()
 print(ts.stress_text("Твои слова ничего не значат."))
 ```
