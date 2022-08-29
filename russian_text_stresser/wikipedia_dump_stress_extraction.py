@@ -62,6 +62,7 @@ def get_words_with_yo_with_stats(already_extracted_yo_set: set[str], yo_word_wit
                     yo_words.append(word)
 
 
+# Not recommended, because it is very slow
 def extract_spacy():
     dump = mwxml.Dump.from_file(
         open("D:/ruwiki-20220401-pages-articles-multistream.xml", encoding="utf-8"))

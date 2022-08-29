@@ -90,3 +90,5 @@ Write to that silero habr post
 Evaluate method that uses AI only for ambiguous words and a word list for the rest
 
 Upload to Pypi
+
+Straightforward way to create database, depend on other packages
