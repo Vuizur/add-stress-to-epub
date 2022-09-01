@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 import json
-from os import remove
 import pickle
-from shutil import copy
 import sqlite3
-import subprocess
-from stressed_cyrillic_tools import remove_yo, get_lower_and_without_yo, unaccentify, is_unhelpfully_unstressed
+from stressed_cyrillic_tools import get_lower_and_without_yo, unaccentify, is_unhelpfully_unstressed
 
 @dataclass
 class PossibleForms:
@@ -46,8 +43,8 @@ def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
         #TODO: delete from DB
 
 
-def delete_unstressed_and_useless_words_from_DB():
-    con = sqlite3.connect("russian_dict.db")
+def delete_unstressed_and_useless_words_from_DB(dict_path: str = "russian_dict.db"):
+    con = sqlite3.connect(dict_path)
     cur = con.cursor()
     cur.execute("PRAGMA foreign_keys = ON;")
     cur.execute("SELECT word_id, canonical_form FROM word")
@@ -95,9 +92,9 @@ def add_word_to_db_if_not_there(canonical_form: str, cur: sqlite3.Cursor):
         #print(f"Inserted {canonical_form}")
         cur.execute("INSERT INTO word (canonical_form, word, word_lowercase, word_lower_and_without_yo) VALUES (?,?,?,?)", (canonical_form, word, word_lower, lower_and_without_yo))
 
-def add_ruwiktionary_data_to_db(ruwiktionary_json="ruwiktionary_words_fixed.json"):
+def add_ruwiktionary_data_to_db(database_path = "russian_dict.db", ruwiktionary_json="ruwiktionary_words_fixed.json"):
     #TODO: Pay attention that some words have also two stress marks.
-    con = sqlite3.connect("russian_dict.db")
+    con = sqlite3.connect(database_path)
     cur = con.cursor()
     # Load the list of dictionaries from the json file
     wordstress_word_mapping: dict[str, set[str]] = {}
@@ -118,19 +115,8 @@ def add_ruwiktionary_data_to_db(ruwiktionary_json="ruwiktionary_words_fixed.json
             # The word only has one possible option to be accented correctly:
             # Add the word to the database
             add_word_to_db_if_not_there(options.pop(), cur)
+        # TODO: Add the word to the database if it has two options
     con.commit()
-
-def update_database(clean_unused_data=True):
-    subprocess.run(["../wiktionary_extract_test/venv/Scripts/python.exe",
-                   "../wiktionary_extract_test/update_russian_data.py"])
-    try:
-        remove("russian_dict.db")
-    except:
-        pass
-    copy("../wiktionary_extract_test/russian_dict.db", "russian_dict.db")
-
-    if clean_unused_data:
-        clean_unused_data_for_stress_lookup()
 
 
 if __name__ == "__main__":

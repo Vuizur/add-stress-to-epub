@@ -8,10 +8,11 @@ classifiers = [
 ]
 description = "Stresses Russian texts and ebooks using ML grammar analysis and Wiktionary data"
 license = "GPLv3"
+keywords = ["russian", "stress", "wiktionary", "ebook"]
 name = "russian-text-stresser"
 readme = "README.md"
 repository = "https://github.com/Vuizur/add-stress-to-epub"
-version = "0.1.0"
+version = "0.1.1"
 
 [tool.poetry.dependencies]
 PyQt6 = {version = "^6.3.1", optional = true}

@@ -106,7 +106,7 @@ def extract_efficient():
         if k % 50000 == 0:
             print(k)
             end = time.time()
-            # print(stressed_words)
+
             print(end - start)
     final_set = set(extracted_words)
     final_str = "\n".join(final_set)
