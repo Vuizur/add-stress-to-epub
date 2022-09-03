@@ -32,3 +32,5 @@ data_augmentation/__pycache__/
 ruwiktionary_words_fixed.json
 poetry.lock
 8d9bad5b43259c6ee27d9aadc7b832/
+ruwiki_yo_wordlist.txt
+openai-key.txt

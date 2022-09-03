@@ -118,6 +118,27 @@ def add_ruwiktionary_data_to_db(database_path = "russian_dict.db", ruwiktionary_
         # TODO: Add the word to the database if it has two options
     con.commit()
 
+def add_wikipedia_data_to_db(database_path = "russian_dict.db", wikipedia_wordlist="wikipedia_words.txt"):
+    wordstress_word_mapping: dict[str, set[str]] = {}
+
+    con = sqlite3.connect(database_path)
+    cur = con.cursor()
+    with open(wikipedia_wordlist, "r", encoding="utf-8") as f:
+        for line in f:
+            word = line.strip()
+            wrd_unaccentified = get_lower_and_without_yo(word)
+            # Add word to wordsstress_word_mapping, with an empty set as the value as default
+            if wrd_unaccentified not in wordstress_word_mapping:
+                wordstress_word_mapping[wrd_unaccentified] = set()
+            # Add the word to the list of words for this word
+            wordstress_word_mapping[wrd_unaccentified].add(word.lower())
+
+            for word, options in wordstress_word_mapping.items():
+                if len(options) == 1:
+                    add_word_to_db_if_not_there(word, cur)
+    con.commit()
+    cur.close()
+    con.close()
 
 if __name__ == "__main__":
     #update_database()

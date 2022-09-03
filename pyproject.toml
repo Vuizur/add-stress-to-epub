@@ -7,8 +7,8 @@ classifiers = [
   "Development Status :: 4 - Beta",
 ]
 description = "Stresses Russian texts and ebooks using ML grammar analysis and Wiktionary data"
-license = "GPLv3"
 keywords = ["russian", "stress", "wiktionary", "ebook"]
+license = "GPLv3"
 name = "russian-text-stresser"
 readme = "README.md"
 repository = "https://github.com/Vuizur/add-stress-to-epub"
@@ -19,7 +19,8 @@ PyQt6 = {version = "^6.3.1", optional = true}
 beautifulsoup4 = "^4.11.1"
 ebook-dictionary-creator = {git = "https://github.com/Vuizur/ebook_dictionary_creator", optional = true}
 lxml = "^4.9.1"
-mwxml = "^0.3.3"
+mwxml = {version = "^0.3.3", optional = true}
+openai = "^0.23.0"
 pymorphy2 = "^0.9.1"
 python = "^3.8,<3.11"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
@@ -33,7 +34,7 @@ pyinstaller = "^5.3"
 
 [tool.poetry.extras]
 GUI = ["PyQt6"]
-database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser"]
+database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
