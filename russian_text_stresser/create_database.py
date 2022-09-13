@@ -9,6 +9,7 @@ from ruwiktionary_htmldump_parser.htmldumpparser import HTMLDumpParser
 
 from update_database import add_ruwiktionary_data_to_db, add_wikipedia_data_to_db, delete_unstressed_and_useless_words_from_DB
 from wikipedia_dump_stress_extraction import extract_efficient
+import shutil
 
 class DatabaseCreator:
 
@@ -17,6 +18,7 @@ class DatabaseCreator:
         self.wiktionary_parser = HTMLDumpParser(htmldump_path)
     
     def create_database(self):
+        TEMPORARY_DB_FOLDER = "D:/temporary_dictionary_dbs"
         kaikki_file_path = "russian-kaikki.json"
         wikipedia_stress_output_path = "wikipedia_words.txt"
         # If kaiiki file is not found, create it
@@ -29,8 +31,13 @@ class DatabaseCreator:
         self.dictionary_creator.create_database()
         print("Updating database with OpenRussian data")
         self.dictionary_creator.add_data_from_openrussian()
-        print("Deleting unstressed words from database")
+        print("Deleting unstressed/useless words from database")
         delete_unstressed_and_useless_words_from_DB(self.dictionary_creator.database_path)
+
+        # Copy the database to a temporary folder
+        if not os.path.exists(TEMPORARY_DB_FOLDER):
+            os.mkdir(TEMPORARY_DB_FOLDER)
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_1.db")
 
         if not os.path.exists(self.wiktionary_parser.intermediate_data_path):
             print("Parsing Russian Wiktionary HTML dump")
@@ -42,6 +49,7 @@ class DatabaseCreator:
         print("Adding Russian Wiktionary data to database")
         add_ruwiktionary_data_to_db(self.dictionary_creator.database_path, self.wiktionary_parser.cleaned_data_path)
 
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_2.db")
 
         print("Extracting words from Russian Wikipedia")
         
@@ -53,9 +61,12 @@ class DatabaseCreator:
         print("Adding Russian Wikipedia data to database")
         add_wikipedia_data_to_db(self.dictionary_creator.database_path, wikipedia_stress_output_path)
 
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_3.db")
+
         # Also add yo data from Wikipedia to the database
         # Also delete all data where there is only one possible option and add it to a pickled file or another sqlite table
-
+        
 
 if __name__ == "__main__":
     database_creator = DatabaseCreator( "D:/ruwiktionary")
+    database_creator.create_database()

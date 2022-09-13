@@ -18,4 +18,5 @@ class WordSenseDisambiguator:
         Ответ: 
         """
 
-        return self.gpt3.ask(f"Which word sense of {word} is correct in the following context? {context}")
+
+        

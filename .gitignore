@@ -34,3 +34,8 @@ poetry.lock
 8d9bad5b43259c6ee27d9aadc7b832/
 ruwiki_yo_wordlist.txt
 openai-key.txt
+base_words.json
+russian-kaikki.json
+ruwiktdata_cleaned.json
+ruwiktdata_int.json
+wikipedia_words.txt
