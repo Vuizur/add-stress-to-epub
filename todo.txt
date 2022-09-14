@@ -96,3 +96,8 @@ Straightforward way to create database, depend on other packages
 Fix add_wikipedia_to_db so that it works properly
 
 Clean up yo data
+
+Test if information gets lost with delete_data 
+(for example for words that have only one syllable, but pronounced differently based on declination)
+
+Delete archaic stress forms if an alternatives with the same POS exist (первого)

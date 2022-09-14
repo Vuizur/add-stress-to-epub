@@ -3,6 +3,8 @@
 from benchmark_accuracy import benchmark_accuracy
 from stressed_cyrillic_tools import remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
+from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import RussianDictionaryCreator
+
 
 def find_hard_to_detect_case_words():
     # Idea: find all words where there are two or more prepositions 
@@ -83,5 +85,9 @@ if __name__ == "__main__":
 
     text100 = "Чехия предоставила Киеву военную помощь на 8,8 миллиарда рублей."
 
-    print(ts.stress_text(text100))
+    test123 = "Это шутер от первого лица."
 
+    print(ts.stress_text(test123))
+
+    rdc = RussianDictionaryCreator(kaikki_file_path="russian-kaikki.json")
+    rdc.export_kaikki_utf8("russian-kaikki-utf8.json")

@@ -1,10 +1,12 @@
 import unittest
 from russian_dictionary import RussianDictionary
+from text_stresser import RussianTextStresser
 
 
 class StressTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.rd = RussianDictionary()
+        self.stresser = RussianTextStresser()
 
     def test_simple_case(self):
         self.assertEqual(self.rd.get_stressed_word_and_set_yo("тупо"), "ту́по")
@@ -31,6 +33,19 @@ class StressTestCase(unittest.TestCase):
     def test_uppercase_yo(self):
         self.assertEqual(
             self.rd.get_stressed_word_and_set_yo("Зеленый"), "Зелёный")
+
+    def test_uppercase_ambiguous_yo_case(self):
+        self.assertEqual(
+            self.rd.get_stressed_word_and_set_yo("Копье"), "Копье")
+
+    def test_genitive(self):
+        self.assertEqual(
+            self.stresser.stress_text("Лица сияют."), "Ли́ца сия́ют.")
+    
+    # Test "Э́то шу́тер от первого лица́.""
+    def test_sentence_plural(self):
+        self.assertEqual(
+            self.stresser.stress_text("Это шутер от первого лица."), "Э́то шу́тер от первого лица́.")
 
 
 if __name__ == '__main__':

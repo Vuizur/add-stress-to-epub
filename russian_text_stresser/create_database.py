@@ -29,6 +29,8 @@ class DatabaseCreator:
             self.dictionary_creator.kaikki_file_path = kaikki_file_path
         print("Creating database")
         self.dictionary_creator.create_database()
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_0_enwiktionary_only.db")
+
         print("Updating database with OpenRussian data")
         self.dictionary_creator.add_data_from_openrussian()
         print("Deleting unstressed/useless words from database")
@@ -37,7 +39,7 @@ class DatabaseCreator:
         # Copy the database to a temporary folder
         if not os.path.exists(TEMPORARY_DB_FOLDER):
             os.mkdir(TEMPORARY_DB_FOLDER)
-        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_1.db")
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_1_with_openrussian.db")
 
         if not os.path.exists(self.wiktionary_parser.intermediate_data_path):
             print("Parsing Russian Wiktionary HTML dump")
@@ -49,7 +51,7 @@ class DatabaseCreator:
         print("Adding Russian Wiktionary data to database")
         add_ruwiktionary_data_to_db(self.dictionary_creator.database_path, self.wiktionary_parser.cleaned_data_path)
 
-        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_2.db")
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_2_with_ruwiktionary.db")
 
         print("Extracting words from Russian Wikipedia")
         
@@ -61,7 +63,10 @@ class DatabaseCreator:
         print("Adding Russian Wikipedia data to database")
         add_wikipedia_data_to_db(self.dictionary_creator.database_path, wikipedia_stress_output_path)
 
-        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_3.db")
+        print("Deleting unstressed/useless words from database")
+        delete_unstressed_and_useless_words_from_DB(self.dictionary_creator.database_path)
+
+        shutil.copy(self.dictionary_creator.database_path, TEMPORARY_DB_FOLDER + "/tempdb_3_with_ruwikipedia.db")
 
         # Also add yo data from Wikipedia to the database
         # Also delete all data where there is only one possible option and add it to a pickled file or another sqlite table
