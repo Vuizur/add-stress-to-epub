@@ -47,6 +47,14 @@ class StressTestCase(unittest.TestCase):
         self.assertEqual(
             self.stresser.stress_text("Это шутер от первого лица."), "Э́то шу́тер от первого лица́.")
 
+    def test_sentence_one_syllable(self):
+        self.assertEqual(
+            self.stresser.stress_text("Эти красивые леса!"), "Э́ти краси́вые леса́!")
+        
+    def test_sentence_genitive(self):
+        self.assertEqual(
+            self.stresser.stress_text("Это магия этого леса."), "Э́то ма́гия э́того ле́са.")
+
 
 if __name__ == '__main__':
     unittest.main()
