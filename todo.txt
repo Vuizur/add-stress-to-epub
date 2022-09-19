@@ -101,3 +101,7 @@ Test if information gets lost with delete_data
 (for example for words that have only one syllable, but pronounced differently based on declination)
 
 Delete archaic stress forms if an alternatives with the same POS exist (первого)
+
+Handle double accented words from Russian wiktionary
+
+More tests
