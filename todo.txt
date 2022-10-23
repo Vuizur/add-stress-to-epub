@@ -102,6 +102,10 @@ Test if information gets lost with delete_data
 
 Delete archaic stress forms if an alternatives with the same POS exist (первого)
 
-Handle double accented words from Russian wiktionary
-
 More tests
+
+Integrate "alternative form" in ruwiktionary data
+
+WSD: Handle upper and lowercase disambiguation
+
+Add Disambiguation examples to BigBench (why not)

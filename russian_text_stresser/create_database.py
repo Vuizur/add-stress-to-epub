@@ -4,8 +4,8 @@
 # 4. Add data from Russian Wiktionary to the database, parse the Russian Wiktionary first
 
 import os
-from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import RussianDictionaryCreator
-from ruwiktionary_htmldump_parser.htmldumpparser import HTMLDumpParser
+from ebook_dictionary_creator import RussianDictionaryCreator
+from ruwiktionary_htmldump_parser import HTMLDumpParser
 
 from update_database import add_ruwiktionary_data_to_db, add_wikipedia_data_to_db, delete_unstressed_and_useless_words_from_DB
 from wikipedia_dump_stress_extraction import extract_efficient

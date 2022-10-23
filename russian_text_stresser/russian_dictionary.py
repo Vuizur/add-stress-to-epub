@@ -252,7 +252,8 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
         else:  # word must be written with a ё
             return self.write_word_with_yo(word, words_with_possibly_written_yo[0][0])
 
-    def write_stressed_word(self, word, stressed_dict_word):
+    @staticmethod
+    def write_stressed_word(word, stressed_dict_word):
         index = 0
         result_word = ""
         for char in stressed_dict_word:
