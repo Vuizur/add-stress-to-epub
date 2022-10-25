@@ -1,7 +1,8 @@
 from collections import namedtuple
-from dataclasses import dataclass
+from pydantic.dataclasses import dataclass
 import os
 from typing import Optional, TypedDict
+from confection import BaseModel
 import openai
 import sqlite3
 import json
@@ -14,6 +15,8 @@ from ruwiktionary_htmldump_parser import HTMLDumpParser
 from helper_methods import load_spacy_min
 
 from russian_dictionary import RussianDictionary
+from pydantic.json import pydantic_encoder
+
 
 # JSON has format like this
 # {
@@ -50,15 +53,6 @@ class Entry:
     definitions: list[str]
     grammar_info: str
     IPA: str
-
-
-# Entries = TypedDict(
-#    "Entries",
-#    {
-#        "word": Entry,
-#    },
-# )
-
 
 class RuWiktionary:
     def __init__(
@@ -130,6 +124,9 @@ class RuWiktionary:
         )
         rows = self.cursor.fetchall()
 
+        # Remove all rows where the word is uppercase and the parameter word is lowercase
+        rows = [row for row in rows if not (row[1][0].isupper() and not word[0].isupper())]
+
         inflection_word_ids = self.get_entries_with_inflection(word)
         if inflection_word_ids is not None:
             for word_id in inflection_word_ids:
@@ -145,13 +142,6 @@ class RuWiktionary:
             return None
         else:
             return [
-                # {
-                #    "word": row[1],
-                #    "definitions": json.loads(row[2]),
-                #    "grammar_info": row[3],
-                #    "IPA": row[4],
-                #    "inflections": self.get_inflections(row[0]),
-                # }
                 Entry(
                     word=row[1],
                     alternative_form=None,
@@ -173,10 +163,16 @@ class RuWiktionary:
     def get_entries_with_inflection(self, word: str) -> list[int]:
         """Returns all fitting entries where the word is an inflection of the base word"""
         self.cursor.execute(
-            "SELECT words.word_id FROM words INNER JOIN inflections ON words.word_id = inflections.word_id WHERE inflection_lower_unstressed = ?",
+            "SELECT words.word_id, words.word FROM words INNER JOIN inflections ON words.word_id = inflections.word_id WHERE inflection_lower_unstressed = ?",
             (remove_yo(unaccentify(word.lower())),),
         )
         rows = self.cursor.fetchall()
+
+        # Remove rows with None as word
+        rows = [row for row in rows if row[1] is not None and len(row[1]) > 0]
+        # Remove all rows where the word is uppercase and the parameter word is lowercase
+        rows = [row for row in rows if not (row[1][0].isupper() and not word[0].isupper())]
+
         if len(rows) == 0:
             return None
         else:
@@ -194,6 +190,11 @@ class RuWiktionary:
     def __del__(self):
         self.conn.close()
 
+@dataclass
+class DisambiguationTask:
+    """A list of disambiguation tasks"""
+    generated_string: str
+    choices: list[Entry]
 
 class WordSenseDisambiguator:
     def __init__(
@@ -207,6 +208,7 @@ class WordSenseDisambiguator:
         with open("openai-key.txt", "r", encoding="utf-8") as f:
             openai.api_key = f.readline().strip()
         self.russian_wiktionary = RuWiktionary(russian_wiktionary_json_path)
+        self.disambiguation_tasks = []
 
     @staticmethod
     def find_in_entry_matching_word(word: str, entry: Entry) -> list[str]:
@@ -219,7 +221,7 @@ class WordSenseDisambiguator:
             # for inflection in entry["inflections"] + [entry["word"]]
             for inflection in entry.inflections + [entry.word]
             if remove_yo(unaccentify(inflection.lower()))
-            == remove_yo(unaccentify(word.lower())) and not (inflection[0].isupper and word[0].islower())
+            == remove_yo(unaccentify(word.lower())) #and not (inflection[0].isupper and word[0].islower())
         ]
         return compatible_words
 
@@ -260,17 +262,10 @@ class WordSenseDisambiguator:
         elif self.is_impossible_to_disambiguate(word, valid_entries):
             return None
         else:
-            # for entry in valid_entries:
-            #    matching_words = self.find_in_entry_matching_word(word, entry)
-            #    assert (
-            #        matching_words != []
-            #    ), "No matching words found, this should not happen"
-            #
-            #    # Generate all the options
             options = "\n".join(
                 [
                     f"{i + 1}. {entry.word} ({entry.grammar_info.replace(',', ' ').replace(';', ' ').split(' ')[0]}) - {entry.definitions[0].split('◆')[0].strip()}"
-                    for i, entry in enumerate(valid_entries)
+                    for i, entry in enumerate(valid_entries) #if entry.definitions is not None and entry.definitions != []
                 ]
             )
 
@@ -279,6 +274,13 @@ class WordSenseDisambiguator:
 Вопрос: Какое определение слова "{word}" здесь правильное?
 {options}
 Ответ:"""
+
+            # Append to the list of disambiguation tasks
+            self.disambiguation_tasks.append(
+                DisambiguationTask(
+                    generated_string=question,
+                    choices=valid_entries,
+                ))
             print(question)
 
     def detect_and_fix_missing_stressed_words(self, text: str) -> str:
@@ -295,11 +297,18 @@ class WordSenseDisambiguator:
                 # If the word is not stressed, try to fix it
                 self.disambiguate(word.text, sent.text)
 
+    def export_disambiguation_tasks_to_json(self):
+        with open("disambiguation_tasks.json", "w", encoding="utf-8") as f:
+            json.dump(self.disambiguation_tasks, f, ensure_ascii=False, default=pydantic_encoder, indent=4)
+
+
+def generate_tasks_file():
+    pass
 
 if __name__ == "__main__":
-    # hd = HTMLDumpParser(None, "ruwiktdata_int.json", "ruwiktdata_cleaned.json")
-    # hd.clean_entries()
-    # quit()
+    #hd = HTMLDumpParser(None, "ruwiktdata_int.json", "ruwiktdata_cleaned.json")
+    #hd.clean_entries()
+    #quit()
     # rw = RuWiktionary("ruwiktdata_cleaned.json")
     ##word = "леса"
     # word = "лица"
@@ -307,23 +316,25 @@ if __name__ == "__main__":
     # entries = rw.get_entries(word)
     # print("Number of entries:", len(entries))
     # print(entries)
-    # wsd = WordSenseDisambiguator()
+    wsd = WordSenseDisambiguator()
     # matchwords = wsd.find_in_entries_matching_words(word, entries)
     # print(f"Is impossible to disambiguate: {wsd.is_impossible_to_disambiguate(word, entries)}")
     # print(matchwords)
 
-    wsd = WordSenseDisambiguator()
-    print(wsd.disambiguate("замок", "В замке было очень темно."))
-    print(
-        wsd.disambiguate(
-            "потом",
-            "С потом переносятся феромоны и множество биологически активных веществ.",
-        )
-    )
+    #wsd = WordSenseDisambiguator()
+    #print(wsd.russian_wiktionary.get_entries("нельзя"))
+    #print(wsd.disambiguate("замок", "В замке было очень темно."))
+    #print(
+    #    wsd.disambiguate(
+    #        "потом",
+    #        "С потом переносятся феромоны и множество биологически активных веществ.",
+    #    )
+    #)
 
     # Load disambiguation_text.txt
-    with open("disambiguation_text.txt", "r", encoding="utf-8") as f:
+    with open("disambiguation_text3.txt", "r", encoding="utf-8") as f:
         text = f.read()
     wsd.detect_and_fix_missing_stressed_words(text)
+    wsd.export_disambiguation_tasks_to_json()
 
     # wsd.detect_and_fix_missing_stressed_words("В замке было очень темно.")

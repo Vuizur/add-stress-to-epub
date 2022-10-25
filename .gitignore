@@ -40,3 +40,7 @@ ruwiktdata_cleaned.json
 ruwiktdata_int.json
 wikipedia_words.txt
 russian-kaikki-utf8.json
+disambiguation_text2.txt
+chosen_tasks.txt
+disambiguation_text3.txt
+question.json
