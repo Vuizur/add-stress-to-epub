@@ -20,7 +20,7 @@ beautifulsoup4 = "^4.11.1"
 ebook-dictionary-creator = {git = "https://github.com/Vuizur/ebook_dictionary_creator", optional = true}
 lxml = "^4.9.1"
 mwxml = {version = "^0.3.3", optional = true}
-openai = "^0.23.0"
+openai = ">=0.24.0"
 pymorphy2 = "^0.9.1"
 python = "^3.8,<3.11"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
