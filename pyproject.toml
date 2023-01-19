@@ -26,6 +26,8 @@ python = "^3.8,<3.11"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
 spacy = "3.4.0"
 stressed-cyrillic-tools = "^0.1.3"
+russtress = {version = "^0.1.4", optional = true}
+transliterate = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
@@ -35,6 +37,8 @@ pyinstaller = "^5.3"
 [tool.poetry.extras]
 GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
+benchmark = ["russtress"]
+
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
