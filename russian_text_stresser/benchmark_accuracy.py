@@ -61,6 +61,8 @@ class AnalysisResults:
             self.file_path + other.file_path,
         )
 
+def token_is_unimportant(token: Token) -> bool:
+    return token.is_punct or token.is_space
 
 class AccuracyCalculator:
     def __init__(self) -> None:
@@ -89,8 +91,19 @@ class AccuracyCalculator:
                 unstressed_text = unaccentify(orig_text)
             unstressed_doc = self._nlp(unstressed_text)
 
-            num_tokens_in_original = len(orig_doc)
-            num_tokens_in_auto_stressed = len(auto_stress_doc)
+            original_no_punct_tokens = [
+                token for token in orig_doc if not token_is_unimportant(token)
+            ]
+            auto_stressed_no_punct_tokens = [
+                token for token in auto_stress_doc if not token_is_unimportant(token)
+            ]
+            unstressed_no_punct_tokens = [
+                token for token in unstressed_doc if not token_is_unimportant(token)
+            ]
+
+            num_tokens_in_original = len(original_no_punct_tokens)
+            num_tokens_in_auto_stressed = len(auto_stressed_no_punct_tokens)
+
             stress_mistakes: list[StressMistake] = []
 
             if num_tokens_in_auto_stressed != num_tokens_in_original:
@@ -99,8 +112,8 @@ class AccuracyCalculator:
                     f"Error!\nLength of original document: {num_tokens_in_original}\nLength of automatically stressed document: {num_tokens_in_auto_stressed}"
                 )
 
-                print_spacy_doc_difference(orig_doc, auto_stress_doc)
-                print_two_docs_with_pos_next_to_another(orig_doc, auto_stress_doc)
+                #print_spacy_doc_difference(orig_doc, auto_stress_doc)
+                print_two_docs_with_pos_next_to_another(original_no_punct_tokens, auto_stressed_no_punct_tokens)
                 raise Exception(
                     f"{orig_stressed_file_path} and {auto_stressed_file_path} are not the same length."
                 )
@@ -109,9 +122,9 @@ class AccuracyCalculator:
             num_unstressed_tokens = 0
             num_correctly_stressed_tokens = 0
 
-            for i, orig_token in enumerate(orig_doc):
+            for auto_stress_token, orig_token, unstressed_token in zip(original_no_punct_tokens, auto_stressed_no_punct_tokens, unstressed_no_punct_tokens):
 
-                auto_stress_token = auto_stress_doc[i]
+                #auto_stress_token = auto_stress_doc[i]
                 orig_token_text: str = orig_token.text
                 auto_stress_token_text: str = auto_stress_token.text
                 if remove_yo(unaccentify(orig_token_text)) != remove_yo(unaccentify(auto_stress_token_text)):
@@ -130,9 +143,7 @@ class AccuracyCalculator:
                                 orig_token_text,
                                 auto_stress_token_text,
                                 orig_token.sent.text,
-                                unstressed_doc[
-                                    i
-                                ],  # We take here the unstressed doc because I doubt
+                                unstressed_token,  # We take here the unstressed doc because I doubt
                                 # that spaCy will perform correct grammar analysis for stressed texts
                             )
                         )
@@ -272,9 +283,21 @@ if __name__ == "__main__":
 
     acc_calc = AccuracyCalculator()
 
-    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
+    #results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
+    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/result_my_solution")
 
-    print(sum(results))
+    for result in results:
+        print(f"File: {result.file_path}")
+        print(f"Number of tokens: {result.orig_doc_length}")
+        print(
+            f"Percentage correctly stressed tokens: {result.get_percentage_correctly_stressed_tokens()}"
+        )
+        print(
+            f"Percentage unstressed tokens: {result.get_percentage_unstressed_tokens()}"
+        )
+        print(
+            f"Percentage incorrectly stressed tokens: {result.get_percentage_incorrectly_stressed_tokens()}"
+        )
 
     # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
     #acc_calc.print_accuracy(

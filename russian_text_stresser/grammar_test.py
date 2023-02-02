@@ -74,6 +74,7 @@ def test_json_dump():
 
 
 if __name__ == "__main__":
+
     str = "Пусти́те."
     nlp = load_spacy_min()
     doc = nlp(str)
