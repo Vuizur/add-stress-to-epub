@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import os
 from pathlib import Path
+from debug_helpers import print_spacy_doc_difference, print_two_docs_with_pos_next_to_another
 from helper_methods import load_spacy_full, load_spacy_min
 from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
@@ -97,6 +98,14 @@ class AccuracyCalculator:
                     f"{orig_stressed_file_path} and {auto_stressed_file_path} are not the same length."
                     f"Error!\nLength of original document: {num_tokens_in_original}\nLength of automatically stressed document: {num_tokens_in_auto_stressed}"
                 )
+
+                print_spacy_doc_difference(orig_doc, auto_stress_doc)
+                print_two_docs_with_pos_next_to_another(orig_doc, auto_stress_doc)
+                raise Exception(
+                    f"{orig_stressed_file_path} and {auto_stressed_file_path} are not the same length."
+                )
+
+                
             num_unstressed_tokens = 0
             num_correctly_stressed_tokens = 0
 
