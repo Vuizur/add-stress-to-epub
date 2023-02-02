@@ -73,7 +73,7 @@ class AccuracyCalculator:
         self,
         orig_stressed_file_path: str,
         auto_stressed_file_path: str,
-        remove_yo: bool = False,  # I am not sure if remove_yo here makes sense
+        remov_yo: bool = False,  # I am not sure if remove_yo here makes sense
     ) -> AnalysisResults:
         with open(orig_stressed_file_path, "r", encoding="utf-8") as orig_file, open(
             auto_stressed_file_path, "r", encoding="utf-8"
@@ -83,7 +83,7 @@ class AccuracyCalculator:
             orig_text_fixed = remove_accent_if_only_one_syllable(orig_text)
             orig_doc = self._nlp(orig_text_fixed)
             auto_stress_doc = self._nlp(auto_stressed_text)
-            if remove_yo:
+            if remov_yo:
                 unstressed_text = unaccentify(remove_yo(orig_text))
             else:
                 unstressed_text = unaccentify(orig_text)
@@ -114,7 +114,7 @@ class AccuracyCalculator:
                 auto_stress_token = auto_stress_doc[i]
                 orig_token_text: str = orig_token.text
                 auto_stress_token_text: str = auto_stress_token.text
-                if unaccentify(orig_token_text) != unaccentify(auto_stress_token_text):
+                if remove_yo(unaccentify(orig_token_text)) != remove_yo(unaccentify(auto_stress_token_text)):
                     print("Differing words:")
                     print(orig_token.text)
                     print(auto_stress_token.text)
@@ -188,30 +188,24 @@ class AccuracyCalculator:
             f"Percentage incorrectly stressed tokens: {analysis_res.percentage_incorrectly_stressed_tokens}"
         )
 
+TEST_RG_TEXT = """
+– Ты, дя́дя, мно́го не спра́шивай, – улыбну́лась де́вочка. По э́той улы́бке он по́нял, что вопро́сы действи́тельно задава́ть не ну́жно. – Ты спи́чку бе́ри|бери́.
+Дя́дя закры́л глаза́ и взял чёрную спи́чку.
+"""
 
 def fix_russiangram_text(text: str) -> str:
     """If russiangram is unsure or there are two options, it returns option1|option2. We always take the first one for a fair benchmark."""
     nlp = load_spacy_min()
-    # Split the text by spaces
-    text_split = text.split(" ")
-    text_split_fixed = []
-    # Iterate over all words
-    for word in text_split:
-        # If the word contains a pipe
-        if "|" in word:
-            # Take the first option
-            fixed_word = word.split("|")[0]
-            rest = word.split("|")[-1]
-            doc = nlp(rest)
-            for doc_word in doc:
-                # If it is a punctuation mark, add it to the previous word
-                if doc_word.is_punct:
-                    fixed_word += doc_word.text
-            text_split_fixed.append(fixed_word)
-        else:
-            text_split_fixed.append(word)
 
-    return " ".join(text_split_fixed)
+    doc = nlp(text)
+    final_text = ""
+    for token in doc:
+        if "|" in token.text:
+            fixed_word = token.text.split("|")[0]
+            final_text += fixed_word + token.whitespace_
+        else:
+            final_text += token.text_with_ws
+    return final_text
 
 
 def fix_russiangram_folder(input_folder: str, output_folder: str) -> None:
@@ -262,6 +256,7 @@ def perform_benchmark_for_my_solution() -> None:
 
 if __name__ == "__main__":
 
+    
     # perform_benchmark_for_my_solution()
 
     #fix_russiangram_folder(
