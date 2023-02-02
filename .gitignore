@@ -46,3 +46,4 @@ disambiguation_text3.txt
 question.json
 disambiguation_tasks.json
 correctness_tests.zip
+correctness_tests/results_russiangram_with_yo/

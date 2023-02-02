@@ -61,7 +61,7 @@ class AccuracyCalculator:
         )  # We need this because we want to collect part of speech/morphology statistics
 
     def calc_accuracy(
-        self, orig_stressed_file_path: str, auto_stressed_file_path: str, remove_yo: bool = False
+        self, orig_stressed_file_path: str, auto_stressed_file_path: str, remove_yo: bool = False # I am not sure if remove_yo here makes sense
     ) -> AnalysisResults:
         with open(orig_stressed_file_path, "r", encoding="utf-8") as orig_file, open(
             auto_stressed_file_path, "r", encoding="utf-8"
@@ -157,47 +157,29 @@ class AccuracyCalculator:
             f"Percentage incorrectly stressed tokens: {analysis_res.percentage_incorrectly_stressed_tokens}"
         )
 
-
-def benchmark_accuracy(file_path: str):
-    # raise deprecation warning
-    raise DeprecationWarning(
-        "This function is deprecated and will be removed in the future. Use AccuracyCalculator instead."
-    )
-
-    stresser = RussianTextStresser()
-    with open(file_path, "r", encoding="utf-8") as file:
-        text_file = file.read()
-        text_file = remove_accent_if_only_one_syllable(text_file)
-        text_file_unstressed = unaccentify(text_file)
-        split_file_as_it_should_be = text_file.split(" ")
-        stressed_file = stresser.stress_text(text_file_unstressed)
-        split_file_by_my_program = stressed_file.split(" ")
-    correct_tokens = 0
-    wrong_tokens = 0
-
-    for i in range(0, len(split_file_as_it_should_be)):
-        # The stress of one-syllable words is obvious and usually not marked
-        if split_file_as_it_should_be[i] == split_file_by_my_program[i]:
-            correct_tokens += 1
+def fix_russiangram_text(text: str) -> str:
+    """If russiangram is unsure or there are two options, it returns option1|option2. We always take the first one for a fair benchmark."""
+    nlp = load_spacy_min()
+    # Split the text by spaces
+    text_split = text.split(" ")
+    text_split_fixed = []
+    # Iterate over all words
+    for word in text_split:
+        # If the word contains a pipe
+        if "|" in word:
+            # Take the first option
+            fixed_word, rest = word.split("|")
+            doc = nlp(rest)
+            for doc_word in doc:
+                # If it is a punctuation mark, add it to the previous word
+                if doc_word.is_punct:
+                    fixed_word += doc_word.text
+            text_split_fixed.append(fixed_word)
         else:
-            wrong_tokens += 1
-            print(split_file_as_it_should_be[i])
-            print(split_file_by_my_program[i])
-    print(correct_tokens)
-    print(wrong_tokens)
-    file_name = file_path.split("/")[-1]
-    file_name_stump = file_name.split(".")[0]
-    with open(
-        f"../correctness_tests/results/{file_name_stump}_original.txt",
-        "w",
-        encoding="utf-8",
-    ) as orig, open(
-        f"../correctness_tests/results/{file_name_stump}_edit.txt",
-        "w",
-        encoding="utf-8",
-    ) as edit:
-        orig.write(text_file)
-        edit.write(stressed_file)
+            text_split_fixed.append(word)
+
+    return " ".join(text_split_fixed)
+        
 
 def print_statistics_over_data(folder_path: str):
     nlp = load_spacy_full()
