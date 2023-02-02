@@ -28,7 +28,7 @@ spacy = "3.4.0"
 stressed-cyrillic-tools = "^0.1.3"
 russtress = {version = "^0.1.4", optional = true}
 transliterate = "^1.10.2"
-russian-stress-benchmark = {git = "https://github.com/Vuizur/russian-stress-benchmark"}
+russian-stress-benchmark = {git = "https://github.com/Vuizur/russian-stress-benchmark", optional = true}
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
@@ -38,7 +38,7 @@ pyinstaller = "^5.3"
 [tool.poetry.extras]
 GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
-benchmark = ["russtress"]
+benchmark = ["russtress", "russian-stress-benchmark"]
 
 
 [build-system]
