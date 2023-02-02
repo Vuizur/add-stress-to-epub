@@ -34,13 +34,15 @@ def print_spacy_doc_difference(doc1, doc2):
         if diff_histogram[key] != 0:
             print("{}: {}".format(key, diff_histogram[key]))
 
+def esc_nl(s: str):
+    return s.replace("\r", "\\r").replace("\n", "\\n")
 
 def print_two_docs_with_pos_next_to_another(doc1, doc2):
     # This function iterates through two spacy documents
     # For each token it print <token> <pos> <token> <pos> to a tsv file
 
     # Open the file
-    with open("pos_comparison.tsv", "w", encoding="utf-8") as f:
+    with open("pos_comparison.tsv", "w", encoding="utf-8", newline="") as f:
         #for i, token in enumerate(doc1):
         #    if i < len(doc2):
         #        f.write("{}\t{}\t{}\t{}\n".format(token.text, token.pos_, doc2[i].text, doc2[i].pos_))
@@ -51,12 +53,13 @@ def print_two_docs_with_pos_next_to_another(doc1, doc2):
         #        f.write("\t\t{}\t{}\n".format(token.text, token.pos_))
 
         # Now we use the CSV library and pay attention to newlines
-        writer = csv.writer(f, delimiter="\t")
+        writer = csv.writer(f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE)
         for i, token in enumerate(doc1):
+
             if i < len(doc2):
-                writer.writerow([token.text, token.pos_, doc2[i].text, doc2[i].pos_])
+                writer.writerow([f"{esc_nl(token.text)}", token.pos_, esc_nl(doc2[i].text), doc2[i].pos_])
             else:
-                writer.writerow([token.text, token.pos_, "", ""])
+                writer.writerow([esc_nl(token.text), token.pos_, "", ""])
         for i, token in enumerate(doc2):
             if i >= len(doc1):
-                writer.writerow(["", "", token.text, token.pos_])
+                writer.writerow(["", "", esc_nl(token.text), token.pos_])
