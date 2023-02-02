@@ -29,6 +29,7 @@ stressed-cyrillic-tools = "^0.1.10"
 russtress = {version = "^0.1.4", optional = true}
 transliterate = "^1.10.2"
 russian-stress-benchmark = {git = "https://github.com/Vuizur/russian-stress-benchmark", optional = true}
+numpy = "1.23.5" # russtress cannot handle newer versions
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"

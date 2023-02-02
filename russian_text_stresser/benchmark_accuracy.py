@@ -13,6 +13,7 @@ from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
 from russian_stress_benchmark import benchmark_everything_in_folder
 from pprint import pprint
+from russtress import Accent
 
 @dataclass
 class StressMistake:
@@ -59,6 +60,19 @@ class AnalysisResults:
             + other.num_incorrectly_stressed_tokens,
             self.stress_mistakes + other.stress_mistakes,
             self.file_path + other.file_path,
+        )
+    
+    # Returns empty AnalysisResults object
+    @staticmethod
+    def get_empty_results():
+        return AnalysisResults(
+            0,
+            0,
+            0,
+            0,
+            0,
+            [],
+            [],
         )
 
 def token_is_unimportant(token: Token) -> bool:
@@ -257,13 +271,26 @@ def perform_benchmark_for_my_solution() -> None:
     ts = RussianTextStresser()
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
-    result_folder = "result_my_solution"
+    result_folder = "results_my_solution"
 
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
 
     benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
+def perform_benchmark_for_russtress() -> None:
+    stresser = Accent()
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_russtress"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    def stress_text(text: str) -> str:
+        return stresser.put_stress(text).replace("'", "\u0301")
+
+    benchmark_everything_in_folder(base_path, result_path, stress_text)
 
 if __name__ == "__main__":
 
@@ -275,6 +302,7 @@ if __name__ == "__main__":
     #    "correctness_tests/results_russiangram_with_yo_fixed",
     #)
     
+    perform_benchmark_for_russtress()
     
 
 
@@ -283,8 +311,10 @@ if __name__ == "__main__":
 
     acc_calc = AccuracyCalculator()
 
-    #results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
-    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/result_my_solution")
+    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
+    #results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_my_solution")
+    # Add together all the results
+    total_result = sum(results, AnalysisResults.get_empty_results())
 
     for result in results:
         print(f"File: {result.file_path}")
@@ -298,6 +328,13 @@ if __name__ == "__main__":
         print(
             f"Percentage incorrectly stressed tokens: {result.get_percentage_incorrectly_stressed_tokens()}"
         )
+    
+    print(f"Total number of tokens: {total_result.orig_doc_length}")
+    print(f"Total percentage correctly stressed tokens: {total_result.get_percentage_correctly_stressed_tokens()}")
+    print(f"Total percentage unstressed tokens: {total_result.get_percentage_unstressed_tokens()}")
+    print(f"Total percentage incorrectly stressed tokens: {total_result.get_percentage_incorrectly_stressed_tokens()}")
+    
+
 
     # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
     #acc_calc.print_accuracy(

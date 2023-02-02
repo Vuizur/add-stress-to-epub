@@ -48,6 +48,7 @@ disambiguation_tasks.json
 correctness_tests.zip
 correctness_tests/results_russiangram_with_yo/
 correctness_tests/results_russiangram_with_yo_fixed/
-correctness_tests/result_my_solution/commercial/
-correctness_tests/result_my_solution/reynolds_dataset/
+correctness_tests/results_my_solution/commercial/
+correctness_tests/results_my_solution/reynolds_dataset/
 pos_comparison.tsv
+correctness_tests/results_russtress/
