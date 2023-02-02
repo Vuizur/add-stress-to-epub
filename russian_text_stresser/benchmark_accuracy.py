@@ -6,18 +6,21 @@ from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
     remove_accent_if_only_one_syllable,
     unaccentify,
-    remove_yo
+    remove_yo,
 )
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
 from russian_stress_benchmark import benchmark_everything_in_folder
+from pprint import pprint
 
 @dataclass
 class StressMistake:
     orig_token: str
     auto_stressed_token: str
     sentence: str
-    unstressed_token_with_grammar_info: Token # This should include grammar info an
+    unstressed_token_with_grammar_info: Token  # This should include grammar info an
+
+
 @dataclass
 class AnalysisResults:
     orig_doc_length: int
@@ -30,12 +33,15 @@ class AnalysisResults:
 
     def get_percentage_unstressed_tokens(self) -> float:
         return self.num_unstressed_tokens / self.orig_doc_length * 100
+
     def get_percentage_correctly_stressed_tokens(self) -> float:
         return self.num_correctly_stressed_tokens / self.orig_doc_length * 100
+
     def get_percentage_incorrectly_stressed_tokens(self) -> float:
         return self.num_incorrectly_stressed_tokens / self.orig_doc_length * 100
+
     # Overload the + operator to make it easier to combine results
-    
+
     def __add__(self, other):
 
         if isinstance(self.file_path, str):
@@ -48,10 +54,12 @@ class AnalysisResults:
             self.auto_stressed_doc_length + other.auto_stressed_doc_length,
             self.num_unstressed_tokens + other.num_unstressed_tokens,
             self.num_correctly_stressed_tokens + other.num_correctly_stressed_tokens,
-            self.num_incorrectly_stressed_tokens + other.num_incorrectly_stressed_tokens,
+            self.num_incorrectly_stressed_tokens
+            + other.num_incorrectly_stressed_tokens,
             self.stress_mistakes + other.stress_mistakes,
             self.file_path + other.file_path,
         )
+
 
 class AccuracyCalculator:
     def __init__(self) -> None:
@@ -61,7 +69,10 @@ class AccuracyCalculator:
         )  # We need this because we want to collect part of speech/morphology statistics
 
     def calc_accuracy(
-        self, orig_stressed_file_path: str, auto_stressed_file_path: str, remove_yo: bool = False # I am not sure if remove_yo here makes sense
+        self,
+        orig_stressed_file_path: str,
+        auto_stressed_file_path: str,
+        remove_yo: bool = False,  # I am not sure if remove_yo here makes sense
     ) -> AnalysisResults:
         with open(orig_stressed_file_path, "r", encoding="utf-8") as orig_file, open(
             auto_stressed_file_path, "r", encoding="utf-8"
@@ -83,6 +94,7 @@ class AccuracyCalculator:
 
             if num_tokens_in_auto_stressed != num_tokens_in_original:
                 print(
+                    f"{orig_stressed_file_path} and {auto_stressed_file_path} are not the same length."
                     f"Error!\nLength of original document: {num_tokens_in_original}\nLength of automatically stressed document: {num_tokens_in_auto_stressed}"
                 )
             num_unstressed_tokens = 0
@@ -109,7 +121,9 @@ class AccuracyCalculator:
                                 orig_token_text,
                                 auto_stress_token_text,
                                 orig_token.sent.text,
-                                unstressed_doc[i], # We take here the unstressed doc because I doubt
+                                unstressed_doc[
+                                    i
+                                ],  # We take here the unstressed doc because I doubt
                                 # that spaCy will perform correct grammar analysis for stressed texts
                             )
                         )
@@ -123,26 +137,34 @@ class AccuracyCalculator:
             analysis_results = AnalysisResults(
                 num_tokens_in_original,
                 num_tokens_in_auto_stressed,
-                num_unstressed_tokens, # / num_tokens_in_original * 100,
-                num_correctly_stressed_tokens, #/ num_tokens_in_original * 100,
-                num_incorrectly_stressed_tokens, # / num_tokens_in_original * 100,
+                num_unstressed_tokens,  # / num_tokens_in_original * 100,
+                num_correctly_stressed_tokens,  # / num_tokens_in_original * 100,
+                num_incorrectly_stressed_tokens,  # / num_tokens_in_original * 100,
                 stress_mistakes,
                 orig_stressed_file_path,
             )
             return analysis_results
 
-    def calc_accuracy_over_dir(self, original_dir_path: str, auto_stressed_dir_path: str)-> AnalysisResults:
+    def calc_accuracy_over_dir(
+        self, original_dir_path: str, auto_stressed_dir_path: str
+    ) -> list[AnalysisResults]:
         # Iterate over all files in the directory and subdirectories
         results: list[AnalysisResults] = []
         for root, dirs, files in os.walk(original_dir_path):
             for file in files:
                 if file.endswith(".txt") or file.endswith(".ref"):
                     original_file_path = os.path.join(root, file)
-                    relative_path = os.path.relpath(original_file_path, original_dir_path)
-                    #auto_stressed_file_path = os.path.join(auto_stressed_dir_path, file)
-                    auto_stressed_file_path = os.path.join(auto_stressed_dir_path, relative_path)
-                    results.append(self.calc_accuracy(original_file_path, auto_stressed_file_path))
-        return sum(results)
+                    relative_path = os.path.relpath(
+                        original_file_path, original_dir_path
+                    )
+                    # auto_stressed_file_path = os.path.join(auto_stressed_dir_path, file)
+                    auto_stressed_file_path = os.path.join(
+                        auto_stressed_dir_path, relative_path
+                    )
+                    results.append(
+                        self.calc_accuracy(original_file_path, auto_stressed_file_path)
+                    )
+        return results
 
     def print_accuracy(self, original_file_path, auto_stressed_file_path):
         analysis_res = self.calc_accuracy(original_file_path, auto_stressed_file_path)
@@ -157,6 +179,7 @@ class AccuracyCalculator:
             f"Percentage incorrectly stressed tokens: {analysis_res.percentage_incorrectly_stressed_tokens}"
         )
 
+
 def fix_russiangram_text(text: str) -> str:
     """If russiangram is unsure or there are two options, it returns option1|option2. We always take the first one for a fair benchmark."""
     nlp = load_spacy_min()
@@ -168,7 +191,8 @@ def fix_russiangram_text(text: str) -> str:
         # If the word contains a pipe
         if "|" in word:
             # Take the first option
-            fixed_word, rest = word.split("|")
+            fixed_word = word.split("|")[0]
+            rest = word.split("|")[-1]
             doc = nlp(rest)
             for doc_word in doc:
                 # If it is a punctuation mark, add it to the previous word
@@ -179,6 +203,7 @@ def fix_russiangram_text(text: str) -> str:
             text_split_fixed.append(word)
 
     return " ".join(text_split_fixed)
+
 
 def fix_russiangram_folder(input_folder: str, output_folder: str) -> None:
     """Fixes all files in a folder and its subfolders"""
@@ -195,7 +220,7 @@ def fix_russiangram_folder(input_folder: str, output_folder: str) -> None:
                 os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
                 with open(output_file_path, "w", encoding="utf-8") as f:
                     f.write(text_fixed)
-        
+
 
 def print_statistics_over_data(folder_path: str):
     nlp = load_spacy_full()
@@ -213,33 +238,42 @@ def print_statistics_over_data(folder_path: str):
 
     print(f"Number of tokens: {token_num}")
 
+
 def perform_benchmark_for_my_solution() -> None:
     ts = RussianTextStresser()
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "result_my_solution"
 
-    base_path = f"{base_folder}/{orig_folder}" 
-    result_path = f"{base_folder}/{result_folder}" 
-    
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
     benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+
 
 if __name__ == "__main__":
 
-    perform_benchmark_for_my_solution()
+    # perform_benchmark_for_my_solution()
 
-    fix_russiangram_folder("correctness_tests/results_russiangram_with_yo", "correctness_tests/results_russiangram_with_yo_fixed")
-
-    quit()
-
-    #print_statistics_over_data("correctness_tests/stressed_russian_texts")
-    #quit()
+    #fix_russiangram_folder(
+    #    "correctness_tests/results_russiangram_with_yo",
+    #    "correctness_tests/results_russiangram_with_yo_fixed",
+    #)
     
+    
+
+
+    # print_statistics_over_data("correctness_tests/stressed_russian_texts")
+    # quit()
+
     acc_calc = AccuracyCalculator()
 
-    # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
-    acc_calc.print_accuracy(
-        "correctness_tests/results/bargamot_original.txt",
-        "correctness_tests/results/bargamot_edit.txt",
-    )
+    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
 
+    print(sum(results))
+
+    # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
+    #acc_calc.print_accuracy(
+    #    "correctness_tests/results/bargamot_original.txt",
+    #    "correctness_tests/results/bargamot_edit.txt",
+    #)
