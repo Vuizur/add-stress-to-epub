@@ -179,6 +179,22 @@ def fix_russiangram_text(text: str) -> str:
             text_split_fixed.append(word)
 
     return " ".join(text_split_fixed)
+
+def fix_russiangram_folder(input_folder: str, output_folder: str) -> None:
+    """Fixes all files in a folder and its subfolders"""
+    # Iterate over all files in the folder and its subfolders
+    for root, dirs, files in os.walk(input_folder):
+        for file in files:
+            if file.endswith(".txt") or file.endswith(".ref"):
+                file_path = os.path.join(root, file)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                    text_fixed = fix_russiangram_text(text)
+                relative_path = os.path.relpath(file_path, input_folder)
+                output_file_path = os.path.join(output_folder, relative_path)
+                os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+                with open(output_file_path, "w", encoding="utf-8") as f:
+                    f.write(text_fixed)
         
 
 def print_statistics_over_data(folder_path: str):
@@ -211,6 +227,9 @@ def perform_benchmark_for_my_solution() -> None:
 if __name__ == "__main__":
 
     perform_benchmark_for_my_solution()
+
+    fix_russiangram_folder("correctness_tests/results_russiangram_with_yo", "correctness_tests/results_russiangram_with_yo_fixed")
+
     quit()
 
     #print_statistics_over_data("correctness_tests/stressed_russian_texts")
