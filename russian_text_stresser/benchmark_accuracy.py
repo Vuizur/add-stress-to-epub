@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import os
 from pathlib import Path
+import random
 from debug_helpers import print_spacy_doc_difference, print_two_docs_with_pos_next_to_another
 from helper_methods import load_spacy_full, load_spacy_min
 from stressed_cyrillic_tools import (
@@ -8,6 +9,7 @@ from stressed_cyrillic_tools import (
     remove_accent_if_only_one_syllable,
     unaccentify,
     remove_yo,
+    has_only_one_syllable
 )
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
@@ -292,7 +294,58 @@ def perform_benchmark_for_russtress() -> None:
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
 
+#def stress_word_randomly(word: str) -> str:
+#    """Stresses a word randomly. Used for benchmarking."""
+#    stressed_word = ""
+#    if has_only
+
+class RandomStresser:
+    """Stresses texts randomly. Used for benchmarking."""
+    def __init__(self) -> None:
+        self._nlp = load_spacy_min()
+
+    def stress_text(self, text: str) -> str:
+        doc = self._nlp(text)
+        final_text = ""
+        for token in doc:
+            final_text += self.stress_word_randomly(token.text) + token.whitespace_
+        return final_text
+    
+    def stress_word_randomly(self, word: str) -> str:
+        if has_only_one_syllable(word):
+            return word
+        else:
+            # calculate the vowel indexes (аоэуыяеёюи)
+            indexes = []
+            for i, char in enumerate(word):
+                if char in "аоэуыяеёюи":
+                    indexes.append(i)
+            if len(indexes) == 0:
+                return word
+            # choose a random vowel index
+            stressed_index = random.choice(indexes)
+            # add the stress mark
+            stressed_word = word[:stressed_index] + "\u0301" + word[stressed_index:]
+            return stressed_word
+
+def perform_benchmark_random():
+    rs = RandomStresser()
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_random"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    benchmark_everything_in_folder(base_path, result_path, rs.stress_text)
+
 if __name__ == "__main__":
+
+    #print(RandomStresser().stress_text("Привет, как дела?"))
+    
+    perform_benchmark_random()
+
+    quit()
 
     
     # perform_benchmark_for_my_solution()
@@ -302,7 +355,7 @@ if __name__ == "__main__":
     #    "correctness_tests/results_russiangram_with_yo_fixed",
     #)
     
-    perform_benchmark_for_russtress()
+    #perform_benchmark_for_russtress()
     
 
 
@@ -311,8 +364,10 @@ if __name__ == "__main__":
 
     acc_calc = AccuracyCalculator()
 
-    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
+    #results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
     #results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_my_solution")
+    results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russtress")
+    
     # Add together all the results
     total_result = sum(results, AnalysisResults.get_empty_results())
 

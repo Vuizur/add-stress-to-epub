@@ -52,3 +52,4 @@ correctness_tests/results_my_solution/commercial/
 correctness_tests/results_my_solution/reynolds_dataset/
 pos_comparison.tsv
 correctness_tests/results_russtress/
+correctness_tests/results_random/
