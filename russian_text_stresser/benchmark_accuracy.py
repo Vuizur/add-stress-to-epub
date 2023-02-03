@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 import random
-from debug_helpers import print_spacy_doc_difference, print_two_docs_with_pos_next_to_another
+from debug_helpers import esc_nl, print_spacy_doc_difference, print_two_docs_with_pos_next_to_another
 from helper_methods import load_spacy_full, load_spacy_min
 from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
@@ -320,14 +320,16 @@ class RandomStresser:
             # calculate the vowel indexes (аоэуыяеёюи)
             indexes = []
             for i, char in enumerate(word):
-                if char in "аоэуыяеёюи":
+                if char.lower() in "аоэуыяеёюи":
                     indexes.append(i)
             if len(indexes) == 0:
                 return word
             # choose a random vowel index
             stressed_index = random.choice(indexes)
+            word_until_stressed = word[:stressed_index+1]
+            word_after_stressed = word[stressed_index+1:]
             # add the stress mark
-            stressed_word = word[:stressed_index] + "\u0301" + word[stressed_index:]
+            stressed_word = word_until_stressed + "\u0301" + word_after_stressed
             return stressed_word
 
 def perform_benchmark_random():
@@ -376,23 +378,107 @@ def print_stressmistake_to_tsv(mistakes: list[StressMistake], tsv_path: str) -> 
                 orig_token,
                 pos,
                 auto_stressed_token,
-                mistakes[0].unstressed_token_with_grammar_info.sent.text,
+                esc_nl(mistakes[0].unstressed_token_with_grammar_info.sent.text),
                 len(mistakes),
             ])
-            
+
+def get_all_pos(stressed_text_path = "correctness_tests/stressed_russian_texts"):
+    """Gets all the POS tags in the corpus."""
+    nlp = load_spacy_min()
+    all_pos = set()
+    for root, dirs, files in os.walk(stressed_text_path):
+        for file in files:
+            if file.endswith(".txt") or file.endswith(".ref"):
+                file_path = os.path.join(root, file)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                    doc = nlp(text)
+                    for token in doc:
+                        all_pos.add(token.pos_)
+    return all_pos
+
+    
+def print_benchmark_result_tsv():
+    BASE_PATH = "correctness_tests"
+    BENCHMARKED_SYSTEMS_PATHS: list[str] = [
+        "results_my_solution",
+        "results_russtress",
+        "results_random",
+        "results_russiangram_with_yo_fixed",
+    ]
+    ALL_POS = get_all_pos()
+
+    ac = AccuracyCalculator()
+
+    # The TSV file will have the following columns:
+    # * The name of the benchmarked system
+    # * Percentage correct words
+    # * Percentage unstressed words
+    # * Percentage incorrect words
+    # * For each POS, the percentage of correct words
+    # * For each POS, the percentage of unstressed words
+    # * For each POS, the percentage of incorrect words
+    
+    with open(f"{BASE_PATH}/benchmark_results.tsv", "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerow([
+            "System",
+            "Percentage correct words",
+            "Percentage unstressed words",
+            "Percentage incorrect words",
+            #*["Correct: " + pos for pos in ALL_POS],
+            #*["Unstressed: " + pos for pos in ALL_POS],
+            #*["Incorrect: " + pos for pos in ALL_POS],
+        ])
         
+        for benchmarked_system_path in BENCHMARKED_SYSTEMS_PATHS:
+            # Get the name of the benchmarked system (delete results_ from the beginning)
+            system_name = benchmarked_system_path[8:]
+            # Get the statistics
+            res = ac.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", f"{BASE_PATH}/{benchmarked_system_path}")
+            total_result = sum(res, AnalysisResults.get_empty_results())
+
+            cor = total_result.get_percentage_correctly_stressed_tokens()
+            uns = total_result.get_percentage_unstressed_tokens()
+            inc = total_result.get_percentage_incorrectly_stressed_tokens()
+            
+            # Print to the TSV
+            writer.writerow([
+                system_name,
+                cor,
+                uns,
+                inc,
+            ])
+
+            # Print to the TSV
+            #writer.writerow([
+            #    system_name,
+            #    stats["correct_words_percentage"],
+            #    stats["unstressed_words_percentage"],
+            #    stats["incorrect_words_percentage"],
+            #    *stats["correct_words_percentage_by_pos"].values(),
+            #    *stats["unstressed_words_percentage_by_pos"].values(),
+            #    *stats["incorrect_words_percentage_by_pos"].values(),
+            #])
+        #
+        #
 
 
 if __name__ == "__main__":
+    print(RandomStresser().stress_text("когда"))
+    print(RandomStresser().stress_text("Привет, как дела?"))
+    quit()
 
-    #print(RandomStresser().stress_text("Привет, как дела?"))
-    
-    perform_benchmark_random()
-
+    print_benchmark_result_tsv()
     quit()
 
     
-    # perform_benchmark_for_my_solution()
+    #perform_benchmark_random()
+
+    #quit()
+
+    
+    #perform_benchmark_for_my_solution()
 
     #fix_russiangram_folder(
     #    "correctness_tests/results_russiangram_with_yo",
@@ -433,7 +519,8 @@ if __name__ == "__main__":
     print(f"Total percentage unstressed tokens: {total_result.get_percentage_unstressed_tokens()}")
     print(f"Total percentage incorrectly stressed tokens: {total_result.get_percentage_incorrectly_stressed_tokens()}")
     
-
+    # Print the stress mistakes to a TSV file
+    print_stressmistake_to_tsv(total_result.stress_mistakes, "stress_mistakes.tsv")
 
     # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
     #acc_calc.print_accuracy(
