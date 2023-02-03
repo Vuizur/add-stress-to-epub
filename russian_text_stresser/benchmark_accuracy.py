@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import dataclass
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ from spacy.tokens.token import Token
 from russian_stress_benchmark import benchmark_everything_in_folder
 from pprint import pprint
 from russtress import Accent
+import csv
 
 @dataclass
 class StressMistake:
@@ -338,6 +340,48 @@ def perform_benchmark_random():
     result_path = f"{base_folder}/{result_folder}"
 
     benchmark_everything_in_folder(base_path, result_path, rs.stress_text)
+
+
+def print_stressmistake_to_tsv(mistakes: list[StressMistake], tsv_path: str) -> None:
+    """Prints a histogram of stress mistakes to a TSV file."""
+    # The TSV will have the rows in the following order:
+    # * The word
+    # * The part of speech
+    # * The morphological features
+    # * The correct stress
+    # * The incorrect stress
+    # * The number of times the mistake was made
+
+    with open(tsv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
+        
+        mistakes_by_token = defaultdict(list)
+        for mistake in mistakes:
+            mistakes_by_token[(mistake.orig_token, mistake.unstressed_token_with_grammar_info.pos_, mistake.auto_stressed_token)].append(mistake)
+        
+        # Sort the mistakes by the number of times they were made
+        mistakes_by_token = sorted(mistakes_by_token.items(), key=lambda x: len(x[1]), reverse=True)
+
+        writer.writerow([
+            "Word",
+            "POS",
+            "Auto-stressed word",
+            "Example sentence"
+            "Number of mistakes",
+        ])
+
+        for (orig_token, pos, auto_stressed_token), mistakes in mistakes_by_token:
+            # Print to the TSV
+            writer.writerow([
+                orig_token,
+                pos,
+                auto_stressed_token,
+                mistakes[0].unstressed_token_with_grammar_info.sent.text,
+                len(mistakes),
+            ])
+            
+        
+
 
 if __name__ == "__main__":
 
