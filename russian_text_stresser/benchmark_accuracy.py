@@ -18,7 +18,7 @@ from russian_stress_benchmark import benchmark_everything_in_folder
 from pprint import pprint
 from russtress import Accent
 import csv
-
+from russ.stress.predictor import StressPredictor
 @dataclass
 class StressMistake:
     orig_token: str
@@ -343,6 +343,37 @@ def perform_benchmark_random():
 
     benchmark_everything_in_folder(base_path, result_path, rs.stress_text)
 
+def perform_benchmark_for_russ():
+    model = StressPredictor()
+
+    nlp = load_spacy_min()
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_russ"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    def stress_word(word: str):
+        if has_only_one_syllable(word):
+            return word
+        else:
+            stressed_index = model.predict(word)
+            word_until_stressed = word[:stressed_index[0]+1]
+            word_after_stressed = word[stressed_index+1:]
+            # add the stress mark
+            stressed_word = word_until_stressed + "\u0301" + word_after_stressed
+            return stressed_word
+    def stress_text(word: str) -> str:
+        doc = nlp(word)
+        final_text = ""
+        for token in doc:
+            final_text += stress_word(token.text) + token.whitespace_
+        return final_text
+
+    benchmark_everything_in_folder(base_path, result_path, stress_text)    
+
+
 
 def print_stressmistake_to_tsv(mistakes: list[StressMistake], tsv_path: str) -> None:
     """Prints a histogram of stress mistakes to a TSV file."""
@@ -471,7 +502,9 @@ if __name__ == "__main__":
 
     #print_benchmark_result_tsv()
     #quit()    
-
+    perform_benchmark_for_russ()
+    
+    quit()
     
     perform_benchmark_random()
     print_benchmark_result_tsv()
