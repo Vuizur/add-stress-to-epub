@@ -140,7 +140,7 @@ class AccuracyCalculator:
             num_unstressed_tokens = 0
             num_correctly_stressed_tokens = 0
 
-            for auto_stress_token, orig_token, unstressed_token in zip(original_no_punct_tokens, auto_stressed_no_punct_tokens, unstressed_no_punct_tokens):
+            for orig_token, auto_stress_token, unstressed_token in zip(original_no_punct_tokens, auto_stressed_no_punct_tokens, unstressed_no_punct_tokens):
 
                 #auto_stress_token = auto_stress_doc[i]
                 orig_token_text: str = orig_token.text
@@ -465,18 +465,16 @@ def print_benchmark_result_tsv():
 
 
 if __name__ == "__main__":
-    print(RandomStresser().stress_text("когда"))
-    print(RandomStresser().stress_text("Привет, как дела?"))
-    quit()
-
-    print_benchmark_result_tsv()
-    quit()
-
-    
-    #perform_benchmark_random()
-
+    #print(RandomStresser().stress_text("когда"))
+    #print(RandomStresser().stress_text("Привет, как дела?"))
     #quit()
 
+    #print_benchmark_result_tsv()
+    #quit()    
+
+    
+    perform_benchmark_random()
+    print_benchmark_result_tsv()
     
     #perform_benchmark_for_my_solution()
 
@@ -491,6 +489,8 @@ if __name__ == "__main__":
 
     # print_statistics_over_data("correctness_tests/stressed_russian_texts")
     # quit()
+
+    quit()
 
     acc_calc = AccuracyCalculator()
 
