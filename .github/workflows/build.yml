@@ -28,7 +28,7 @@ jobs:
           poetry config virtualenvs.create false
           poetry install -E "GUI" --without dev
           pip install pyinstaller
-          poetry run ./russian_text_stresser/compile.py
+          poetry run python ./russian_text_stresser/compile.py
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
