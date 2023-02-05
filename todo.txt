@@ -116,3 +116,6 @@ Add Disambiguation examples to BigBench (why not)
 
 Add more examples where the aspect matters to the benchmark
 
+Fix povesti.txt and the russiangram version
+
+percentage unstressed words seems to be broken
