@@ -26,7 +26,7 @@ jobs:
       - name: Run PyInstaller
         run: |
           poetry config virtualenvs.create false
-          poetry install --without dev
+          poetry install -E "GUI" --without dev
           pip install pyinstaller
           poetry run russian_text_stresser/compile.py
       - name: Create Release
