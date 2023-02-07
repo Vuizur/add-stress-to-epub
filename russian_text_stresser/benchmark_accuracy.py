@@ -80,7 +80,8 @@ class AnalysisResults:
         )
 
 def token_is_unimportant(token: Token) -> bool:
-    return token.is_punct or token.is_space
+    # We don't want to count punctuation or spaces. Also we only want takens that contain at least one letter
+    return token.is_punct or token.is_space or not any(char.isalpha() for char in token.text)
 
 class AccuracyCalculator:
     def __init__(self) -> None:
@@ -99,7 +100,7 @@ class AccuracyCalculator:
             auto_stressed_file_path, "r", encoding="utf-8"
         ) as auto_stressed_file:
             orig_text = orig_file.read()
-            auto_stressed_text = auto_stressed_file.read()
+            auto_stressed_text = remove_accent_if_only_one_syllable(auto_stressed_file.read())
             orig_text_fixed = remove_accent_if_only_one_syllable(orig_text)
             orig_doc = self._nlp(orig_text_fixed)
             auto_stress_doc = self._nlp(auto_stressed_text)
@@ -359,8 +360,8 @@ def perform_benchmark_for_russ():
             return word
         else:
             stressed_index = model.predict(word)
-            word_until_stressed = word[:stressed_index[0]+1]
-            word_after_stressed = word[stressed_index+1:]
+            word_until_stressed = word[:stressed_index[-1]+1]
+            word_after_stressed = word[stressed_index[-1]+1:]
             # add the stress mark
             stressed_word = word_until_stressed + "\u0301" + word_after_stressed
             return stressed_word
@@ -432,10 +433,12 @@ def get_all_pos(stressed_text_path = "correctness_tests/stressed_russian_texts")
 def print_benchmark_result_tsv():
     BASE_PATH = "correctness_tests"
     BENCHMARKED_SYSTEMS_PATHS: list[str] = [
+        "results_reynolds",
         "results_my_solution",
         "results_russtress",
         "results_random",
         "results_russiangram_with_yo_fixed",
+        "results_russ",
     ]
     ALL_POS = get_all_pos()
 
@@ -496,17 +499,22 @@ def print_benchmark_result_tsv():
 
 
 if __name__ == "__main__":
+    #sp = StressPredictor()
+    #res = sp.predict("ты")
+    #print(res)
+#
+    #quit()
     #print(RandomStresser().stress_text("когда"))
     #print(RandomStresser().stress_text("Привет, как дела?"))
     #quit()
 
     #print_benchmark_result_tsv()
     #quit()    
-    perform_benchmark_for_russ()
-    
-    quit()
-    
-    perform_benchmark_random()
+    #perform_benchmark_for_russ()
+    #
+    #quit()
+    #
+    #perform_benchmark_random()
     print_benchmark_result_tsv()
     
     #perform_benchmark_for_my_solution()

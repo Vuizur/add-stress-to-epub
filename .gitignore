@@ -56,3 +56,5 @@ correctness_tests/results_random/
 stress_mistakes.tsv
 *.txt
 *.tsv
+correctness_tests/results_russ/
+correctness_tests/results_reynolds/
