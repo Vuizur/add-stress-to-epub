@@ -37,12 +37,12 @@ def print_spacy_doc_difference(doc1, doc2):
 def esc_nl(s: str):
     return s.replace("\r", "\\r").replace("\n", "\\n")
 
-def print_two_docs_with_pos_next_to_another(doc1, doc2):
+def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison.tsv"):
     # This function iterates through two spacy documents
     # For each token it print <token> <pos> <token> <pos> to a tsv file
 
     # Open the file
-    with open("pos_comparison.tsv", "w", encoding="utf-8", newline="") as f:
+    with open(filename, "w", encoding="utf-8", newline="") as f:
         #for i, token in enumerate(doc1):
         #    if i < len(doc2):
         #        f.write("{}\t{}\t{}\t{}\n".format(token.text, token.pos_, doc2[i].text, doc2[i].pos_))
