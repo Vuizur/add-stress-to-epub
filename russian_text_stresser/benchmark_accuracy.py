@@ -580,6 +580,7 @@ def print_benchmark_result_tsv():
         "results_my_solution_old",
     ]
     ALL_POS = get_all_pos()
+    ALL_POS.sort()
 
     ac = AccuracyCalculator()
 
@@ -643,8 +644,8 @@ def print_benchmark_result_tsv():
 
 if __name__ == "__main__":
 
-    perform_benchmark_for_my_solution()
-    quit()
+    #perform_benchmark_for_my_solution()
+    #quit()
     #print(get_all_pos())
     #quit()
     # sp = StressPredictor()
@@ -663,7 +664,7 @@ if __name__ == "__main__":
     # quit()
     #
     # perform_benchmark_random()
-    perform_benchmark_for_my_solution_old()
+    #perform_benchmark_for_my_solution_old()
     print_benchmark_result_tsv()
 
     # perform_benchmark_for_my_solution()
