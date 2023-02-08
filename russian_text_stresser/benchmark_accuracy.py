@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 import os
 from pathlib import Path
+import pstats
 import random
 from debug_helpers import (
     esc_nl,
@@ -23,6 +24,7 @@ from pprint import pprint
 from russtress import Accent
 import csv
 from russ.stress.predictor import StressPredictor
+import cProfile
 
 
 def add_defaultdicts(dict1, dict2):
@@ -383,7 +385,15 @@ def perform_benchmark_for_my_solution() -> None:
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
 
-    benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+    # Profile
+    cProfile.runctx("benchmark_everything_in_folder(base_path, result_path, ts.stress_text)", globals(), locals(), "Profile.prof")
+
+    # Stats
+    s = pstats.Stats("Profile.prof")
+    s.strip_dirs().sort_stats("time").print_stats()
+
+    
+    #benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
 def perform_benchmark_for_my_solution_old() -> None:
     ts = RussianTextStresser(db_file="russian_dict_old_downloadable.db")
@@ -632,6 +642,9 @@ def print_benchmark_result_tsv():
 
 
 if __name__ == "__main__":
+
+    perform_benchmark_for_my_solution()
+    quit()
     #print(get_all_pos())
     #quit()
     # sp = StressPredictor()
