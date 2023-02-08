@@ -6,7 +6,7 @@ from spacy import Language, load
 def load_spacy_full() -> Language:
     bundle_dir = Path(__file__).parent.absolute()
 
-    return load(bundle_dir / "ru_core_news_sm-3.4.0")
+    return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["lemmatizer", "ner"])
 
 
 def load_spacy_min() -> Language:
