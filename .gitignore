@@ -58,3 +58,4 @@ stress_mistakes.tsv
 correctness_tests/results_russ/
 correctness_tests/results_reynolds/
 correctness_tests/results_my_solution_old/
+Profile.prof
