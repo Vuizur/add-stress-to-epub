@@ -3620,4 +3620,4 @@ gui = ["PyQt6"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "49b77e38d5321b98d4271730f6b69ddf73c2b3c8a46f5ac7390480e8d5bd6dc5"
+content-hash = "9ad55f09279de8b4d0afda1ebabee73a5f9b374c383d4f259dd2577d7dd32fc8"
