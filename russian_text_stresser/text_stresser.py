@@ -4,8 +4,8 @@ from russian_text_stresser.russian_dictionary import RussianDictionary
 
 class RussianTextStresser:
 
-    def __init__(self) -> None:
-        self.rd = RussianDictionary()
+    def __init__(self, db_file: str = "russian_dict.db") -> None:
+        self.rd = RussianDictionary(db_file)
         self._nlp = load_spacy_full()
 
     def stress_text(self, text: str) -> str:

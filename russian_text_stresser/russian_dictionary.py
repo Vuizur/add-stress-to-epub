@@ -45,8 +45,8 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 
 class RussianDictionary:
-    def __init__(self) -> None:
-        russian_dict_path = Path(__file__).parent / "russian_dict.db"
+    def __init__(self, db_file: str) -> None:
+        russian_dict_path = Path(__file__).parent / db_file
         # If russian_dict.db doesn't exist, download it
         if not russian_dict_path.exists():
             print("Russian dictionary not found. Downloading...")
