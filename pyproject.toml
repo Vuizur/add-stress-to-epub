@@ -33,6 +33,7 @@ russ = {version = "^0.0.2", optional = true}
 #numpy = "1.23.5" # russtress cannot handle newer versions, but if you uncomment this it breaks everything thanks to poetry
 msgpack = {version = "^1.0.4", optional = true}
 filelock = {version = "^3.9.0", optional = true}
+pymorphy2-dicts-ru = "^2.4.417127.4579844"
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
