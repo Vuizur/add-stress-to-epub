@@ -30,7 +30,6 @@ data_augmentation/sample_files/
 ruwiktionary_words.json
 data_augmentation/__pycache__/
 ruwiktionary_words_fixed.json
-poetry.lock
 8d9bad5b43259c6ee27d9aadc7b832/
 ruwiki_yo_wordlist.txt
 openai-key.txt
@@ -58,3 +57,4 @@ stress_mistakes.tsv
 *.tsv
 correctness_tests/results_russ/
 correctness_tests/results_reynolds/
+correctness_tests/results_my_solution_old/
