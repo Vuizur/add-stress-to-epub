@@ -5,7 +5,7 @@ from text_stresser import RussianTextStresser
 
 class StressTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.rd = RussianDictionary()
+        self.rd = RussianDictionary("russian_dict.db")
         self.stresser = RussianTextStresser()
 
     def test_simple_case(self):
