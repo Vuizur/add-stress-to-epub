@@ -6,7 +6,7 @@ import sqlite3
 from stressed_cyrillic_tools import remove_accent_if_only_one_syllable, unaccentify
 from text_stresser import RussianTextStresser
 from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import RussianDictionaryCreator
-from helper_methods import load_spacy_min#
+from helper_methods import load_spacy_min, load_spacy_full
 
 def find_hard_to_detect_case_words():
     # Idea: find all words where there are two or more prepositions 
@@ -74,7 +74,11 @@ def test_json_dump():
 
 
 if __name__ == "__main__":
+    nlp = load_spacy_full()
+    for pipe in nlp.pipe_names:
+        print(nlp.get_pipe_config(pipe))
 
+    quit()
     str = "Пусти́те."
     nlp = load_spacy_min()
     doc = nlp(str)

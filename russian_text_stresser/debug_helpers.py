@@ -43,16 +43,6 @@ def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison
 
     # Open the file
     with open(filename, "w", encoding="utf-8", newline="") as f:
-        #for i, token in enumerate(doc1):
-        #    if i < len(doc2):
-        #        f.write("{}\t{}\t{}\t{}\n".format(token.text, token.pos_, doc2[i].text, doc2[i].pos_))
-        #    else:
-        #        f.write("{}\t{}\t\t\n".format(token.text, token.pos_))
-        #for i, token in enumerate(doc2):
-        #    if i >= len(doc1):
-        #        f.write("\t\t{}\t{}\n".format(token.text, token.pos_))
-
-        # Now we use the CSV library and pay attention to newlines
         writer = csv.writer(f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE)
         for i, token in enumerate(doc1):
 

@@ -618,19 +618,6 @@ def print_benchmark_result_tsv():
                 ]
             )
 
-            # Print to the TSV
-            # writer.writerow([
-            #    system_name,
-            #    stats["correct_words_percentage"],
-            #    stats["unstressed_words_percentage"],
-            #    stats["incorrect_words_percentage"],
-            #    *stats["correct_words_percentage_by_pos"].values(),
-            #    *stats["unstressed_words_percentage_by_pos"].values(),
-            #    *stats["incorrect_words_percentage_by_pos"].values(),
-            # ])
-        #
-        #
-
 
 if __name__ == "__main__":
     #print(get_all_pos())
@@ -666,48 +653,3 @@ if __name__ == "__main__":
     # quit()
 
     quit()
-
-    acc_calc = AccuracyCalculator()
-
-    # results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_russiangram_with_yo_fixed")
-    # results=acc_calc.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_my_solution")
-    results = acc_calc.calc_accuracy_over_dir(
-        "correctness_tests/stressed_russian_texts",
-        "correctness_tests/results_russtress",
-    )
-
-    # Add together all the results
-    total_result = sum(results, AnalysisResults.get_empty_results())
-
-    for result in results:
-        print(f"File: {result.file_path}")
-        print(f"Number of tokens: {result.orig_doc_length}")
-        print(
-            f"Percentage correctly stressed tokens: {result.get_percentage_correctly_stressed_tokens()}"
-        )
-        print(
-            f"Percentage unstressed tokens: {result.get_percentage_unstressed_tokens()}"
-        )
-        print(
-            f"Percentage incorrectly stressed tokens: {result.get_percentage_incorrectly_stressed_tokens()}"
-        )
-
-    print(f"Total number of tokens: {total_result.orig_doc_length}")
-    print(
-        f"Total percentage correctly stressed tokens: {total_result.get_percentage_correctly_stressed_tokens()}"
-    )
-    print(
-        f"Total percentage unstressed tokens: {total_result.get_percentage_unstressed_tokens()}"
-    )
-    print(
-        f"Total percentage incorrectly stressed tokens: {total_result.get_percentage_incorrectly_stressed_tokens()}"
-    )
-
-    # Print the stress mistakes to a TSV file
-    print_stressmistake_to_tsv(total_result.stress_mistakes, "stress_mistakes.tsv")
-
-    # orig_path = Path(__file__).parent.parent / "correctness_tests" / "results" / "bargamot_original.txt"
-    # acc_calc.print_accuracy(
-    #    "correctness_tests/results/bargamot_original.txt",
-    #    "correctness_tests/results/bargamot_edit.txt",
-    # )
