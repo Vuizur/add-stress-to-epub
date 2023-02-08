@@ -7,15 +7,11 @@ Count determiners as pronouns
 
 Add option to convert book back to source format
 
-Check if ner can be disabled
-
 Add algorithm to handle connected color words (with dash) тёмно-серый
 
 Write script to upload the program
 
-Benchmark over other programs (also with grammar detection vs without)
-
-Detailed error analysis
+Benchmark with grammar detection vs without
 
 Add two textfields to GUI where simple text can be stressed
 
@@ -40,19 +36,13 @@ load entire database in memory to make the program faster
 
 Add direct FB2 support
 
-disable NER
-
 Does the dictionary lookup work with words without correctly marked ё?
 
 Update readme to reflect the new refactored EbookStresser class
 
 Make variables of classes _private
 
-Compare the output of two files by reading them with spacy, then comparing the tokens, and creating an HTML report on the differences
-
 Compare raw_data with post-processed russian kaikki data -> Compare resulting dictionary, maybe with sqldiff
-
-Fix pyinstaller
 
 and for adding more:
 http://nskhuman.ru/unislov/udarenija.php?nlet=1
@@ -70,8 +60,6 @@ Add words in other areas from ru-wiktionary
 Use frequency data in udar repo
 
 Remove un-yoified from words extracted from Wiktionary-RU -> This could also be a source for the yoification data
-
-Сравнительная степень - extract it from Wiktionary
 
 Develop way to find out which stressed form is more common -> Possibly the corpus that I won't get access to.
 
@@ -117,3 +105,5 @@ Add Disambiguation examples to BigBench (why not)
 Add more examples where the aspect matters to the benchmark
 
 Disable parser if not needed
+
+LRUCache 
