@@ -385,6 +385,17 @@ def perform_benchmark_for_my_solution() -> None:
 
     benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
+def perform_benchmark_for_my_solution_old() -> None:
+    ts = RussianTextStresser(db_file="russian_dict_old_downloadable.db")
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_my_solution_old"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+
 
 def perform_benchmark_for_russtress() -> None:
     stresser = Accent()
@@ -556,6 +567,7 @@ def print_benchmark_result_tsv():
         "results_random",
         "results_russiangram_with_yo_fixed",
         "results_russ",
+        "results_my_solution_old",
     ]
     ALL_POS = get_all_pos()
 
@@ -638,6 +650,7 @@ if __name__ == "__main__":
     # quit()
     #
     # perform_benchmark_random()
+    perform_benchmark_for_my_solution_old()
     print_benchmark_result_tsv()
 
     # perform_benchmark_for_my_solution()
