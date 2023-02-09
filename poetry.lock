@@ -499,7 +499,7 @@ wordfreq = "^3.0.1"
 type = "git"
 url = "https://github.com/Vuizur/ebook_dictionary_creator"
 reference = "HEAD"
-resolved_reference = "e397b0fdce41e6c98b6545b20c9d8eac064caa64"
+resolved_reference = "c16046dc1ba1f3d79807481c7cde74c3c876293f"
 
 [[package]]
 name = "filelock"

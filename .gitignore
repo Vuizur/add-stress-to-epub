@@ -59,3 +59,11 @@ correctness_tests/results_russ/
 correctness_tests/results_reynolds/
 correctness_tests/results_my_solution_old/
 Profile.prof
+correctness_tests/results_russian_dict_old_downloadable/
+correctness_tests/results_tempdb_0_enwiktionary_only/
+correctness_tests/results_tempdb_1_with_openrussian/
+correctness_tests/results_tempdb_3_with_ruwikipedia/
+correctness_tests/results_tempdb_2_with_ruwiktionary/
+ruwiktdata_int-old.json
+ruwiktdata_cleaned-old.json
+ruwiktionary-NS0-20230201-ENTERPRISE-HTML.json.tar.gz

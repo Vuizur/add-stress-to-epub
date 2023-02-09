@@ -395,16 +395,27 @@ def perform_benchmark_for_my_solution() -> None:
     
     #benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
-def perform_benchmark_for_my_solution_old() -> None:
-    ts = RussianTextStresser(db_file="russian_dict_old_downloadable.db")
-    base_folder = "correctness_tests"
-    orig_folder = "stressed_russian_texts"
-    result_folder = "results_my_solution_old"
 
-    base_path = f"{base_folder}/{orig_folder}"
-    result_path = f"{base_folder}/{result_folder}"
+def perform_benchmark_for_my_solutions_old() -> None:
+    old_file_paths = [
+        "russian_dict_old_downloadable.db",
+        "tempdb_0_enwiktionary_only.db",
+        "tempdb_1_with_openrussian.db",
+        "tempdb_2_with_ruwiktionary.db",
+        "tempdb_3_with_ruwikipedia.db",
+    ]
 
-    benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+    for file_path in old_file_paths:
+        ts = RussianTextStresser(db_file=file_path)
+        base_folder = "correctness_tests"
+        orig_folder = "stressed_russian_texts"
+        result_folder = f"results_{file_path.replace('.db', '')}"
+
+        base_path = f"{base_folder}/{orig_folder}"
+        result_path = f"{base_folder}/{result_folder}"
+
+        benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+
 
 
 def perform_benchmark_for_russtress() -> None:
@@ -567,7 +578,6 @@ def get_all_pos(
                             all_pos.add(token.pos_)
     return list(all_pos)
 
-
 def print_benchmark_result_tsv():
     BASE_PATH = "correctness_tests"
     BENCHMARKED_SYSTEMS_PATHS: list[str] = [
@@ -577,7 +587,11 @@ def print_benchmark_result_tsv():
         "results_random",
         "results_russiangram_with_yo_fixed",
         "results_russ",
-        "results_my_solution_old",
+        "results_russian_dict_old_downloadable",
+        "results_tempdb_0_enwiktionary_only",
+        "results_tempdb_1_with_openrussian",
+        "results_tempdb_2_with_ruwiktionary",
+        "results_tempdb_3_with_ruwikipedia",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -664,7 +678,7 @@ if __name__ == "__main__":
     # quit()
     #
     # perform_benchmark_random()
-    #perform_benchmark_for_my_solution_old()
+    perform_benchmark_for_my_solutions_old()
     print_benchmark_result_tsv()
 
     # perform_benchmark_for_my_solution()
