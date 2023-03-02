@@ -54,6 +54,10 @@ class StressTestCase(unittest.TestCase):
     def test_sentence_genitive(self):
         self.assertEqual(
             self.stresser.stress_text("Это магия этого леса."), "Э́то ма́гия э́того ле́са.")
+        
+    def test_bylo(self):
+        self.assertEqual(
+            self.stresser.stress_text("Это было давно."), "Э́то бы́ло давно́.")
 
 
 if __name__ == '__main__':
