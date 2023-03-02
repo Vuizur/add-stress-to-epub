@@ -52,6 +52,7 @@ class AnalysisResults:
     num_unstressed_by_pos: defaultdict[str, int]
     num_incorrectly_stressed_by_pos: defaultdict[str, int]
     stress_mistakes: list[StressMistake]
+    unstressed_mistakes: list[StressMistake]
     file_path: str | list[str]
 
     def get_percentage_unstressed_tokens(self) -> float:
@@ -127,6 +128,7 @@ class AnalysisResults:
                 other.num_incorrectly_stressed_by_pos,
             ),
             self.stress_mistakes + other.stress_mistakes,
+            self.unstressed_mistakes + other.unstressed_mistakes,
             self.file_path + other.file_path,
         )
 
@@ -142,6 +144,7 @@ class AnalysisResults:
             defaultdict(int),
             defaultdict(int),
             defaultdict(int),
+            [],
             [],
             [],
         )
@@ -199,6 +202,7 @@ class AccuracyCalculator:
             num_tokens_in_auto_stressed = len(auto_stressed_no_punct_tokens)
 
             stress_mistakes: list[StressMistake] = []
+            unstressed_mistakes: list[StressMistake] = []
             correctly_stressed_by_pos_dict: defaultdict[str, int] = defaultdict(int)
             unstressed_by_pos_dict: defaultdict[str, int] = defaultdict(int)
             incorrectly_stressed_by_pos_dict: defaultdict[str, int] = defaultdict(int)
@@ -240,6 +244,14 @@ class AccuracyCalculator:
                 if not has_acute_accent_or_only_one_syllable(auto_stress_token_text):
                     num_unstressed_tokens += 1
                     unstressed_by_pos_dict[unstressed_token.pos_] += 1
+                    unstressed_mistakes.append(
+                        StressMistake(
+                            orig_token_text,
+                            auto_stress_token_text,
+                            orig_token.sent.text,
+                            unstressed_token,
+                        )
+                    )
                 else:
                     if orig_token_text == auto_stress_token_text:
                         num_correctly_stressed_tokens += 1
@@ -282,6 +294,7 @@ class AccuracyCalculator:
                 unstressed_by_pos_dict,
                 incorrectly_stressed_by_pos_dict,
                 stress_mistakes,
+                unstressed_mistakes,
                 orig_stressed_file_path,
             )
             return analysis_results
@@ -658,6 +671,14 @@ def print_benchmark_result_tsv():
 
 if __name__ == "__main__":
 
+    ac = AccuracyCalculator()
+    analysisresults = ac.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_tempdb_3_with_ruwikipedia")
+    sum_results = sum(analysisresults, AnalysisResults.get_empty_results())
+    # Print mistakes
+    print_stressmistake_to_tsv(sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv")
+    print_stressmistake_to_tsv(sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv")
+    # Print benchmark results
+
     #perform_benchmark_for_my_solution()
     #quit()
     #print(get_all_pos())
@@ -678,8 +699,8 @@ if __name__ == "__main__":
     # quit()
     #
     # perform_benchmark_random()
-    perform_benchmark_for_my_solutions_old()
-    print_benchmark_result_tsv()
+    # perform_benchmark_for_my_solutions_old()
+    # print_benchmark_result_tsv()
 
     # perform_benchmark_for_my_solution()
 
