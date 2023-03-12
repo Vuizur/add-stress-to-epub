@@ -26,7 +26,7 @@ jobs:
       - name: Run PyInstaller
         run: |
           poetry config virtualenvs.create false
-          poetry install --extras "GUI"
+          poetry install --extras "GUI poetry-workaround"
           pip install pyinstaller
           poetry run python ./russian_text_stresser/download_db.py
           poetry run python ./russian_text_stresser/compile.py
