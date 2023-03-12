@@ -21,7 +21,8 @@ spacy_wiktionary_pos_mapping = {
     "PART": "particle",
     "DET": "pron",  # fits for какими
     "INTJ": "intj",
-    "NUM": "num"
+    "NUM": "num",
+    "AUX": "verb", 
     # Maybe num -> adv (больше)
 }
 spacy_wiktionary_number_mapping = {
