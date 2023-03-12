@@ -22,11 +22,11 @@ jobs:
       - name: Run Poetry
         uses: abatilo/actions-poetry@v2
         with: 
-          poetry-version: "1.3.2"
+          poetry-version: "1.4.0"
       - name: Run PyInstaller
         run: |
           poetry config virtualenvs.create false
-          poetry install --extras "GUI poetry-workaround" --without dev
+          poetry install --extras "GUI"
           pip install pyinstaller
           poetry run python ./russian_text_stresser/download_db.py
           poetry run python ./russian_text_stresser/compile.py

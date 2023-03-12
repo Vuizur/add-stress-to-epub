@@ -48,7 +48,7 @@ GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
 benchmark = ["russtress", "russian-stress-benchmark", "russ"]
 #https://github.com/python-poetry/poetry/issues/3957
-poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent"]
+#poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent"]
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
