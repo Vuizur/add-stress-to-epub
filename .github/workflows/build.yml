@@ -22,7 +22,7 @@ jobs:
       - name: Run Poetry
         uses: abatilo/actions-poetry@v2
         with: 
-          poetry-version: "1.4.0"
+          poetry-version: "1.3.2"
       - name: Run PyInstaller
         run: |
           poetry config virtualenvs.create false
