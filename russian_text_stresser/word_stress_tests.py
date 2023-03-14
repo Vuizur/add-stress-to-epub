@@ -59,6 +59,13 @@ class StressTestCase(unittest.TestCase):
         self.assertEqual(
             self.stresser.stress_text("Это было давно."), "Э́то бы́ло давно́.")
 
+    # SO FAR FAILING TESTS
+    def test_vselennaya(self):
+        self.assertEqual(
+            self.stresser.stress_text("В конце концов, небольшое сумасшествие гораздо, гораздо более вероятно, чем вселенная, содержащая в себе магию."),
+            "В конце́ концо́в, небольшо́е сумасше́ствие гора́здо, гора́здо бо́лее вероя́тно, чем вселе́нная, содержа́щая в себе́ ма́гию.")
+
+# Но е́сли ничего́ не произойдёт, то ты признаешь, что ошиба́лась. 
 
 if __name__ == '__main__':
     unittest.main()
