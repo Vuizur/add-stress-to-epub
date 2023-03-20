@@ -67,3 +67,4 @@ correctness_tests/results_tempdb_2_with_ruwiktionary/
 ruwiktdata_int-old.json
 ruwiktdata_cleaned-old.json
 ruwiktionary-NS0-20230201-ENTERPRISE-HTML.json.tar.gz
+*.json
