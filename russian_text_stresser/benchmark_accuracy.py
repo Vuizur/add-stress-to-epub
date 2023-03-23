@@ -222,7 +222,7 @@ class AccuracyCalculator:
 
             num_unstressed_tokens = 0
             num_correctly_stressed_tokens = 0
-            num_differing_tokens = 0 # This means serious problems
+            num_differing_tokens = 0  # This means serious problems
 
             for orig_token, auto_stress_token, unstressed_token in zip(
                 original_no_punct_tokens,
@@ -238,7 +238,7 @@ class AccuracyCalculator:
                     print("Differing words:")
                     print(orig_token.text)
                     print(auto_stress_token.text)
-                    
+
                     num_differing_tokens += 1
 
                 if not has_acute_accent_or_only_one_syllable(auto_stress_token_text):
@@ -277,12 +277,14 @@ class AccuracyCalculator:
             if num_differing_tokens > 0:
                 print("Differing tokens: ", num_differing_tokens)
                 orig_filename = os.path.basename(orig_stressed_file_path)
-                auto_stressed_path_first_folder = Path(auto_stressed_file_path).parent.name
+                auto_stressed_path_first_folder = Path(
+                    auto_stressed_file_path
+                ).parent.name
                 print_two_docs_with_pos_next_to_another(  # This is super useful for debugging
-                    original_no_punct_tokens, auto_stressed_no_punct_tokens,
-                    f"{orig_filename}_{auto_stressed_path_first_folder}.tsv"
+                    original_no_punct_tokens,
+                    auto_stressed_no_punct_tokens,
+                    f"{orig_filename}_{auto_stressed_path_first_folder}.tsv",
                 )
-
 
             analysis_results = AnalysisResults(
                 num_tokens_in_original,
@@ -399,14 +401,18 @@ def perform_benchmark_for_my_solution() -> None:
     result_path = f"{base_folder}/{result_folder}"
 
     # Profile
-    cProfile.runctx("benchmark_everything_in_folder(base_path, result_path, ts.stress_text)", globals(), locals(), "Profile.prof")
+    cProfile.runctx(
+        "benchmark_everything_in_folder(base_path, result_path, ts.stress_text)",
+        globals(),
+        locals(),
+        "Profile.prof",
+    )
 
     # Stats
     s = pstats.Stats("Profile.prof")
     s.strip_dirs().sort_stats("time").print_stats()
 
-    
-    #benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+    # benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
 
 def perform_benchmark_for_my_solutions_old() -> None:
@@ -428,7 +434,6 @@ def perform_benchmark_for_my_solutions_old() -> None:
         result_path = f"{base_folder}/{result_folder}"
 
         benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
-
 
 
 def perform_benchmark_for_russtress() -> None:
@@ -591,6 +596,7 @@ def get_all_pos(
                             all_pos.add(token.pos_)
     return list(all_pos)
 
+
 def print_benchmark_result_tsv():
     BASE_PATH = "correctness_tests"
     BENCHMARKED_SYSTEMS_PATHS: list[str] = [
@@ -672,17 +678,24 @@ def print_benchmark_result_tsv():
 if __name__ == "__main__":
 
     ac = AccuracyCalculator()
-    analysisresults = ac.calc_accuracy_over_dir("correctness_tests/stressed_russian_texts", "correctness_tests/results_tempdb_3_with_ruwikipedia")
+    analysisresults = ac.calc_accuracy_over_dir(
+        "correctness_tests/stressed_russian_texts",
+        "correctness_tests/results_tempdb_3_with_ruwikipedia",
+    )
     sum_results = sum(analysisresults, AnalysisResults.get_empty_results())
     # Print mistakes
-    print_stressmistake_to_tsv(sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv")
-    print_stressmistake_to_tsv(sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv")
+    print_stressmistake_to_tsv(
+        sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv"
+    )
+    print_stressmistake_to_tsv(
+        sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv"
+    )
     # Print benchmark results
 
-    #perform_benchmark_for_my_solution()
-    #quit()
-    #print(get_all_pos())
-    #quit()
+    # perform_benchmark_for_my_solution()
+    # quit()
+    # print(get_all_pos())
+    # quit()
     # sp = StressPredictor()
     # res = sp.predict("ты")
     # print(res)

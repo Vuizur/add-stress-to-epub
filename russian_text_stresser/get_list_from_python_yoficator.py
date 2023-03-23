@@ -1,4 +1,3 @@
-
 with open("data_augmentation/yo.dat", "r", encoding="utf-8") as f:
     words: list[str] = []
     for line in f:
@@ -14,4 +13,3 @@ with open("data_augmentation/yo.dat", "r", encoding="utf-8") as f:
 
 with open("data_augmentation/yo_expanded.txt", "w", encoding="utf-8") as out:
     out.write("\n".join(words))
-

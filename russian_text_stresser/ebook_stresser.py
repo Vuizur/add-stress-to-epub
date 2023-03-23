@@ -6,21 +6,26 @@ from bs4 import BeautifulSoup
 from shutil import make_archive, rmtree
 from russian_text_stresser.text_stresser import RussianTextStresser
 
+
 class EbookStresser:
     def __init__(self) -> None:
         self._extraction_path = "8d9bad5b43259c6ee27d9aadc7b832"
         self._text_stresser = RussianTextStresser()
 
     def convert_txt(self, input_txt_path: str, output_txt_path: str):
-        if not input_txt_path.lower().endswith("txt") or not output_txt_path.lower().endswith("txt"):
+        if not input_txt_path.lower().endswith(
+            "txt"
+        ) or not output_txt_path.lower().endswith("txt"):
             raise ValueError("TXT files should be supplied!")
-        with open(input_txt_path, "r", encoding="utf-8") as input, open(output_txt_path, "w+", encoding="utf-8") as output:
+        with open(input_txt_path, "r", encoding="utf-8") as input, open(
+            output_txt_path, "w+", encoding="utf-8"
+        ) as output:
             text = input.read()
             stressed_text = self._text_stresser.stress_text(text)
             output.write(stressed_text)
 
     def convert_book(self, input_file_path: str, output_file_path: str):
-        
+
         if input_file_path.lower().endswith(".txt"):
             self.convert_txt(input_file_path, output_file_path)
             return
@@ -30,7 +35,7 @@ class EbookStresser:
             subprocess.run(["ebook-convert", input_file_path, output_path])
             input_file_path = output_path
 
-        #if not ANALYZE_GRAMMAR:
+        # if not ANALYZE_GRAMMAR:
         #    nlp.disable_pipes("tok2vec", "morphologizer", "parser", "attribute_ruler", "lemmatizer", "ner")
 
         with ZipFile(input_file_path, "r") as zip_ref:
@@ -39,7 +44,7 @@ class EbookStresser:
         for subdir, dirs, files in walk(self._extraction_path):
             for file in files:
                 filepath = path.join(subdir, file)
-                if filepath.endswith(".xhtml") or filepath.endswith(".html"): 
+                if filepath.endswith(".xhtml") or filepath.endswith(".html"):
                     print(filepath)
                     with open(filepath, "r", encoding="utf-8") as f:
                         soup = BeautifulSoup(f.read(), "lxml")
@@ -60,8 +65,11 @@ class EbookStresser:
             pass
         rename(output_file_path + ".zip", output_file_path)
         rmtree(self._extraction_path)
-    
+
     def convert_book_folder(self, input_folder_path: str, output_folder_path: str):
         for filename in listdir(input_folder_path):
             if filename.endswith(".epub"):
-                self.convert_book(path.join(input_folder_path, filename), path.join(output_folder_path, filename))
+                self.convert_book(
+                    path.join(input_folder_path, filename),
+                    path.join(output_folder_path, filename),
+                )

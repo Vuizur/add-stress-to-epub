@@ -8,10 +8,13 @@ def load_spacy_full() -> Language:
 
     return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["lemmatizer", "ner"])
 
+
 def load_spacy_full_with_lemmatizer() -> Language:
     bundle_dir = Path(__file__).parent.absolute()
 
     return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["ner"])
+
+
 def load_spacy_min() -> Language:
     bundle_dir = Path(__file__).parent.absolute()
     return load(

@@ -252,7 +252,11 @@ class WordSenseDisambiguator:
     def get_cleaned_up_grammar_info(self, entry: Entry) -> str:
         pos = get_pos_from_grammar_info(entry.grammar_info)
         aspect = get_aspect_from_grammar_info(entry.grammar_info)
-        if remove_yo(unaccentify(entry.word.lower())) in self.words_where_aspect_matters and aspect is not None:
+        if (
+            remove_yo(unaccentify(entry.word.lower()))
+            in self.words_where_aspect_matters
+            and aspect is not None
+        ):
             return f"{pos}, {aspect} вид"
         else:
             return pos

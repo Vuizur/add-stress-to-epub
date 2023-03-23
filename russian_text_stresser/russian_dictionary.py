@@ -22,16 +22,11 @@ spacy_wiktionary_pos_mapping = {
     "DET": "pron",  # fits for какими
     "INTJ": "intj",
     "NUM": "num",
-    "AUX": "verb", 
+    "AUX": "verb",
     # Maybe num -> adv (больше)
 }
-spacy_wiktionary_number_mapping = {
-    "Sing": "singular",
-    "Plur": "plural"
-}
-spacy_wiktionary_tense_mapping = {
-
-}
+spacy_wiktionary_number_mapping = {"Sing": "singular", "Plur": "plural"}
+spacy_wiktionary_tense_mapping = {}
 spacy_wiktionary_case_mapping = {
     "Nom": "nominative",
     "Gen": "genitive",
@@ -39,7 +34,7 @@ spacy_wiktionary_case_mapping = {
     "Acc": "accusative",
     "Ins": "instrumental",
     "Loc": "prepositional",
-    "Par": "partitive"
+    "Par": "partitive",
 }
 
 VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
@@ -59,7 +54,7 @@ class RussianDictionary:
 
     def download_data(self):
         # Download the file from the URL https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip
-        
+
         url = "https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip"
         file_name = Path(__file__).parent / "russian_dict.zip"
         russian_dict_path = Path(__file__).parent
@@ -69,16 +64,15 @@ class RussianDictionary:
 
         print("Download complete. Extracting...")
         # Unzip the file
-        with zipfile.ZipFile(file_name, 'r') as zip_ref:
+        with zipfile.ZipFile(file_name, "r") as zip_ref:
             zip_ref.extractall(russian_dict_path)
         # Delete the zip file
         os.remove(file_name)
         print("Extraction complete.")
-        
 
     @staticmethod
     def _replacenth(string, sub, wanted, n):
-        where = [m.start() for m in re.finditer(sub, string)][n-1]
+        where = [m.start() for m in re.finditer(sub, string)][n - 1]
         before = string[:where]
         after = string[where:]
         after = after.replace(sub, wanted, 1)
@@ -95,7 +89,8 @@ class RussianDictionary:
         return new_string
 
     def get_dictionary_entry(self, word: str, e_try_index=-1):
-        results = self._cur.execute("""SELECT g.gloss_string, s.sense_id, base_forms.word_id, COALESCE(base_forms.canonical_form, base_forms.word) AS canonical_word FROM gloss g INNER JOIN
+        results = self._cur.execute(
+            """SELECT g.gloss_string, s.sense_id, base_forms.word_id, COALESCE(base_forms.canonical_form, base_forms.word) AS canonical_word FROM gloss g INNER JOIN
 sense AS s ON g.sense_id = s.sense_id 
 INNER JOIN
 (SELECT --This query gets all base forms, the direct ones and the ones over the relation table
@@ -132,7 +127,9 @@ ON
 ON
         der_w.word_id = fow.word_id
     WHERE
-        der_w.word = ?)) base_forms ON s.word_id = base_forms.word_id""", (word, word)).fetchall()
+        der_w.word = ?)) base_forms ON s.word_id = base_forms.word_id""",
+            (word, word),
+        ).fetchall()
 
         if len(results) == 0:
             if word[0].isupper():
@@ -146,8 +143,11 @@ ON
                 elif e_try_index < word.count("ё") + word.count("е"):
                     eword = self._turnyotoye(word)
                     new_word_variation = self._replacenth(
-                        eword, "е", "ё", e_try_index + 1)
-                    return self.get_dictionary_entry(new_word_variation, e_try_index=e_try_index + 1)
+                        eword, "е", "ё", e_try_index + 1
+                    )
+                    return self.get_dictionary_entry(
+                        new_word_variation, e_try_index=e_try_index + 1
+                    )
 
         res_dict = {}
         for gloss_string, sense_id, word_id, canonical_word in results:
@@ -164,7 +164,7 @@ ON
                 fixed_res_dict[k[0]] = []
             fixed_res_dict[k[0]] += list(v.values())
 
-        #fixed_dict = {k[0]:list(v.values()) for (k,v) in res_dict.items()}
+        # fixed_dict = {k[0]:list(v.values()) for (k,v) in res_dict.items()}
 
         return fixed_res_dict
 
@@ -182,14 +182,17 @@ ON
         return ("".join(wordlist), True)
 
     # Returns (result_word, bool: true if is_unique/not_in_database)
-    def get_correct_yo_form(self, word: str, pos: str = None, morph=None) -> Tuple[str, bool]:
-
+    def get_correct_yo_form(
+        self, word: str, pos: str = None, morph=None
+    ) -> Tuple[str, bool]:
         # is the word lowercased in the dictionary
         word_lower = word.lower()
         # TODO: Fix this and use GROUP BY
 
-        words_with_possibly_written_yo = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ?",
-                                                           (word_lower,)).fetchall()
+        words_with_possibly_written_yo = self._cur.execute(
+            "SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ?",
+            (word_lower,),
+        ).fetchall()
         if words_with_possibly_written_yo == []:
             return (word, False)
         # elif len(set(words_with_possibly_written_yo)) == 1:
@@ -206,7 +209,9 @@ ON
             if pos != None:
                 pos = spacy_wiktionary_pos_mapping[pos]
                 pos_filtered = self._cur.execute(
-                    "SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = ? GROUP BY w.word", (word_lower, pos)).fetchall()
+                    "SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = ? GROUP BY w.word",
+                    (word_lower, pos),
+                ).fetchall()
                 # if len(pos_filtered) == 0 and pos == "name":
                 #    pos_filtered = self._cur.execute("SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = \"noun\" GROUP BY w.word", (word_lower,)).fetchall()
                 if len(pos_filtered) == 0:
@@ -217,15 +222,18 @@ ON
                 elif len(pos_filtered) == 1:
                     return self.write_word_with_yo(word, pos_filtered[0][0])
                 else:
-                    tagged_results = self._cur.execute("""
+                    tagged_results = self._cur.execute(
+                        """
 SELECT w.canonical_form, fow.form_of_word_id, tag_text
 FROM word w 
 JOIN form_of_word fow ON w.word_id = fow.word_id 
 JOIN case_tags ct ON ct.form_of_word_id = fow.form_of_word_id
 WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
-                    """, (word_lower, pos)).fetchall()
+                    """,
+                        (word_lower, pos),
+                    ).fetchall()
                     morph_dict = morph.to_dict()
-                    #fow, (word, form_tags)
+                    # fow, (word, form_tags)
                     fow_canonical_form_mapping: dict[int, str] = {}
                     grouped_forms: dict[int, set] = {}
                     for canonical_form, form_of_word_id, tag_text in tagged_results:
@@ -235,21 +243,30 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
                         else:
                             grouped_forms[form_of_word_id].add(tag_text)
 
-                    if (pos == "noun" or pos == "adj" or pos == "name" or pos == "pron") and "Case" in morph_dict:
+                    if (
+                        pos == "noun" or pos == "adj" or pos == "name" or pos == "pron"
+                    ) and "Case" in morph_dict:
                         case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
                         plurality = None
                         if "Number" in morph_dict:
-                            plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
+                            plurality = spacy_wiktionary_number_mapping[
+                                morph_dict["Number"]
+                            ]
                         fitting_word_candidates = set()
                         for fow_key, tag_set in grouped_forms.items():
-                            if case in tag_set and (plurality in tag_set or plurality == None):
+                            if case in tag_set and (
+                                plurality in tag_set or plurality == None
+                            ):
                                 fitting_word_candidates.add(
-                                    fow_canonical_form_mapping[fow_key])
+                                    fow_canonical_form_mapping[fow_key]
+                                )
                         if len(fitting_word_candidates) == 1:
-                            return self.write_word_with_yo(word, fitting_word_candidates.pop())
-            return(word, False)
+                            return self.write_word_with_yo(
+                                word, fitting_word_candidates.pop()
+                            )
+            return (word, False)
         elif has_word_without_yo == True:
-            return(word, True)
+            return (word, True)
         else:  # word must be written with a ё
             return self.write_word_with_yo(word, words_with_possibly_written_yo[0][0])
 
@@ -259,13 +276,13 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
         result_word = ""
         for char in stressed_dict_word:
             # This is needed because some canonical words are incorrect in the database
-            if char != u'\u0301':
+            if char != "\u0301":
                 if index >= len(word):
                     break
                 result_word += word[index]
                 index += 1
             else:
-                result_word += u'\u0301'
+                result_word += "\u0301"
         return result_word
 
     # Returns the word unstressed if stress is unclear
@@ -276,9 +293,14 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             is_lower = False
         word_lower = word.lower()
         words_in_dict = self._cur.execute(
-            "SELECT canonical_form FROM word w WHERE w.word_lowercase = ?", (word_lower,)).fetchall()
-        canonical_list: set[str] = {wrd[0].lower(
-        ) for wrd in words_in_dict if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+            "SELECT canonical_form FROM word w WHERE w.word_lowercase = ?",
+            (word_lower,),
+        ).fetchall()
+        canonical_list: set[str] = {
+            wrd[0].lower()
+            for wrd in words_in_dict
+            if wrd[0] != None and not (is_lower and not wrd[0].islower())
+        }
         if len(canonical_list) == 1:
             canonical_word = canonical_list.pop()
             return self.write_stressed_word(word, canonical_word)
@@ -288,15 +310,25 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             # Try to resolve ambiguities
             pos = spacy_wiktionary_pos_mapping[pos]
             pos_filtered = self._cur.execute(
-                "SELECT w.canonical_form FROM word w WHERE w.word_lowercase = ? AND w.pos = ?", (word_lower, pos)).fetchall()
-            canonical_list: set[str] = {wrd[0].lower(
-            ) for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+                "SELECT w.canonical_form FROM word w WHERE w.word_lowercase = ? AND w.pos = ?",
+                (word_lower, pos),
+            ).fetchall()
+            canonical_list: set[str] = {
+                wrd[0].lower()
+                for wrd in pos_filtered
+                if wrd[0] != None and not (is_lower and not wrd[0].islower())
+            }
 
             if len(canonical_list) == 0 and pos == "name":
                 pos_filtered = self._cur.execute(
-                    "SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = \"noun\" GROUP BY w.word", (word_lower,)).fetchall()
-                canonical_list: set[str] = {wrd[0].lower(
-                ) for wrd in pos_filtered if wrd[0] != None and not (is_lower and not wrd[0].islower())}
+                    'SELECT w.word FROM word w WHERE w.word_lower_and_without_yo = ? AND w.pos = "noun" GROUP BY w.word',
+                    (word_lower,),
+                ).fetchall()
+                canonical_list: set[str] = {
+                    wrd[0].lower()
+                    for wrd in pos_filtered
+                    if wrd[0] != None and not (is_lower and not wrd[0].islower())
+                }
 
             if len(canonical_list) == 0:
                 print("Apparently wrong POS detected")
@@ -306,15 +338,18 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             elif len(canonical_list) == 1:
                 return self.write_stressed_word(word, canonical_list.pop())
             else:
-                tagged_results = self._cur.execute("""
+                tagged_results = self._cur.execute(
+                    """
 SELECT w.canonical_form, fow.form_of_word_id, tag_text
 FROM word w 
 JOIN form_of_word fow ON w.word_id = fow.word_id 
 JOIN case_tags ct ON ct.form_of_word_id = fow.form_of_word_id
 WHERE w.word_lowercase = ? AND w.pos = ?
-                """, (word_lower, pos)).fetchall()
+                """,
+                    (word_lower, pos),
+                ).fetchall()
                 morph_dict = morph.to_dict()
-                #fow, (word, form_tags)
+                # fow, (word, form_tags)
                 fow_canonical_form_mapping: dict[int, str] = {}
                 grouped_forms: dict[int, set] = {}
                 for canonical_form, form_of_word_id, tag_text in tagged_results:
@@ -323,18 +358,28 @@ WHERE w.word_lowercase = ? AND w.pos = ?
                         grouped_forms[form_of_word_id] = {tag_text}
                     else:
                         grouped_forms[form_of_word_id].add(tag_text)
-                if (pos == "noun" or pos == "adj" or pos == "name" or pos == "pron") and "Case" in morph_dict:
+                if (
+                    pos == "noun" or pos == "adj" or pos == "name" or pos == "pron"
+                ) and "Case" in morph_dict:
                     case = spacy_wiktionary_case_mapping[morph_dict["Case"]]
                     plurality = None
                     if "Number" in morph_dict:
-                        plurality = spacy_wiktionary_number_mapping[morph_dict["Number"]]
+                        plurality = spacy_wiktionary_number_mapping[
+                            morph_dict["Number"]
+                        ]
                     fitting_word_candidates = set()
                     for fow_key, tag_set in grouped_forms.items():
-                        if (case in tag_set and (plurality in tag_set or plurality == None)) or ("locative" in tag_set and morph_dict["Case"] == "Loc"):
+                        if (
+                            case in tag_set
+                            and (plurality in tag_set or plurality == None)
+                        ) or ("locative" in tag_set and morph_dict["Case"] == "Loc"):
                             fitting_word_candidates.add(
-                                fow_canonical_form_mapping[fow_key])
+                                fow_canonical_form_mapping[fow_key]
+                            )
                     if len(fitting_word_candidates) == 1:
-                        return self.write_stressed_word(word, fitting_word_candidates.pop())
+                        return self.write_stressed_word(
+                            word, fitting_word_candidates.pop()
+                        )
                     else:
                         return word
                 else:

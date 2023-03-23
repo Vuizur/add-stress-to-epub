@@ -66,9 +66,15 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.chooseLabel.setText(_translate("MainWindow", "Choose the ebook to you want to add stress marks to..."))
+        self.chooseLabel.setText(
+            _translate(
+                "MainWindow", "Choose the ebook to you want to add stress marks to..."
+            )
+        )
         self.selectInputButton.setText(_translate("MainWindow", "Select File..."))
         self.outputLabel.setText(_translate("MainWindow", "Output path"))
         self.selectOutputButton.setText(_translate("MainWindow", "Select File..."))
         self.stressMarkButton.setText(_translate("MainWindow", "Start stress marking"))
-        self.openOutputFolderButton.setText(_translate("MainWindow", "Open output folder"))
+        self.openOutputFolderButton.setText(
+            _translate("MainWindow", "Open output folder")
+        )

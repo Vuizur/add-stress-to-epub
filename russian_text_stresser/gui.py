@@ -7,9 +7,10 @@ from russian_text_stresser.ebook_stresser import EbookStresser
 import os
 import pathlib
 
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    os.environ["PYMORPHY2_DICT_PATH"] = str(pathlib.Path(
-        sys._MEIPASS).joinpath('pymorphy2_dicts_ru/data'))
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    os.environ["PYMORPHY2_DICT_PATH"] = str(
+        pathlib.Path(sys._MEIPASS).joinpath("pymorphy2_dicts_ru/data")
+    )
 
 
 def is_tool(name):
@@ -45,7 +46,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stressMarkButton.clicked.connect(self.startStressMarking)
 
     def open(self):
-        fileName = QFileDialog.getOpenFileName(self, 'OpenFile')
+        fileName = QFileDialog.getOpenFileName(self, "OpenFile")
         print(fileName)
         self.lineEditInput.setText(fileName[0])
         if fileName[0] == "":
@@ -60,7 +61,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     msgBox = QMessageBox()
                     msgBox.setTextFormat(QtCore.Qt.TextFormat.RichText)
                     msgBox.setText(
-                        "You want to add stress marks to a non-epub book. Please install Calibre from <a href='https://calibre-ebook.com/download'>https://calibre-ebook.com/download</a> first!")
+                        "You want to add stress marks to a non-epub book. Please install Calibre from <a href='https://calibre-ebook.com/download'>https://calibre-ebook.com/download</a> first!"
+                    )
                     msgBox.exec()
             output_path = input_path_split[0] + "_stressed.epub"
         self.lineEditOutput.setText(output_path)
@@ -72,13 +74,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def startStressMarking(self):
         self.stressMarkButton.setText("Stressing the book, please wait...")
         self.stressMarkButton.setEnabled(False)
-        #convertBookThread = Thread(None, convert_book, args=(self.lineEditInput.text(), self.lineEditOutput.text()))
+        # convertBookThread = Thread(None, convert_book, args=(self.lineEditInput.text(), self.lineEditOutput.text()))
         stressThread = StressThread(
-            self, self.lineEditInput.text(), self.lineEditOutput.text())
+            self, self.lineEditInput.text(), self.lineEditOutput.text()
+        )
         stressThread.book_stressed.connect(self.stressMarkingFinished)
         stressThread.start()
 
         # self.lineEditOutput.setText(fileName[0].rfin)
+
     def stressMarkingFinished(self):
         self.stressMarkButton.setText("Start stress marking")
         self.stressMarkButton.setEnabled(True)
