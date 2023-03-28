@@ -3,6 +3,7 @@ import os
 import subprocess
 import shutil, errno
 
+# This is for publishing the app as executable on Windows
 
 def copy_folder(src, dst):
     try:

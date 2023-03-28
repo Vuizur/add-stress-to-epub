@@ -8,9 +8,11 @@ from stressed_cyrillic_tools import (
     is_unhelpfully_unstressed,
 )
 
+# This file contains several helper functions to delete unnecessary data from the database or that update it with new data
 
 @dataclass
 class PossibleForms:
+    # TODO: Finish/remove
     unpronounced_word: dict
 
 
@@ -79,8 +81,8 @@ def delete_unstressed_and_useless_words_from_DB(dict_path: str = "russian_dict.d
 def clean_unused_data_for_stress_lookup():
     con = sqlite3.connect("russian_dict.db")
     cur = con.cursor()
-    find_words_that_only_have_one_meaning(cur)
-    quit()
+    #find_words_that_only_have_one_meaning(cur)
+    #quit()
     # This is needed to get cascading delete
     cur.execute("PRAGMA foreign_keys = ON;")
     cur.execute("DROP table sense;")

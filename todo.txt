@@ -106,4 +106,8 @@ Add more examples where the aspect matters to the benchmark
 
 Disable parser if not needed
 
-LRUCache 
+LRUCache?
+
+Delete everything unused from database
+
+* Do we really want to delete base_word_id?
