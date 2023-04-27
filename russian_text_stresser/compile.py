@@ -46,7 +46,7 @@ if __name__ == "__main__":
         os.mkdir(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
 
     shutil.copy(RUSSIAN_DICT_NAME, RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
-    shutil.copy(SIMPLE_CASES_NAME, RELEASE_FOLDER_NAME + "/" + SIMPLE_CASES_NAME)
+    shutil.copy(SIMPLE_CASES_NAME, RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
 
     try:
         remove(RELEASE_FOLDER_NAME + ".zip")
