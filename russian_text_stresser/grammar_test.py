@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import json
+import pickle
 import sqlite3
 
 # from benchmark_accuracy import benchmark_accuracy
@@ -81,8 +82,23 @@ def test_json_dump():
         # print data
         print(data)
 
+def write_simple_cases():
+    with open("simple_cases.pkl", "rb") as f:
+        simple_cases = pickle.load(f)
+    # Print to file
+    with open("simple_cases.txt", "w", encoding="utf-8") as f:
+        # Print dict
+        for key, value in simple_cases.items():
+            f.write(f"{key}: {value}\n")
+
 
 if __name__ == "__main__":
+    # Load simple_cases.pkl
+    rd = RussianTextStresser()
+    print(rd.stress_text("еж"))
+
+
+    quit()
     nlp = load_spacy_full()
     for pipe in nlp.pipe_names:
         print(nlp.get_pipe_config(pipe))

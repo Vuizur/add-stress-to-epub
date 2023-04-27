@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import pstats
 import random
+import time
 from debug_helpers import (
     esc_nl,
     print_spacy_doc_difference,
@@ -425,15 +426,21 @@ def perform_benchmark_for_my_solutions_old() -> None:
     ]
 
     for file_path in old_file_paths:
-        ts = RussianTextStresser(db_file=file_path)
+        if file_path != "tempdb_3_with_ruwikipedia.db":
+            simple_cases = None
+        else:
+            simple_cases = "simple_cases.pkl"
+        ts = RussianTextStresser(db_file=file_path, simple_cases_file=simple_cases)
         base_folder = "correctness_tests"
         orig_folder = "stressed_russian_texts"
         result_folder = f"results_{file_path.replace('.db', '')}"
 
         base_path = f"{base_folder}/{orig_folder}"
         result_path = f"{base_folder}/{result_folder}"
-
+        t0 = time.time()
         benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+        print(f"Time for {file_path}: {time.time() - t0}")
+        
 
 
 def perform_benchmark_for_russtress() -> None:
@@ -684,12 +691,12 @@ if __name__ == "__main__":
     )
     sum_results = sum(analysisresults, AnalysisResults.get_empty_results())
     # Print mistakes
-    print_stressmistake_to_tsv(
-        sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv"
-    )
-    print_stressmistake_to_tsv(
-        sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv"
-    )
+    #print_stressmistake_to_tsv(
+    #    sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv"
+    #)
+    #print_stressmistake_to_tsv(
+    #    sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv"
+    #)
     # Print benchmark results
 
     # perform_benchmark_for_my_solution()
@@ -712,8 +719,9 @@ if __name__ == "__main__":
     # quit()
     #
     # perform_benchmark_random()
-    # perform_benchmark_for_my_solutions_old()
-    # print_benchmark_result_tsv()
+    perform_benchmark_for_my_solutions_old()
+    #
+    print_benchmark_result_tsv()
 
     # perform_benchmark_for_my_solution()
 

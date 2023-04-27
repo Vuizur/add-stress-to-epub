@@ -27,6 +27,7 @@ if __name__ == "__main__":
     SPACY_FOLDER_NAME = "ru_core_news_sm-3.4.0"
     # RUSSIAN_DICT_NAME = STRESSER_FOLDER + "/russian_dict.db"
     RUSSIAN_DICT_NAME = "russian_dict.db"
+    SIMPLE_CASES_NAME = "simple_cases.pkl"
 
     # subprocess.run(["pyinstaller",  STRESSER_FOLDER + "/gui.spec", "--noconfirm"])
     subprocess.run(["pyinstaller", "gui.spec", "--noconfirm"])
@@ -45,6 +46,7 @@ if __name__ == "__main__":
         os.mkdir(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
 
     shutil.copy(RUSSIAN_DICT_NAME, RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
+    shutil.copy(SIMPLE_CASES_NAME, RELEASE_FOLDER_NAME + "/" + SIMPLE_CASES_NAME)
 
     try:
         remove(RELEASE_FOLDER_NAME + ".zip")

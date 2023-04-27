@@ -17,7 +17,8 @@ class PossibleForms:
 
 
 def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
-    """This output the words that do not require any context to be stressed correctly"""
+    """This output the words that do not require any context to be stressed correctly.
+    This also deletes them from the database and saves them in a pickle file"""
     words = cur.execute(
         "SELECT canonical_form, alternative_canonical_form, word_lower_and_without_yo FROM word"
     ).fetchall()
@@ -59,7 +60,11 @@ def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):
     }
     with open("simple_cases.pkl", "wb") as f:
         pickle.dump(final_unstr_str_mapping, f)
-        # TODO: delete from DB
+        # delete from DB
+    for word in final_unstr_str_mapping.keys():
+        cur.execute(
+            "DELETE FROM word WHERE word_lower_and_without_yo = ?", (word,)
+        )
 
 
 def delete_unstressed_and_useless_words_from_DB(dict_path: str = "russian_dict.db"):
@@ -74,12 +79,13 @@ def delete_unstressed_and_useless_words_from_DB(dict_path: str = "russian_dict.d
     con.commit()
 
     con.execute("VACUUM;")
+    con.commit()
     cur.close()
     con.close()
 
 
-def clean_unused_data_for_stress_lookup():
-    con = sqlite3.connect("russian_dict.db")
+def clean_unused_data_for_stress_lookup(dict_path: str = "russian_dict.db"):
+    con = sqlite3.connect(dict_path)
     cur = con.cursor()
     #find_words_that_only_have_one_meaning(cur)
     #quit()
@@ -89,8 +95,13 @@ def clean_unused_data_for_stress_lookup():
     cur.execute("DROP table gloss;")
     cur.execute("ALTER TABLE word DROP COLUMN romanized_form;")
     cur.execute("ALTER TABLE word DROP COLUMN ipa_pronunciation;")
+    cur.execute("DROP INDEX alternative_word_canonical_form_index;")
+    # canonical_alternative_canonical_index
+    cur.execute("DROP INDEX canonical_alternative_canonical_index;")
     cur.execute("ALTER TABLE word DROP COLUMN alternative_canonical_form;")
-    cur.execute("ALTER TABLE form_of_word DROP COLUMN base_word_id")
+    # cur.execute("ALTER TABLE form_of_word DROP COLUMN base_word_id")
+    # Currently can't delete due to foreign key constraint
+    
     cur.execute("VACUUM;")
     con.commit()
     cur.close()

@@ -4,13 +4,16 @@
 # 4. Add data from Russian Wiktionary to the database, parse the Russian Wiktionary first
 
 import os
+import sqlite3
 from ebook_dictionary_creator import RussianDictionaryCreator
 from ruwiktionary_htmldump_parser import HTMLDumpParser
 
-from update_database import (
+from russian_text_stresser.update_database import (
     add_ruwiktionary_data_to_db,
     add_wikipedia_data_to_db,
+    clean_unused_data_for_stress_lookup,
     delete_unstressed_and_useless_words_from_DB,
+    find_words_that_only_have_one_meaning,
 )
 from wikipedia_dump_stress_extraction import extract_efficient
 import shutil
@@ -22,7 +25,10 @@ class DatabaseCreator:
         self.wiktionary_parser = HTMLDumpParser(htmldump_path)
 
     def create_database(self):
-        TEMPORARY_DB_FOLDER = "D:/temporary_dictionary_dbs"
+        TEMPORARY_DB_FOLDER = "D:/temporary_dictionary_dbs-new"
+        if not os.path.exists(TEMPORARY_DB_FOLDER):
+            os.mkdir(TEMPORARY_DB_FOLDER)
+
         kaikki_file_path = "russian-kaikki.json"
         wikipedia_stress_output_path = "wikipedia_words.txt"
         # If kaiiki file is not found, create it
@@ -92,11 +98,27 @@ class DatabaseCreator:
             self.dictionary_creator.database_path,
             TEMPORARY_DB_FOLDER + "/tempdb_3_with_ruwikipedia.db",
         )
+        print("Creating database with only necessary data")
 
         # Also add yo data from Wikipedia to the database
         # Also delete all data where there is only one possible option and add it to a pickled file or another sqlite table
+        conn = sqlite3.connect(self.dictionary_creator.database_path)
+        cur = conn.cursor()
+        find_words_that_only_have_one_meaning(cur)
+
+        cur.close()
+        conn.close()
+        print("Cleaning unused data")
+        clean_unused_data_for_stress_lookup(self.dictionary_creator.database_path)
+        delete_unstressed_and_useless_words_from_DB(
+            self.dictionary_creator.database_path
+        )
+        shutil.copy(
+            self.dictionary_creator.database_path,
+            TEMPORARY_DB_FOLDER + "/tempdb_4_unnecessary_deleted.db",
+        )
 
 
 if __name__ == "__main__":
-    database_creator = DatabaseCreator("D:/ruwiktionary")
+    database_creator = DatabaseCreator("D:/ruwiktionary-new")
     database_creator.create_database()

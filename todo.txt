@@ -110,4 +110,8 @@ LRUCache?
 
 Delete everything unused from database
 
+Upload simple_cases to zip file
+
+Fix еж
+
 * Do we really want to delete base_word_id?

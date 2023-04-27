@@ -1,11 +1,16 @@
 from russian_text_stresser.helper_methods import is_unimportant, load_spacy_full
 from stressed_cyrillic_tools import is_acute_accented
 from russian_text_stresser.russian_dictionary import RussianDictionary
+import pickle
 
 
 class RussianTextStresser:
-    def __init__(self, db_file: str = "russian_dict.db") -> None:
-        self.rd = RussianDictionary(db_file)
+    def __init__(
+        self,
+        db_file: str = "russian_dict.db",
+        simple_cases_file: str | None = "simple_cases.pkl",
+    ) -> None:
+        self.rd = RussianDictionary(db_file, simple_cases_file)
         self._nlp = load_spacy_full()
 
     def stress_text(self, text: str) -> str:

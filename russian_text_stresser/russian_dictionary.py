@@ -1,10 +1,12 @@
 from pathlib import Path
+import pickle
 import sqlite3
 import re
 from typing import Tuple
 import os
 import urllib.request
 import zipfile
+from stressed_cyrillic_tools import get_lower_and_without_yo
 
 
 spacy_wiktionary_pos_mapping = {
@@ -41,12 +43,19 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 
 class RussianDictionary:
-    def __init__(self, db_file: str) -> None:
+    def __init__(self, db_file: str, simple_cases_file: str | None) -> None:
         russian_dict_path = Path(__file__).parent / db_file
         # If russian_dict.db doesn't exist, download it
         if not russian_dict_path.exists():
             print("Russian dictionary not found. Downloading...")
             self.download_data()
+
+        if simple_cases_file is not None:
+            simple_cases_path = Path(__file__).parent / simple_cases_file
+            with open(simple_cases_path, "rb") as f:
+                self.simple_cases: dict[str, str] = pickle.load(f)
+        else:
+            self.simple_cases = {}
 
         dict_path = russian_dict_path
         self._con = sqlite3.connect(dict_path)
@@ -271,12 +280,19 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             return self.write_word_with_yo(word, words_with_possibly_written_yo[0][0])
 
     @staticmethod
-    def write_stressed_word(word, stressed_dict_word):
+    def write_stressed_word(word: str, stressed_dict_word: str):
         index = 0
         result_word = ""
         for char in stressed_dict_word:
             # This is needed because some canonical words are incorrect in the database
-            if char != "\u0301":
+            if char == "ё" or char == "Ё":
+                yo_in_wrd = word[index]
+                if yo_in_wrd == "е":
+                    result_word += "ё"
+                elif yo_in_wrd == "Е":
+                    result_word += "Ё"
+                index += 1
+            elif char != "\u0301":
                 if index >= len(word):
                     break
                 result_word += word[index]
@@ -390,6 +406,12 @@ WHERE w.word_lowercase = ? AND w.pos = ?
             return word
         if pos == "PUNCT":
             return word
+
+        # First look in simple_cases
+        if get_lower_and_without_yo(word) in self.simple_cases:
+            fitting_word = self.simple_cases[get_lower_and_without_yo(word)]
+            return self.write_stressed_word(word, fitting_word)
+
         word_with_yo, is_unique = self.get_correct_yo_form(word, pos, morph)
         if not is_unique:
             return word
