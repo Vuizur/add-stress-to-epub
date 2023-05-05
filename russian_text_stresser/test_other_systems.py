@@ -20,6 +20,9 @@ text = "У нашей девочки не было старой обуви на 
 if __name__ == "__main__":
     # accentor = Accentor()
 
+    print(transliterate.translit("замок", reversed=True))
+    quit()
+
     text_stresser = RussianTextStresser()
 
     stressed_text = text_stresser.stress_text(text)

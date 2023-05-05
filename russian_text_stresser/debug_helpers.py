@@ -1,6 +1,8 @@
 from stressed_cyrillic_tools import unaccentify
 import csv
 
+from russian_text_stresser.text_stresser import RussianTextStresser
+
 
 def create_histogram_from_spacy_document(doc) -> dict[str, int]:
     """Creates a histogram of the words in a spacy document."""
@@ -65,3 +67,21 @@ def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison
         for i, token in enumerate(doc2):
             if i >= len(doc1):
                 writer.writerow(["", "", esc_nl(token.text), token.pos_])
+
+def print_stressed_text_with_grammar_analysis(text: str):
+    """Prints a sentence with stress and grammar analysis."""
+    rts = RussianTextStresser()
+    stressed_text = rts.stress_text(text)
+    original_doc = rts._nlp(text)
+    stressed_doc = rts._nlp(stressed_text)
+
+    # enumerate through both docs in parallel
+    for token, stressed_token in zip(original_doc, stressed_doc):
+        print(
+            f"{token.text} {token.pos_} {token.morph} # {stressed_token.text}"
+        )
+
+
+if __name__ == "__main__":
+    text = "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
+    print_stressed_text_with_grammar_analysis(text)

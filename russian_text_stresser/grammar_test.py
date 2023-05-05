@@ -94,16 +94,16 @@ def write_simple_cases():
 
 if __name__ == "__main__":
     # Load simple_cases.pkl
-    rd = RussianTextStresser()
-    print(rd.stress_text("еж"))
+    #rd = RussianTextStresser()
+    #print(rd.stress_text("еж"))
+#
+#
+    #quit()
+    #nlp = load_spacy_full()
+    #for pipe in nlp.pipe_names:
+    #    print(nlp.get_pipe_config(pipe))
 
-
-    quit()
-    nlp = load_spacy_full()
-    for pipe in nlp.pipe_names:
-        print(nlp.get_pipe_config(pipe))
-
-    quit()
+    #quit()
     str = "Пусти́те."
     nlp = load_spacy_min()
     doc = nlp(str)
