@@ -123,4 +123,6 @@ def print_stressed_text_with_grammar_analysis(text: str):
 
 if __name__ == "__main__":
     text = "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
-    print_stressed_text_with_grammar_analysis(text)
+    text2 = "Вот видишь, – сказала она, – мне курить вредно, я уже падаю."
+    text3 = "И если вдруг тебе казалось, что твоя сестра и её муж угадывали твои мысли, то такой приём называется «холодное чтение»."
+    print_stressed_text_with_grammar_analysis(text3)
