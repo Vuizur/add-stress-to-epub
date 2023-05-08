@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from stressed_cyrillic_tools import unaccentify
 import csv
 
@@ -68,6 +69,16 @@ def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison
             if i >= len(doc1):
                 writer.writerow(["", "", esc_nl(token.text), token.pos_])
 
+@dataclass
+class StressOptions:
+    canonical_form: str
+    unstressed_form: str
+    pos: str
+    case_tags: list[str]
+    form_of_word_id: int
+
+
+
 def print_stressed_text_with_grammar_analysis(text: str):
     """Prints a sentence with stress and grammar analysis."""
     rts = RussianTextStresser()
@@ -77,8 +88,36 @@ def print_stressed_text_with_grammar_analysis(text: str):
 
     # enumerate through both docs in parallel
     for token, stressed_token in zip(original_doc, stressed_doc):
+        stress_options = rts.rd._cur.execute("""
+            SELECT w.word_id, w.pos, w.canonical_form, fow.form_of_word_id, ct.tag_text FROM word w 
+            JOIN form_of_word fow ON w.word_id = fow.word_id 
+            JOIN case_tags ct ON ct.form_of_word_id = fow.form_of_word_id
+            WHERE w.word_lower_and_without_yo = ?
+        """, (token.text.lower(),)).fetchall()
+
+        stress_option_objs: list[StressOptions] = []
+        # Convert to stress options
+        for option in stress_options:
+            # Check if form_of_word_id already exist. If yes, add tag
+            for stress_option in stress_option_objs:
+                if stress_option.form_of_word_id == option[3]:
+                    stress_option.case_tags.append(option[4])
+                    break
+            else:
+                stress_option_objs.append(
+                    StressOptions(
+                        canonical_form=option[2],
+                        unstressed_form=token.text,
+                        pos=option[1],
+                        case_tags=[option[4]],
+                        form_of_word_id=option[3],
+                    )
+                )
+
         print(
-            f"{token.text} {token.pos_} {token.morph} # {stressed_token.text}"
+            f"{token.text} {token.pos_} {token.morph} # {stressed_token.text} //" + "|".join(
+                f" {option.canonical_form} {option.pos} {option.case_tags}" for option in stress_option_objs
+            )
         )
 
 
