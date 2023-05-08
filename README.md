@@ -14,6 +14,8 @@ This program stresses entire Russian ebooks and adds the dots over the ё. It no
 
 To reach the best results, it analyzes the case and part of speech of every word in order to find the correct stress. So it will stress the word "слова" differently in these two sentences: `В стро́гом смы́сле сло́ва?` vs. `Твои́ слова́ ничего́ не зна́чат.`
 
+Also check out my dictionaries that are compatible with stressed text: [Russian-English](https://github.com/Vuizur/ebook_dictionary_creator/releases/download/v1.0.0/Russian-English.Stardict.zip) and [Russian-Russian](https://github.com/Vuizur/ruwiktionary-htmldump-parser/releases/download/v1.0.0/Russian-Russian-dict.zip) (both are in Stardict format and work well with programs such as KOReader).
+
 ### Installation
 
 **For windows**, you simply need to download the [executable release](https://github.com/Vuizur/add-stress-to-epub/releases), unpack the .zip file into a folder and start the program called #Stress marker.exe. This opens up a GUI and you can simply select the ebook you want to convert. Click on the "Start stress marking" button to start it all. Txt files are also supported.
