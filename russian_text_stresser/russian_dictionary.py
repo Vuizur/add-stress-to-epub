@@ -287,9 +287,9 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
             # This is needed because some canonical words are incorrect in the database
             if char == "ё" or char == "Ё":
                 yo_in_wrd = word[index]
-                if yo_in_wrd == "е":
+                if yo_in_wrd == "е" or yo_in_wrd == "ё":
                     result_word += "ё"
-                elif yo_in_wrd == "Е":
+                elif yo_in_wrd == "Е" or yo_in_wrd == "Ё":
                     result_word += "Ё"
                 index += 1
             elif char != "\u0301":
