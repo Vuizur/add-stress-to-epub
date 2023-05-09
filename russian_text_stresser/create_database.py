@@ -26,6 +26,7 @@ class DatabaseCreator:
 
     def create_database(self):
         TEMPORARY_DB_FOLDER = "D:/temporary_dictionary_dbs-new"
+        RUWIKIPEDIA_DUMP_PATH = "ruwiki-20230501-pages-articles-multistream.xml"
         if not os.path.exists(TEMPORARY_DB_FOLDER):
             os.mkdir(TEMPORARY_DB_FOLDER)
 
@@ -82,7 +83,7 @@ class DatabaseCreator:
         # TODO: Add data from Wikipedia to the database
         if not os.path.exists(wikipedia_stress_output_path):
             print("Creating wordlist from Russian Wikipedia")
-            extract_efficient("STRESS", wikipedia_stress_output_path)
+            extract_efficient("STRESS", wikipedia_stress_output_path, RUWIKIPEDIA_DUMP_PATH)
 
         print("Adding Russian Wikipedia data to database")
         add_wikipedia_data_to_db(
@@ -120,5 +121,5 @@ class DatabaseCreator:
 
 
 if __name__ == "__main__":
-    database_creator = DatabaseCreator("D:/ruwiktionary-new")
+    database_creator = DatabaseCreator("ruwiktionary-new") # The path probably is not needed (?)
     database_creator.create_database()
