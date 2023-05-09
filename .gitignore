@@ -72,3 +72,6 @@ ruwiktionary-NS0-20230401-ENTERPRISE-HTML.json.tar.gz
 russian_text_stresser/simple_casesOLD.pkl
 russian_text_stresser/russian_dictOLD.zip
 *.ndjson
+*.xml
+*.xml.bz2
+ruwiktionary-new
