@@ -121,12 +121,12 @@ CREATE INDEX IF NOT EXISTS yo_stats_without_yo_index ON yo_stats (without_yo);
 
 
 def extract_efficient(
-    extraction_mode: str = "STRESS", wordlist_path: str = "ruwiki_wordlist.txt"
+    extraction_mode: str = "STRESS", wordlist_path: str = "ruwiki_wordlist.txt", DUMP_PATH = "D:/ruwiki-20220820-pages-articles-multistream.xml"
 ):
     """The extraction mode can be either "STRESS" or "YO\" """
     # EXTRACTION_MODE = "YO"
 
-    DUMP_PATH = "D:/ruwiki-20220820-pages-articles-multistream.xml"
+    
 
     dump = mwxml.Dump.from_file(open(DUMP_PATH, encoding="utf-8"))
     extracted_words: list[str] = []
