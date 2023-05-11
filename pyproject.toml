@@ -38,7 +38,10 @@ importlib-metadata = {version = "^6.0.0", optional = true}
 jsonschema = {version = "^4.17.3", optional = true}
 pyrsistent = {version = "^0.19.3", optional = true}
 tensorflow-io-gcs-filesystem = {version = "0.31.0", optional = true} # Another thing that needs to be locked when using poetry, awesome :/
-#langchain = "^0.0.120"
+#langchain = {version = ">=0.0.120", optional = true}
+llama-cpp-python = {version = "^0.1.48", optional = true}
+langchain = {version = "^0.0.165", optional = true}
+
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
@@ -51,6 +54,7 @@ database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser",
 benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem"]
 #https://github.com/python-poetry/poetry/issues/3957
 poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent", "charset-normalizer"]
+word_sense_disambiguation = ["langchain", "llama-cpp-python"]
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
