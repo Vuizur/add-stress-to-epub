@@ -3,10 +3,12 @@ from pathlib import Path
 from spacy import Language, load
 
 
-def load_spacy_full() -> Language:
+def load_spacy_full(large_model = False) -> Language:
     bundle_dir = Path(__file__).parent.absolute()
-
-    return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["lemmatizer", "ner"])
+    if large_model:
+        return load(bundle_dir / "ru_core_news_lg-3.4.0", exclude=["lemmatizer", "ner"])
+    else:
+        return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["lemmatizer", "ner"])
 
 
 def load_spacy_full_with_lemmatizer() -> Language:

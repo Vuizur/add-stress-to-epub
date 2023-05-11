@@ -9,9 +9,10 @@ class RussianTextStresser:
         self,
         db_file: str = "russian_dict.db",
         simple_cases_file: str | None = "simple_cases.pkl",
+        use_large_model = False,
     ) -> None:
         self.rd = RussianDictionary(db_file, simple_cases_file)
-        self._nlp = load_spacy_full()
+        self._nlp = load_spacy_full(use_large_model)
 
     def stress_text(self, text: str) -> str:
         if len(text) > 0:

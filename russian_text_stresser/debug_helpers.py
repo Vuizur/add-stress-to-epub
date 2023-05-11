@@ -81,7 +81,7 @@ class StressOptions:
 
 def print_stressed_text_with_grammar_analysis(text: str):
     """Prints a sentence with stress and grammar analysis."""
-    rts = RussianTextStresser()
+    rts = RussianTextStresser(use_large_model=True)
     stressed_text = rts.stress_text(text)
     original_doc = rts._nlp(text)
     stressed_doc = rts._nlp(stressed_text)
@@ -126,4 +126,5 @@ if __name__ == "__main__":
     text2 = "Вот видишь, – сказала она, – мне курить вредно, я уже падаю."
     text3 = "И если вдруг тебе казалось, что твоя сестра и её муж угадывали твои мысли, то такой приём называется «холодное чтение»."
     text4 = "Чем ближе к огороду, тем аллеи становились запущеннее, темнее и уже; на одной из них, прятавшейся в густой заросли диких груш, кислиц, молодых дубков, хмеля, целые облака мелких чёрных мошек окружили Ольгу Михайловну; она закрыла руками лицо и стала насильно воображать маленького человечка…"
-    print_stressed_text_with_grammar_analysis(text4)
+    text5 = "Эта река уже чем я ожидал."
+    print_stressed_text_with_grammar_analysis(text5)
