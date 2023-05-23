@@ -1,4 +1,5 @@
 from collections import namedtuple
+import re
 from pydantic.dataclasses import dataclass
 import os
 from typing import Optional, TypedDict
@@ -16,7 +17,6 @@ from helper_methods import load_spacy_min
 
 from russian_dictionary import RussianDictionary
 from pydantic.json import pydantic_encoder
-
 
 # JSON has format like this
 # {
@@ -211,18 +211,43 @@ class RuWiktionary:
         else:
             return [row[0] for row in rows]
 
-    def get_words_with_only_one_choice(self) -> list[str]:
-        """Returns a list of words with only one choice in the database"""
-
-        # named dict that contains (word_lower_unstressed, list of stress options)
-        stress_options = defaultdict(list)
-        StressOptions = named(
-            "StressOptions", ["word_lower_unstressed", "stress_options"]
-        )
+    #def get_words_with_only_one_choice(self) -> list[str]:
+    #    """Returns a list of words with only one choice in the database"""
+#
+    #    # named dict that contains (word_lower_unstressed, list of stress options)
+    #    stress_options = defaultdict(list)
+    #    StressOptions = named(
+    #        "StressOptions", ["word_lower_unstressed", "stress_options"]
+    #    )
 
     def __del__(self):
         self.conn.close()
 
+
+def find_correct_choice(llm_answer: str, options: list[str]) -> str:
+    """Returns the correct choice based on the answer from the language model"""
+    # First, we check if the llm_answer contains one number and only one number equal to the index (starting from 1) of the correct choice
+    # If it does, we return the correct choice
+    # If it doesn't, we return None
+    possible_numbers = range(1, len(options) + 1)
+    numbers_in_llm_answer = [
+        number for number in possible_numbers if str(number) in llm_answer
+    ]
+    if len(numbers_in_llm_answer) == 1:
+        return options[numbers_in_llm_answer[0] - 1]
+    # The choices have this formatting:
+    # 1. све́дение (Существительное) - обычно мн. ч. известие, информация о чём-либо
+    # 2. сведе́ние (Существительное) - уменьшение, сокращение, упрощение
+    # Now we look if the word is in the llm_answer
+    # For this we lowercase everything, but keep the stress
+    else:
+        options_without_leading_number = [option.split(" ", 1)[1] for option in options]
+        options_containing_only_word = [option.split(" (", 1)[0] for option in options_without_leading_number]
+        
+        for i, option in enumerate(options_containing_only_word):
+            if option.lower() in llm_answer.lower():
+                return options[i]
+        return None
 
 @dataclass
 class DisambiguationTask:
@@ -230,6 +255,18 @@ class DisambiguationTask:
 
     generated_string: str
     choices: list[Entry]
+
+    def find_correct_choice(self, llm_answer: str) -> Entry:
+        """Returns the correct choice based on the answer from the language model"""
+        # First, we check if the llm_answer contains one number and only one number equal to the index (starting from 1) of the correct choice
+        # If it does, we return the correct choice
+        # If it doesn't, we return None
+        #possible_numbers = range(1, len(self.choices) + 1)
+        #numbers_in_llm_answer = [
+        #    number for number in possible_numbers if number in llm_answer
+        #]
+        #if len(numbers_in_llm_answer) == 1:
+        #    return self.choices[numbers_in_llm_answer[0] - 1]
 
 
 class WordSenseDisambiguator:
@@ -304,7 +341,10 @@ class WordSenseDisambiguator:
         )
 
     def disambiguate(self, word: str, context: str, word_index: int = 1) -> None | str:
-        """Returns the correctly stressed word"""
+        """Returns the correctly stressed word. If there is no possible disambiguation, returns None"""
+
+        context = unaccentify(context)
+
         valid_entries = self.russian_wiktionary.get_entries(word)
         if valid_entries is None or len(valid_entries) == 0:
             return None
@@ -330,13 +370,16 @@ class WordSenseDisambiguator:
 {options}
 Ответ:"""
 
-            # Append to the list of disambiguation tasks
-            self.disambiguation_tasks.append(
-                DisambiguationTask(
+            disamb_task =  DisambiguationTask(
                     generated_string=question,
                     choices=valid_entries,
                 )
+            # Append to the list of disambiguation tasks
+            self.disambiguation_tasks.append(
+               disamb_task
             )
+
+
             print(question)
 
     def detect_and_fix_missing_stressed_words(self, text: str) -> str:
@@ -362,10 +405,6 @@ class WordSenseDisambiguator:
                 default=pydantic_encoder,
                 indent=4,
             )
-
-
-def generate_tasks_file():
-    pass
 
 
 if __name__ == "__main__":
