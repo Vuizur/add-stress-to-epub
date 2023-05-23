@@ -11,11 +11,26 @@ MANTICORE_PROMPT = """### Instruction: {question}
 
 ### Assistant:"""
 
+SAIGA7B_PATH = r"D:\Programs\one-click-installers\text-generation-webui\models\saiga--7b-ggmlv3-model-q4_1.bin"
+SAIGA7B_PROMPT = """
+Ты — Сайга, русскоязычный автоматический ассистент. Ты разговариваешь с людьми и помогаешь им.
+User: {question}
+Saiga: """
+
 def test_cpp():
     llm = LlamaCpp(
         model_path=MANTICORE13B_PATH, 
+        n_ctx=2048,
+        max_tokens=1024,
     )
-    request = MANTICORE_PROMPT.format(question="Write a short story about aliens!")
+    request = MANTICORE_PROMPT.format(question="Write a cool short story.")
+    print(llm(request))
+
+def test_saiga():
+    llm = LlamaCpp(
+        model_path=SAIGA7B_PATH,
+    )
+    request = SAIGA7B_PROMPT.format(question="Пожалуйста, сочини историю про луны!")
     print(llm(request))
 
 if __name__ == "__main__":

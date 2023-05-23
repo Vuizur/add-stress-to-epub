@@ -8,6 +8,8 @@ from russian_text_stresser.llm_test import (
     WIZARDVICUNA7B_PROMPT,
     MANTICORE13B_PATH,
     MANTICORE_PROMPT,
+    SAIGA7B_PATH,
+    SAIGA7B_PROMPT,
 )
 from langchain.llms import LlamaCpp
 from tqdm import tqdm
@@ -159,19 +161,27 @@ MANTICORE_13B = LLM(
     path=MANTICORE13B_PATH,
     prompt=MANTICORE_PROMPT,
 )
+
+SAIGA_7B = LLM(
+    name="saiga_7B",
+    path=SAIGA7B_PATH,
+    prompt=SAIGA7B_PROMPT,
+)
     
 
 class LocalLLM:
    def __init__(self, llm: LLM):
        self.llm = LlamaCpp(
            model_path=llm.path,
+           temperature=0,
+           n_ctx=1024, # Some tasks are too long for the default 512 context window
        )
        self.name = llm.name
        self.prompt = llm.prompt
    def generate(self, request: str) -> str:
        request = request.replace("Ответ:", "Отвечайте только цифрой.")
        print(request)
-       return self.llm(self.prompt.format(question=request))
+       return self.llm(self.prompt.format(question=request), )
 
 
 if __name__ == "__main__":
@@ -187,13 +197,14 @@ if __name__ == "__main__":
 
     def choose_a_random_number(task: str) -> str:
         # Identify all numbers in the task
-        numbers = re.findall(r"\d+", task)
+        numbers = re.findall(r"\d+\.", task)
+    
         # Choose a random number from the list
-        return random.choice(numbers) + "."
+        return random.choice(numbers)
 
-    def simulate_random_numbers_1000_times():
+    def simulate_random_numbers_10000_times():
         bm = BenchmarkResults()
-        for i in range(1000):
+        for i in range(10000):
             bm += benchmark_word_sense_disambiguation(choose_a_random_number)
         return bm
 
@@ -201,10 +212,17 @@ if __name__ == "__main__":
     #    model_path=WIZARD_VICUNA7B_PATH,
     #)
     wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
+    manticore_13B = LocalLLM(MANTICORE_13B)
+    saiga_7B = LocalLLM(SAIGA_7B)
 
-    #benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B)
-    benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
-    print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
+    #benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
+    #print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
 
-    #benchmark_results = simulate_random_numbers_1000_times()
+    benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
+    print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
+
+    #benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
+    #print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
+
+    #benchmark_results = simulate_random_numbers_10000_times()
     #print_benchmark_results_to_file(benchmark_results, "choose_a_random_number")
