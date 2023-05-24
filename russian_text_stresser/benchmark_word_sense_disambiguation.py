@@ -33,7 +33,9 @@ class BenchmarkResults:
     def get_accuracy(self) -> float:
         """Return the accuracy in percent"""
         return (
-            self.correct_answers / (self.correct_answers + self.incorrect_answers + self.not_answered) * 100
+            self.correct_answers
+            / (self.correct_answers + self.incorrect_answers + self.not_answered)
+            * 100
         )
 
     def __add__(self, other):
@@ -44,14 +46,34 @@ class BenchmarkResults:
         )
 
 
+def get_chatGPT_benchmark_results(
+    benchmark_tasks: list[BenchmarkTask],
+) -> BenchmarkResults:
+    """Get the benchmark results for chatGPT"""
+    bm_results = BenchmarkResults()
+    for benchmark_task in benchmark_tasks:
+        try:
+            chatgpt_answer = int(benchmark_task.chatgpt_answer)
+        except ValueError:
+            bm_results.not_answered += 1
+
+        if chatgpt_answer == benchmark_task.correct_answer:
+            bm_results.correct_answers += 1
+        else:
+            bm_results.incorrect_answers += 1
+
+    return bm_results
+
+
 def benchmark_word_sense_disambiguation(
-    answer_function: Callable[[str], str]
+    answer_function: Callable[[str], str], instead_return_chatgpt_results=False
 ) -> BenchmarkResults:
     # Load the file "chosen_tasks.txt"
     with open("chosen_tasks.txt", "r", encoding="utf-8") as f:
         chosen_tasks = f.readlines()
         current_benchmark_task = ""
         bm_results = BenchmarkResults()
+        benchmark_tasks: list[BenchmarkTask] = []
 
         writing_task = False
         # Iterate through lines until you find one that starts with "Фраза:"
@@ -65,6 +87,8 @@ def benchmark_word_sense_disambiguation(
                         choices=choices,
                         chatgpt_answer=cgpt_answer,
                     )
+                    benchmark_tasks.append(benchmark_task)
+
                     try:
                         llm_answer = answer_function(benchmark_task.complete_task)
                     except Exception as e:
@@ -122,10 +146,10 @@ def benchmark_word_sense_disambiguation(
             if writing_task:
                 current_benchmark_task += line
 
-        # 1. све́дение (Существительное) - обычно мн. ч. известие, информация о чём-либо
-        # 2. сведе́ние (Существительное) - уменьшение, сокращение, упрощение
-
-        return bm_results
+        if instead_return_chatgpt_results:
+            return get_chatGPT_benchmark_results(benchmark_tasks)
+        else:
+            return bm_results
 
 
 def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_name: str):
@@ -150,6 +174,7 @@ class LLM:
     path: str
     prompt: str
 
+
 WIZARD_VICUNA_7B = LLM(
     name="wizard_vicuna_7B",
     path=WIZARD_VICUNA7B_PATH,
@@ -167,21 +192,24 @@ SAIGA_7B = LLM(
     path=SAIGA7B_PATH,
     prompt=SAIGA7B_PROMPT,
 )
-    
+
 
 class LocalLLM:
-   def __init__(self, llm: LLM):
-       self.llm = LlamaCpp(
-           model_path=llm.path,
-           temperature=0,
-           n_ctx=1024, # Some tasks are too long for the default 512 context window
-       )
-       self.name = llm.name
-       self.prompt = llm.prompt
-   def generate(self, request: str) -> str:
-       request = request.replace("Ответ:", "Отвечайте только цифрой.")
-       print(request)
-       return self.llm(self.prompt.format(question=request), )
+    def __init__(self, llm: LLM):
+        self.llm = LlamaCpp(
+            model_path=llm.path,
+            temperature=0,
+            n_ctx=1024,  # Some tasks are too long for the default 512 context window
+        )
+        self.name = llm.name
+        self.prompt = llm.prompt
+
+    def generate(self, request: str) -> str:
+        request = request.replace("Ответ:", "Отвечайте только цифрой.")
+        print(request)
+        return self.llm(
+            self.prompt.format(question=request),
+        )
 
 
 if __name__ == "__main__":
@@ -198,7 +226,7 @@ if __name__ == "__main__":
     def choose_a_random_number(task: str) -> str:
         # Identify all numbers in the task
         numbers = re.findall(r"\d+\.", task)
-    
+
         # Choose a random number from the list
         return random.choice(numbers)
 
@@ -208,21 +236,26 @@ if __name__ == "__main__":
             bm += benchmark_word_sense_disambiguation(choose_a_random_number)
         return bm
 
-    #wizard_vicuna_7B = LlamaCpp(
+    # wizard_vicuna_7B = LlamaCpp(
     #    model_path=WIZARD_VICUNA7B_PATH,
-    #)
-    wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
-    manticore_13B = LocalLLM(MANTICORE_13B)
-    saiga_7B = LocalLLM(SAIGA_7B)
+    # )
+    # wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
+    # manticore_13B = LocalLLM(MANTICORE_13B)
+    # saiga_7B = LocalLLM(SAIGA_7B)
 
-    #benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
-    #print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
+    # benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
+    # print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
 
-    benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
-    print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
+    # benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
+    # print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
 
-    #benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
-    #print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
+    benchmark_results = benchmark_word_sense_disambiguation(
+        lambda x: x, instead_return_chatgpt_results=True
+    )
+    print_benchmark_results_to_file(benchmark_results, "chatgpt")
 
-    #benchmark_results = simulate_random_numbers_10000_times()
-    #print_benchmark_results_to_file(benchmark_results, "choose_a_random_number")
+    # benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
+    # print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
+
+    # benchmark_results = simulate_random_numbers_10000_times()
+    # print_benchmark_results_to_file(benchmark_results, "choose_a_random_number")
