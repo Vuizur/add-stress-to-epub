@@ -41,6 +41,7 @@ tensorflow-io-gcs-filesystem = {version = "0.31.0", optional = true} # Another t
 langchain = {version = "^0.0.165", optional = true}
 transformers = {version = "^4.29.0", optional = true}
 llama-cpp-python = "^0.1.52"
+seaborn = {version = "^0.12.2", optional = true}
 
 
 [tool.poetry.dev-dependencies]
@@ -51,7 +52,7 @@ pyinstaller = "^5.3"
 [tool.poetry.extras]
 GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
-benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem"]
+benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem", "seaborn"]
 #https://github.com/python-poetry/poetry/issues/3957
 poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent", "charset-normalizer"]
 word_sense_disambiguation = ["langchain", "llama-cpp-python", "transformers"]

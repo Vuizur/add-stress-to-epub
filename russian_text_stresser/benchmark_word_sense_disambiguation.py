@@ -14,6 +14,10 @@ from russian_text_stresser.llm_test import (
 from langchain.llms import LlamaCpp
 from tqdm import tqdm
 import random
+import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import pandas as pd
 
 
 @dataclass
@@ -210,31 +214,71 @@ class LocalLLM:
         return self.llm(
             self.prompt.format(question=request),
         )
+    
+    
+def print_results_to_png():
+   
+    # Read the data from the tsv file
+    data = pd.read_csv("llm_benchmark_results.tsv", sep="\t")
 
+    #Order the data by accuracy
+    data = data.sort_values(by=['Percentage'], ascending=True)
+
+    # Plot the histogram with seaborn
+    sns.barplot(data=data, x="Name", y="Percentage")
+
+    # Show the plot
+    plt.savefig("results.png")
+
+
+def stacked_barplot_example():
+    # load dataset
+    tips = sns.load_dataset("tips")
+
+    # set plot style: grey grid in the background:
+    sns.set(style="darkgrid")
+
+    # set the figure size
+    plt.figure(figsize=(14, 14))
+
+    # top bar -> sum all values(smoker=No and smoker=Yes) to find y position of the bars
+    total = tips.groupby('day')['total_bill'].sum().reset_index()
+
+    # bar chart 1 -> top bars (group of 'smoker=No')
+    bar1 = sns.barplot(x="day",  y="total_bill", data=total, color='darkblue')
+
+    # bottom bar ->  take only smoker=Yes values from the data
+    smoker = tips[tips.smoker=='Yes']
+
+    # bar chart 2 -> bottom bars (group of 'smoker=Yes')
+    bar2 = sns.barplot(x="day", y="total_bill", data=smoker, estimator=sum, errorbar=None,  color='lightblue')
+
+    # add legend
+    top_bar = mpatches.Patch(color='darkblue', label='smoker = No')
+    bottom_bar = mpatches.Patch(color='lightblue', label='smoker = Yes')
+    plt.legend(handles=[top_bar, bottom_bar])
+
+    # show the graph
+    plt.savefig("stacked_barplot_with_matplotlib_Python.svg")
+
+def choose_a_random_number(task: str) -> str:
+    # Identify all numbers in the task
+    numbers = re.findall(r"\d+\.", task)
+    # Choose a random number from the list
+    return random.choice(numbers)
+
+def simulate_random_numbers_10000_times():
+    bm = BenchmarkResults()
+    for i in range(10000):
+        bm += benchmark_word_sense_disambiguation(choose_a_random_number)
+    return bm
 
 if __name__ == "__main__":
+    #stacked_barplot_example()
+    print_results_to_png()
+    quit()
 
-    def always_first_in_dictionary(task: str) -> str:
-        return "1."
 
-    def always_second_in_dictionary(task: str) -> str:
-        return "2."
-
-    def always_third_in_dictionary(task: str) -> str:
-        return "3."
-
-    def choose_a_random_number(task: str) -> str:
-        # Identify all numbers in the task
-        numbers = re.findall(r"\d+\.", task)
-
-        # Choose a random number from the list
-        return random.choice(numbers)
-
-    def simulate_random_numbers_10000_times():
-        bm = BenchmarkResults()
-        for i in range(10000):
-            bm += benchmark_word_sense_disambiguation(choose_a_random_number)
-        return bm
 
     # wizard_vicuna_7B = LlamaCpp(
     #    model_path=WIZARD_VICUNA7B_PATH,
