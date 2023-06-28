@@ -2,7 +2,7 @@ from pathlib import Path
 import pickle
 import sqlite3
 import re
-from typing import Tuple
+from typing import Optional, Tuple
 import os
 import urllib.request
 import zipfile
@@ -43,7 +43,7 @@ VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
 
 
 class RussianDictionary:
-    def __init__(self, db_file: str, simple_cases_file: str | None) -> None:
+    def __init__(self, db_file: str, simple_cases_file: Optional[str]) -> None:
         russian_dict_path = Path(__file__).parent / db_file
         # If russian_dict.db doesn't exist, download it
         if not russian_dict_path.exists():
