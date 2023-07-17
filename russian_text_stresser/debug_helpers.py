@@ -81,7 +81,7 @@ class StressOptions:
 
 def print_stressed_text_with_grammar_analysis(text: str):
     """Prints a sentence with stress and grammar analysis."""
-    rts = RussianTextStresser(use_large_model=True)
+    rts = RussianTextStresser(use_large_model=False)
     stressed_text = rts.stress_text(text)
     original_doc = rts._nlp(text)
     stressed_doc = rts._nlp(stressed_text)
@@ -90,7 +90,7 @@ def print_stressed_text_with_grammar_analysis(text: str):
     for token, stressed_token in zip(original_doc, stressed_doc):
         stress_options = rts.rd._cur.execute("""
             SELECT w.word_id, w.pos, w.canonical_form, fow.form_of_word_id, ct.tag_text FROM word w 
-            JOIN form_of_word fow ON w.word_id = fow.word_id 
+            LEFT JOIN form_of_word fow ON w.word_id = fow.word_id 
             JOIN case_tags ct ON ct.form_of_word_id = fow.form_of_word_id
             WHERE w.word_lower_and_without_yo = ?
         """, (token.text.lower(),)).fetchall()
