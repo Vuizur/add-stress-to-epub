@@ -634,6 +634,9 @@ def print_benchmark_result_tsv():
                 "Percentage correct words",
                 "Percentage unstressed words",
                 "Percentage incorrect words",
+                "Number of correct words",
+                "Number of unstressed words",
+                "Number of incorrect words",
                 *["Correct: " + pos for pos in ALL_POS],
                 *["Unstressed: " + pos for pos in ALL_POS],
                 *["Incorrect: " + pos for pos in ALL_POS],
@@ -675,14 +678,55 @@ def print_benchmark_result_tsv():
                     cor,
                     uns,
                     inc,
+                    total_result.num_correctly_stressed_tokens,
+                    total_result.num_unstressed_tokens,
+                    total_result.num_incorrectly_stressed_tokens,
                     *[x[1] for x in correct_pos_results],
                     *[x[1] for x in unstressed_pos_results],
                     *[x[1] for x in incorrect_pos_results],
                 ]
             )
+        
+
+def perform_chatgpt_mini_benchmark():
+    ac = AccuracyCalculator()
+    chatgpt_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                   r"correctness_tests\results_chatgpt\commercial\devochka.txt")
+    print(f"ChatGPT: {chatgpt_res.get_percentage_correctly_stressed_tokens()}")
+
+    my_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                   r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt")
+    print(f"My solution: {my_res.get_percentage_correctly_stressed_tokens()}")
+    random_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                      r"correctness_tests\results_random\commercial\devochka.txt")
+    print(f"Random: {random_res.get_percentage_correctly_stressed_tokens()}")
+    russtress_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                        r"correctness_tests\results_russtress\commercial\devochka.txt")
+    print(f"Russtress: {russtress_res.get_percentage_correctly_stressed_tokens()}")
+    russiangram_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                             r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt")
+    print(f"RussianGram: {russiangram_res.get_percentage_correctly_stressed_tokens()}")
+    russ_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                        r"correctness_tests\results_russ\commercial\devochka.txt")
+    print(f"Russ: {russ_res.get_percentage_correctly_stressed_tokens()}")
+    reynolds_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+                                        r"correctness_tests\results_reynolds\commercial\devochka.txt")
+    print(f"Reynolds: {reynolds_res.get_percentage_correctly_stressed_tokens()}")
+
+    print(f"Total tokens: {chatgpt_res.num_incorrectly_stressed_tokens+chatgpt_res.num_correctly_stressed_tokens+chatgpt_res.num_unstressed_tokens}")
+
+    
+
+        
 
 
 if __name__ == "__main__":
+
+    #perform_chatgpt_mini_benchmark()
+
+    print_benchmark_result_tsv()
+
+    quit()
 
     ac = AccuracyCalculator()
     analysisresults = ac.calc_accuracy_over_dir(
@@ -690,6 +734,15 @@ if __name__ == "__main__":
         "correctness_tests/results_tempdb_3_with_ruwikipedia",
     )
     sum_results = sum(analysisresults, AnalysisResults.get_empty_results())
+    total_tokens = (
+        sum_results.num_incorrectly_stressed_tokens
+        + sum_results.num_correctly_stressed_tokens
+        + sum_results.num_unstressed_tokens
+    )
+    print(f"Total tokens: {total_tokens}")
+
+    quit()
+
     # Print mistakes
     #print_stressmistake_to_tsv(
     #    sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv"
