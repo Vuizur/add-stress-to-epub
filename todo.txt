@@ -116,6 +116,8 @@ Upload simple_cases to zip file
 
 Fix уже + такой
 
+For уже we need to analyze Degree=Pos Cmp
+
 For example:
 Вот видишь, – сказала она, – мне курить вредно, я уже падаю
 
@@ -123,3 +125,4 @@ For example:
 
 fix bug here (курсе): "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
 
+# Has the yofication data actually been added? I don't think so
