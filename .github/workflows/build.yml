@@ -24,10 +24,11 @@ jobs:
         with: 
           poetry-version: "1.3.2"
       - name: Run PyInstaller
+          # poetry config virtualenvs.create false
+          # poetry install --extras "GUI poetry-workaround" --without dev
         run: |
-          poetry config virtualenvs.create false
-          poetry install --extras "GUI poetry-workaround" --without dev
-          pip install pyinstaller
+          poetry install --extras "GUI"
+          poetry run pip install pyinstaller
           poetry run python ./russian_text_stresser/download_db.py
           poetry run python ./russian_text_stresser/compile.py
       - name: Create Release
