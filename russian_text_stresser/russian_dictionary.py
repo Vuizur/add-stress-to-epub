@@ -412,7 +412,7 @@ WHERE w.word_lowercase = ? AND w.pos = ?
             fitting_word = self.simple_cases[get_lower_and_without_yo(word)]
             return self.write_stressed_word(word, fitting_word)
 
-        word_with_yo, is_unique = self.get_correct_yo_form(word, pos, morph)
+        word_with_yo, is_unique = self.get_correct_yo_form(word, pos, morph) # TODO: Make this only if the word contains an е
         if not is_unique:
             return word
         else:
