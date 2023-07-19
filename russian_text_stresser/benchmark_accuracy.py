@@ -689,44 +689,131 @@ def print_benchmark_result_tsv():
         
 
 def perform_chatgpt_mini_benchmark():
-    ac = AccuracyCalculator()
-    chatgpt_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                   r"correctness_tests\results_chatgpt\commercial\devochka.txt")
-    print(f"ChatGPT: {chatgpt_res.get_percentage_correctly_stressed_tokens()}")
-
-    my_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                   r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt")
-    print(f"My solution: {my_res.get_percentage_correctly_stressed_tokens()}")
-    random_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                      r"correctness_tests\results_random\commercial\devochka.txt")
-    print(f"Random: {random_res.get_percentage_correctly_stressed_tokens()}")
-    russtress_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                        r"correctness_tests\results_russtress\commercial\devochka.txt")
-    print(f"Russtress: {russtress_res.get_percentage_correctly_stressed_tokens()}")
-    russiangram_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                             r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt")
-    print(f"RussianGram: {russiangram_res.get_percentage_correctly_stressed_tokens()}")
-    russ_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                        r"correctness_tests\results_russ\commercial\devochka.txt")
-    print(f"Russ: {russ_res.get_percentage_correctly_stressed_tokens()}")
-    reynolds_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
-                                        r"correctness_tests\results_reynolds\commercial\devochka.txt")
-    print(f"Reynolds: {reynolds_res.get_percentage_correctly_stressed_tokens()}")
-
-    print(f"Total tokens: {chatgpt_res.num_incorrectly_stressed_tokens+chatgpt_res.num_correctly_stressed_tokens+chatgpt_res.num_unstressed_tokens}")
+    #ac = AccuracyCalculator()
+    #chatgpt_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                               r"correctness_tests\results_chatgpt\commercial\devochka.txt")
+    #print(f"ChatGPT: {chatgpt_res.get_percentage_correctly_stressed_tokens()}")
+#
+    #my_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                               r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt")
+    #print(f"My solution: {my_res.get_percentage_correctly_stressed_tokens()}")
+    #random_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                                  r"correctness_tests\results_random\commercial\devochka.txt")
+    #print(f"Random: {random_res.get_percentage_correctly_stressed_tokens()}")
+    #russtress_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                                    r"correctness_tests\results_russtress\commercial\devochka.txt")
+    #print(f"Russtress: {russtress_res.get_percentage_correctly_stressed_tokens()}")
+    #russiangram_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                                         r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt")
+    #print(f"RussianGram: {russiangram_res.get_percentage_correctly_stressed_tokens()}")
+    #russ_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                                    r"correctness_tests\results_russ\commercial\devochka.txt")
+    #print(f"Russ: {russ_res.get_percentage_correctly_stressed_tokens()}")
+    #reynolds_res = ac.calc_accuracy(r"correctness_tests\stressed_russian_texts\commercial\devochka.txt",
+    #                                    r"correctness_tests\results_reynolds\commercial\devochka.txt")
+    #print(f"Reynolds: {reynolds_res.get_percentage_correctly_stressed_tokens()}")
+#
+    #print(f"Total tokens: {chatgpt_res.num_incorrectly_stressed_tokens+chatgpt_res.num_correctly_stressed_tokens+chatgpt_res.num_unstressed_tokens}")
 
     
 
+    """     # Import the csv module
+    import csv
+
+    # Create an instance of the AccuracyCalculator class
+    ac = AccuracyCalculator()
+
+    # Define a list of methods to compare
+    methods = ["ChatGPT", "My solution", "Random", "Russtress", "RussianGram", "Russ", "Reynolds"]
+
+    # Define a list of file paths for the input and output files
+    input_file = r"correctness_tests\stressed_russian_texts\commercial\devochka.txt"
+    output_files = [r"correctness_tests\results_chatgpt\commercial\devochka.txt",
+                    r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt",
+                    r"correctness_tests\results_random\commercial\devochka.txt",
+                    r"correctness_tests\results_russtress\commercial\devochka.txt",
+                    r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt",
+                    r"correctness_tests\results_russ\commercial\devochka.txt",
+                    r"correctness_tests\results_reynolds\commercial\devochka.txt"]
+
+    # Create an empty list to store the results
+    results = []
+
+    # Loop through the methods and output files
+    for method, output_file in zip(methods, output_files):
+        # Calculate the accuracy for each method
+        res = ac.calc_accuracy(input_file, output_file)
+        # Append the method name and the percentage of correctly stressed tokens to the results list
+        results.append([method, res.get_percentage_correctly_stressed_tokens()])
+
+    # Define the name of the tsv file to write the results
+    tsv_file = r"correctness_tests\chatgpt_minibenchmark.tsv"
+
+    # Open the tsv file in write mode
+    with open(tsv_file, "w") as f:
+        # Create a csv writer object with tab as the delimiter
+        writer = csv.writer(f, delimiter="\t")
+        # Write the header row with the column names
+        writer.writerow(["Method", "Percentage of correctly stressed tokens"])
+        # Write the results list as rows in the tsv file
+        writer.writerows(results)
+
+    # Print a message to indicate that the tsv file has been created
+    print(f"Results written to {tsv_file}") """
+
+    # Import the pandas module
+    import pandas as pd
+
+    # Create an instance of the AccuracyCalculator class
+    ac = AccuracyCalculator()
+
+    # Define a list of methods to compare
+    methods = ["ChatGPT", "My solution", "Random", "Russtress", "RussianGram", "Russ", "Reynolds"]
+
+    # Define a list of file paths for the input and output files
+    input_file = r"correctness_tests\stressed_russian_texts\commercial\devochka.txt"
+    output_files = [r"correctness_tests\results_chatgpt\commercial\devochka.txt",
+                    r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt",
+                    r"correctness_tests\results_random\commercial\devochka.txt",
+                    r"correctness_tests\results_russtress\commercial\devochka.txt",
+                    r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt",
+                    r"correctness_tests\results_russ\commercial\devochka.txt",
+                    r"correctness_tests\results_reynolds\commercial\devochka.txt"]
+
+    # Create an empty dictionary to store the results
+    results = {}
+
+    # Loop through the methods and output files
+    for method, output_file in zip(methods, output_files):
+        # Calculate the accuracy for each method
+        res = ac.calc_accuracy(input_file, output_file)
+        
+        
+        # Add the method name and the percentage of correctly stressed tokens to the results dictionary
+        results[method] = [res.get_percentage_correctly_stressed_tokens(), res.get_percentage_unstressed_tokens(), res.get_percentage_incorrectly_stressed_tokens()]
+
+    # Convert the results dictionary to a pandas DataFrame
+    df = pd.DataFrame.from_dict(results, orient="index", columns=["Percentage of correctly stressed tokens", "Percentage of unstressed tokens", "Percentage of incorrectly stressed tokens"])
+
+    # Define the name of the tsv file to write the results
+    tsv_file = r"correctness_tests\chatgpt_minibenchmark.tsv"
+
+    # Write the DataFrame to the tsv file with tab as the separator
+    df.to_csv(tsv_file, sep="\t", index_label="System")
+
+    # Print a message to indicate that the tsv file has been created
+    print(f"Results written to {tsv_file}")
         
 
 
 if __name__ == "__main__":
 
-    #perform_chatgpt_mini_benchmark()
-
-    print_benchmark_result_tsv()
-
+    perform_chatgpt_mini_benchmark()
     quit()
+
+    #print_benchmark_result_tsv()
+
+    #quit()
 
     ac = AccuracyCalculator()
     analysisresults = ac.calc_accuracy_over_dir(
