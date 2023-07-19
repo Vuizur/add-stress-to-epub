@@ -54,7 +54,7 @@ GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
 benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem", "seaborn"]
 #https://github.com/python-poetry/poetry/issues/3957
-poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent", "charset-normalizer"]
+#poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent", "charset-normalizer"]
 word_sense_disambiguation = ["langchain", "llama-cpp-python", "transformers"]
 
 [build-system]
