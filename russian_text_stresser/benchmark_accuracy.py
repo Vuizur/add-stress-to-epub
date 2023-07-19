@@ -17,6 +17,7 @@ from stressed_cyrillic_tools import (
     unaccentify,
     remove_yo,
     has_only_one_syllable,
+    has_cyrillic_letters,
 )
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
@@ -26,6 +27,7 @@ from russtress import Accent
 import csv
 from russ.stress.predictor import StressPredictor
 import cProfile
+from spacy import Language
 
 
 def add_defaultdicts(dict1, dict2):
@@ -440,20 +442,62 @@ def perform_benchmark_for_my_solutions_old() -> None:
         t0 = time.time()
         benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
         print(f"Time for {file_path}: {time.time() - t0}")
-        
+
+def try_to_fix_russtress_text(stresser: Accent, stressed_text: str, spacy_min: Language) -> str:
+    
+    fixed_text = ""
+    # Check if there are any words that are not stressed
+    doc = spacy_min(stressed_text)
+    for token in doc:
+        # If yes: cyrillic word is unstressed! -> Problem
+        if (
+            has_cyrillic_letters(token.text)
+            and not has_acute_accent_or_only_one_syllable(token.text)
+            and not "ё" in token.text and not "Ё" in token.text
+            and token.i != 0
+            and token.nbor(-1).text != "-"
+        ):
+            print("Unstressed word found: ", token.text)
+            print("Retrying a text of the following length: ", len(doc[token.i :].text_with_ws))
+            # Get all text after the current token
+            text_to_retry = unaccentify(doc[token.i :].text_with_ws)
+            # Stress it
+            stressed_text_to_retry = stresser.put_stress(
+                text_to_retry
+            ).replace("'", "\u0301")
+            # Replace the old text with the new text
+            # However, we need to check again
+            return fixed_text + try_to_fix_russtress_text(stresser, stressed_text_to_retry, spacy_min)
+        else:
+            fixed_text += token.text_with_ws
+    return fixed_text
 
 
-def perform_benchmark_for_russtress() -> None:
+def perform_benchmark_for_russtress(try_to_fix=True) -> None:
     stresser = Accent()
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "results_russtress"
 
+    if try_to_fix:
+        result_folder += "_fixed"
+
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
 
     def stress_text(text: str) -> str:
-        return stresser.put_stress(text).replace("'", "\u0301")
+        stressed_text = stresser.put_stress(text).replace("'", "\u0301")
+        if try_to_fix:
+            nlp = load_spacy_min()
+            nlp.add_pipe("sentencizer")
+
+            #stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
+            doc = nlp(stressed_text)
+            fixed_text = ""
+            for sent in doc.sents:
+                fixed_text += try_to_fix_russtress_text(stresser, sent.text_with_ws, nlp)
+            return fixed_text
+        return stressed_text
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
 
@@ -610,6 +654,7 @@ def print_benchmark_result_tsv():
         "results_reynolds",
         "results_my_solution",
         "results_russtress",
+        "results_russtress_fixed",
         "results_random",
         "results_russiangram_with_yo_fixed",
         "results_russ",
@@ -686,7 +731,7 @@ def print_benchmark_result_tsv():
                     *[x[1] for x in incorrect_pos_results],
                 ]
             )
-        
+
 
 def perform_chatgpt_mini_benchmark():
     # Import the pandas module
@@ -696,17 +741,27 @@ def perform_chatgpt_mini_benchmark():
     ac = AccuracyCalculator()
 
     # Define a list of methods to compare
-    methods = ["ChatGPT", "My solution", "Random", "Russtress", "RussianGram", "Russ", "Reynolds"]
+    methods = [
+        "ChatGPT",
+        "My solution",
+        "Random",
+        "Russtress",
+        "RussianGram",
+        "Russ",
+        "Reynolds",
+    ]
 
     # Define a list of file paths for the input and output files
     input_file = r"correctness_tests\stressed_russian_texts\commercial\devochka.txt"
-    output_files = [r"correctness_tests\results_chatgpt\commercial\devochka.txt",
-                    r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt",
-                    r"correctness_tests\results_random\commercial\devochka.txt",
-                    r"correctness_tests\results_russtress\commercial\devochka.txt",
-                    r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt",
-                    r"correctness_tests\results_russ\commercial\devochka.txt",
-                    r"correctness_tests\results_reynolds\commercial\devochka.txt"]
+    output_files = [
+        r"correctness_tests\results_chatgpt\commercial\devochka.txt",
+        r"correctness_tests\results_tempdb_3_with_ruwikipedia\commercial\devochka.txt",
+        r"correctness_tests\results_random\commercial\devochka.txt",
+        r"correctness_tests\results_russtress\commercial\devochka.txt",
+        r"correctness_tests\results_russiangram_with_yo_fixed\commercial\devochka.txt",
+        r"correctness_tests\results_russ\commercial\devochka.txt",
+        r"correctness_tests\results_reynolds\commercial\devochka.txt",
+    ]
 
     # Create an empty dictionary to store the results
     results = {}
@@ -715,13 +770,24 @@ def perform_chatgpt_mini_benchmark():
     for method, output_file in zip(methods, output_files):
         # Calculate the accuracy for each method
         res = ac.calc_accuracy(input_file, output_file)
-        
-        
+
         # Add the method name and the percentage of correctly stressed tokens to the results dictionary
-        results[method] = [res.get_percentage_correctly_stressed_tokens(), res.get_percentage_unstressed_tokens(), res.get_percentage_incorrectly_stressed_tokens()]
+        results[method] = [
+            res.get_percentage_correctly_stressed_tokens(),
+            res.get_percentage_unstressed_tokens(),
+            res.get_percentage_incorrectly_stressed_tokens(),
+        ]
 
     # Convert the results dictionary to a pandas DataFrame
-    df = pd.DataFrame.from_dict(results, orient="index", columns=["Percentage of correctly stressed tokens", "Percentage of unstressed tokens", "Percentage of incorrectly stressed tokens"])
+    df = pd.DataFrame.from_dict(
+        results,
+        orient="index",
+        columns=[
+            "Percentage of correctly stressed tokens",
+            "Percentage of unstressed tokens",
+            "Percentage of incorrectly stressed tokens",
+        ],
+    )
 
     # Define the name of the tsv file to write the results
     tsv_file = r"correctness_tests\chatgpt_minibenchmark.tsv"
@@ -731,17 +797,17 @@ def perform_chatgpt_mini_benchmark():
 
     # Print a message to indicate that the tsv file has been created
     print(f"Results written to {tsv_file}")
-        
 
 
 if __name__ == "__main__":
+    #perform_benchmark_for_russtress(try_to_fix=True)
 
-    perform_chatgpt_mini_benchmark()
-    quit()
-
-    #print_benchmark_result_tsv()
-
+    #perform_chatgpt_mini_benchmark()
     #quit()
+
+    print_benchmark_result_tsv()
+
+    quit()
 
     ac = AccuracyCalculator()
     analysisresults = ac.calc_accuracy_over_dir(
@@ -759,12 +825,12 @@ if __name__ == "__main__":
     quit()
 
     # Print mistakes
-    #print_stressmistake_to_tsv(
+    # print_stressmistake_to_tsv(
     #    sum_results.stress_mistakes, "my_solution_stress_mistakes.tsv"
-    #)
-    #print_stressmistake_to_tsv(
+    # )
+    # print_stressmistake_to_tsv(
     #    sum_results.unstressed_mistakes, "my_solution_unstressed_mistakes.tsv"
-    #)
+    # )
     # Print benchmark results
 
     # perform_benchmark_for_my_solution()
