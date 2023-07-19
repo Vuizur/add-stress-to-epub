@@ -136,8 +136,25 @@ def plot_accuracy_my_systems():
 
 
 def plot_chatgpt_minibenchmark():
-    raise NotImplementedError
+    # load correctness_tests/chatgpt_minibenchmark.tsv
+    df = pd.read_csv("correctness_tests/chatgpt_minibenchmark.tsv", sep="\t")
+
+    # Rename System "My solution" to "Our solution"
+    df["System"] = df["System"].replace({"My solution": "Our solution"})
+
+    # Only keep systems Random, Our Solution, ChatGPT
+    df = df[df["System"].isin(["Random", "Our solution", "ChatGPT"])]
+
+    # Sort by percentage of correctly stressed tokens
+    df = df.sort_values(by="Percentage of correctly stressed tokens", ascending=True)
+
+    # Plot
+    sns.barplot(data=df, x="System", y="Percentage of correctly stressed tokens")#, hue="System", dodge=False)
+    plt.savefig("correctness_tests/accuracy_chatgpt.png", dpi=400)
+
+
 
 if __name__ == "__main__":
     #plot_accuracy_all_systems()
-    plot_accuracy_my_systems()
+    #plot_accuracy_my_systems()
+    plot_chatgpt_minibenchmark()
