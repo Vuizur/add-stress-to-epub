@@ -108,7 +108,7 @@ def plot_accuracy_my_systems():
     plt.savefig("correctness_tests/accuracy_my_systems.svg")
 
     # Print to latex
-    print(filter_relevant_columns_for_latex(df).to_latex(index=False))
+    print(filter_relevant_columns_for_latex(df).to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
     # Now calculate the change of the percentage compared to the previous system
     # and print it to latex
@@ -128,7 +128,8 @@ def plot_accuracy_my_systems():
             "Diff incorrect": "Δ % Incorrect",
         }
     )
-    print(diff_df.to_latex(index=False))
+    diff_df = diff_df.round(2)
+    print(diff_df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
     # Now divide the diff correct by the diff incorrect
     diff_df["Diff correct / incorrect"] = diff_df["Δ % Correct"] / diff_df["Δ % Incorrect"]
@@ -151,6 +152,18 @@ def plot_chatgpt_minibenchmark():
     # Plot
     sns.barplot(data=df, x="System", y="Percentage of correctly stressed tokens")#, hue="System", dodge=False)
     plt.savefig("correctness_tests/accuracy_chatgpt.png", dpi=400)
+
+    # Rename the columns
+    df = df.rename(
+        columns={
+            "Percentage of correctly stressed tokens": "% Correct",
+            "Percentage of incorrectly stressed tokens": "% Incorrect",
+            "Percentage of unstressed tokens": "% Unstressed",
+        }
+    )
+    # Keep only 2 decimal places
+    df = df.round(2)
+    print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
 
 
