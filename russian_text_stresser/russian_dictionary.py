@@ -281,6 +281,7 @@ WHERE w.word_lower_and_without_yo = ? AND w.pos = ?
 
     @staticmethod
     def write_stressed_word(word: str, stressed_dict_word: str):
+        stressed_dict_word = stressed_dict_word.replace("ё̀", "ё") # The grave accent over the ё is nonstandard, but nonetheless contained in some Ruwiktionary data.
         index = 0
         result_word = ""
         for char in stressed_dict_word:
