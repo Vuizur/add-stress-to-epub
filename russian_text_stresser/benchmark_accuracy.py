@@ -18,6 +18,7 @@ from stressed_cyrillic_tools import (
     remove_yo,
     has_only_one_syllable,
     has_cyrillic_letters,
+    is_unhelpfully_unstressed
 )
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
@@ -472,6 +473,19 @@ def try_to_fix_russtress_text(stresser: Accent, stressed_text: str, spacy_min: L
             fixed_text += token.text_with_ws
     return fixed_text
 
+def stress_text_with_russtress(text: str, stresser: Accent, try_to_fix=True):
+    stressed_text = stresser.put_stress(text).replace("'", "\u0301")
+    if try_to_fix:
+        nlp = load_spacy_min()
+        nlp.add_pipe("sentencizer")
+        #stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
+        doc = nlp(stressed_text)
+        fixed_text = ""
+        for sent in doc.sents:
+            fixed_text += try_to_fix_russtress_text(stresser, sent.text_with_ws, nlp)
+        return fixed_text
+    return stressed_text
+
 
 def perform_benchmark_for_russtress(try_to_fix=True) -> None:
     stresser = Accent()
@@ -486,18 +500,8 @@ def perform_benchmark_for_russtress(try_to_fix=True) -> None:
     result_path = f"{base_folder}/{result_folder}"
 
     def stress_text(text: str) -> str:
-        stressed_text = stresser.put_stress(text).replace("'", "\u0301")
-        if try_to_fix:
-            nlp = load_spacy_min()
-            nlp.add_pipe("sentencizer")
-
-            #stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
-            doc = nlp(stressed_text)
-            fixed_text = ""
-            for sent in doc.sents:
-                fixed_text += try_to_fix_russtress_text(stresser, sent.text_with_ws, nlp)
-            return fixed_text
-        return stressed_text
+        return stress_text_with_russtress(text, stresser, try_to_fix)
+        
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
 
@@ -663,6 +667,7 @@ def print_benchmark_result_tsv():
         "results_tempdb_1_with_openrussian",
         "results_tempdb_2_with_ruwiktionary",
         "results_tempdb_3_with_ruwikipedia",
+        "results_my_plus_russtress"
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -799,7 +804,45 @@ def perform_chatgpt_mini_benchmark():
     print(f"Results written to {tsv_file}")
 
 
+def stress_with_my_solution_and_russtress_fixed(text: str) -> str:
+    """Stresses a text with my solution and russtress fixed."""
+    # Stress with my solution
+    my_stresser = RussianTextStresser()
+    my_stressed_text = my_stresser.stress_text(text)
+    # Stress with russtress-fixed
+    stresser = Accent()
+    russtress_result = stress_text_with_russtress(text, stresser, try_to_fix=True)
+    my_text_tokenized = my_stresser._nlp(my_stressed_text)
+    russtress_text_tokenized = my_stresser._nlp(russtress_result)
+    # Iterate over both texts in parallel
+    final_text = ""
+    # Throw error if number of tokens is not the same
+    if len(my_text_tokenized) != len(russtress_text_tokenized):
+        raise Exception(
+            f"Number of tokens in my solution and russtress-fixed differ: {len(my_text_tokenized)} vs {len(russtress_text_tokenized)}"
+        )
+    for my_token, russtress_token in zip(my_text_tokenized, russtress_text_tokenized):
+        if is_unhelpfully_unstressed(my_token.text):
+            final_text += russtress_token.text_with_ws
+        else:
+            final_text += my_token.text_with_ws
+
+    return final_text
+
+def perform_benchmark_for_my_solution_plus_russtress():
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_my_plus_russtress"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    benchmark_everything_in_folder(base_path, result_path, stress_with_my_solution_and_russtress_fixed)
+
+
 if __name__ == "__main__":
+    #perform_benchmark_for_my_solution_plus_russtress()
+    #print(stress_with_my_solution_and_russtress_fixed("Я только хочу это попробовать."))
     #perform_benchmark_for_russtress(try_to_fix=True)
 
     #perform_chatgpt_mini_benchmark()
