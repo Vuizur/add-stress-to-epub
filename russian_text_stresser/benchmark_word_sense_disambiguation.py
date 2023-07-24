@@ -158,7 +158,7 @@ def benchmark_word_sense_disambiguation(
 
 def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_name: str):
     # Print to tsv file
-    with open("llm_benchmark_results.tsv", "a", encoding="utf-8", newline="") as f:
+    with open("correctness_tests/llm_benchmark_results.tsv", "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE)
         writer.writerow(
             [
