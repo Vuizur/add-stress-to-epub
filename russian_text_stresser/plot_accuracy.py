@@ -165,9 +165,21 @@ def plot_chatgpt_minibenchmark():
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
+def plot_fixing_russtress():
+    # Load benchmark_results.tsv
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    # Filter relevant columns for latex
+    df = filter_relevant_columns_for_latex(df)
+    # Keep only russtress and russtress_fixed
+    df = df[df["System"].isin(["russtress", "russtress_fixed"])]
+    # Rename russtress_fixed to russtress-fixed
+    df["System"] = df["System"].replace({"russtress": "Russtress", "russtress_fixed": "Russtress-fixed"})
+    df = df.round(2)
+    print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
 
 if __name__ == "__main__":
     #plot_accuracy_all_systems()
-    #plot_accuracy_my_systems()
-    plot_chatgpt_minibenchmark()
+    plot_accuracy_my_systems()
+    #plot_chatgpt_minibenchmark()
+    #plot_fixing_russtress()
