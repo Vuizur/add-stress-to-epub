@@ -93,6 +93,33 @@ def write_simple_cases():
 
 
 if __name__ == "__main__":
+
+    #SENTENCE = "Natural language processing (NLP) is an interdisciplinary subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language,"
+    #SENTENCE = "This is a short sentence"
+    #nlp = load_spacy_full()
+    #from spacy import displacy
+
+    #doc = nlp(SENTENCE)
+    #displacy.serve(doc, style="dep")
+
+    TEXT = "политые тягучим темно-фиолетовым соусом"
+    TEXT = "фиолетовым"
+    TEXT = "темно-фиолетовым"
+    TEXT = "Твои глаза очень красивые."
+    #TEXT = " фиолетовым"
+    rts = RussianTextStresser()
+    print(rts.stress_text(TEXT))
+   
+   
+    quit()
+
+    # Unaccentify txt file in C:\Users\hanne\Documents\Programme\add-stress-to-epub\correctness_tests\stressed_russian_texts\commercial\devochka.txt
+    with open("correctness_tests/stressed_russian_texts/commercial/devochka.txt", "r", encoding="utf-8") as f:
+        text = f.read()
+        print(unaccentify(text))
+
+    quit()
+
     # Load simple_cases.pkl
     #rd = RussianTextStresser()
     #print(rd.stress_text("еж"))
@@ -104,11 +131,14 @@ if __name__ == "__main__":
     #    print(nlp.get_pipe_config(pipe))
 
     #quit()
-    str = "Пусти́те."
-    nlp = load_spacy_min()
+    #str = "Пусти́те."
+
+    #nlp = load_spacy_min()
+    nlp = load_spacy_full()
+    str = "два часа"
     doc = nlp(str)
     for token in doc:
-        print(token.text, token.pos_, token.tag_, token.lemma_, token.is_stop)
+        print(token.text, token.pos_, token.tag_, token.lemma_, token.morph, token.is_stop)
 
     # for each char in str, print isalpha() and isdigit()
     # for char in str:
