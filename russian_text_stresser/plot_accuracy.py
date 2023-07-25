@@ -11,7 +11,7 @@ def plot_accuracy_all_systems():
         df["System"].isin(
             [
                 "reynolds",
-                "russtress",
+                "russtress_fixed",
                 "random",
                 "russiangram_with_yo_fixed",
                 "russ",
@@ -24,7 +24,7 @@ def plot_accuracy_all_systems():
     df["System"] = df["System"].replace(
         {
             "reynolds": "Reynolds",
-            "russtress": "Russtress",
+            "russtress_fixed": "Russtress-f",
             "random": "Random",
             "russiangram_with_yo_fixed": "RussianGram",
             "russ": "Russ",
@@ -101,6 +101,7 @@ def plot_accuracy_my_systems():
     bp.legend(loc="lower right")
 
     bp.set(xticklabels=[])
+    plt.ylim(70, None)
 
     # Rotate x-axis labels
 
@@ -179,7 +180,7 @@ def plot_fixing_russtress():
 
 
 if __name__ == "__main__":
-    #plot_accuracy_all_systems()
-    plot_accuracy_my_systems()
+    plot_accuracy_all_systems()
+    #plot_accuracy_my_systems()
     #plot_chatgpt_minibenchmark()
     #plot_fixing_russtress()
