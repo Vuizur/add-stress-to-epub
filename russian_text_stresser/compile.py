@@ -24,7 +24,7 @@ if __name__ == "__main__":
     STRESSER_FOLDER = "russian_text_stresser"
     RELEASE_FOLDER_NAME = "../Stress-Marker-win"
     # SPACY_FOLDER_NAME = STRESSER_FOLDER + "/ru_core_news_sm-3.4.0"
-    SPACY_FOLDER_NAME = "ru_core_news_sm-3.4.0"
+    SPACY_FOLDER_NAME = "ru_core_news_sm-3.6.0"
     # RUSSIAN_DICT_NAME = STRESSER_FOLDER + "/russian_dict.db"
     RUSSIAN_DICT_NAME = "russian_dict.db"
     SIMPLE_CASES_NAME = "simple_cases.pkl"

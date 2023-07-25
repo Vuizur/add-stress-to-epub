@@ -6,21 +6,21 @@ from spacy import Language, load
 def load_spacy_full(large_model = False) -> Language:
     bundle_dir = Path(__file__).parent.absolute()
     if large_model:
-        return load(bundle_dir / "ru_core_news_lg-3.4.0", exclude=["lemmatizer", "ner"])
+        return load(bundle_dir / "ru_core_news_lg-3.6.0", exclude=["lemmatizer", "ner"])
     else:
-        return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["lemmatizer", "ner"])
+        return load(bundle_dir / "ru_core_news_sm-3.6.0", exclude=["lemmatizer", "ner"])
 
 
 def load_spacy_full_with_lemmatizer() -> Language:
     bundle_dir = Path(__file__).parent.absolute()
 
-    return load(bundle_dir / "ru_core_news_sm-3.4.0", exclude=["ner"])
+    return load(bundle_dir / "ru_core_news_sm-3.6.0", exclude=["ner"])
 
 
 def load_spacy_min() -> Language:
     bundle_dir = Path(__file__).parent.absolute()
     return load(
-        bundle_dir / "ru_core_news_sm-3.4.0",
+        bundle_dir / "ru_core_news_sm-3.6.0",
         exclude=[
             "tok2vec",
             "morphologizer",
