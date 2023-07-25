@@ -158,7 +158,9 @@ def benchmark_word_sense_disambiguation(
 
 def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_name: str):
     # Print to tsv file
-    with open("correctness_tests/llm_benchmark_results.tsv", "a", encoding="utf-8", newline="") as f:
+    with open(
+        "correctness_tests/llm_benchmark_results.tsv", "a", encoding="utf-8", newline=""
+    ) as f:
         writer = csv.writer(f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE)
         writer.writerow(
             [
@@ -214,15 +216,15 @@ class LocalLLM:
         return self.llm(
             self.prompt.format(question=request),
         )
-    
-    
+
+
 def print_results_to_png():
-   
+
     # Read the data from the tsv file
     data = pd.read_csv("llm_benchmark_results.tsv", sep="\t")
 
-    #Order the data by accuracy
-    data = data.sort_values(by=['Percentage'], ascending=True)
+    # Order the data by accuracy
+    data = data.sort_values(by=["Percentage"], ascending=True)
 
     # Plot the histogram with seaborn
     sns.barplot(data=data, x="Name", y="Percentage")
@@ -242,24 +244,32 @@ def stacked_barplot_example():
     plt.figure(figsize=(14, 14))
 
     # top bar -> sum all values(smoker=No and smoker=Yes) to find y position of the bars
-    total = tips.groupby('day')['total_bill'].sum().reset_index()
+    total = tips.groupby("day")["total_bill"].sum().reset_index()
 
     # bar chart 1 -> top bars (group of 'smoker=No')
-    bar1 = sns.barplot(x="day",  y="total_bill", data=total, color='darkblue')
+    bar1 = sns.barplot(x="day", y="total_bill", data=total, color="darkblue")
 
     # bottom bar ->  take only smoker=Yes values from the data
-    smoker = tips[tips.smoker=='Yes']
+    smoker = tips[tips.smoker == "Yes"]
 
     # bar chart 2 -> bottom bars (group of 'smoker=Yes')
-    bar2 = sns.barplot(x="day", y="total_bill", data=smoker, estimator=sum, errorbar=None,  color='lightblue')
+    bar2 = sns.barplot(
+        x="day",
+        y="total_bill",
+        data=smoker,
+        estimator=sum,
+        errorbar=None,
+        color="lightblue",
+    )
 
     # add legend
-    top_bar = mpatches.Patch(color='darkblue', label='smoker = No')
-    bottom_bar = mpatches.Patch(color='lightblue', label='smoker = Yes')
+    top_bar = mpatches.Patch(color="darkblue", label="smoker = No")
+    bottom_bar = mpatches.Patch(color="lightblue", label="smoker = Yes")
     plt.legend(handles=[top_bar, bottom_bar])
 
     # show the graph
     plt.savefig("stacked_barplot_with_matplotlib_Python.svg")
+
 
 def choose_a_random_number(task: str) -> str:
     # Identify all numbers in the task
@@ -267,18 +277,18 @@ def choose_a_random_number(task: str) -> str:
     # Choose a random number from the list
     return random.choice(numbers)
 
+
 def simulate_random_numbers_10000_times():
     bm = BenchmarkResults()
     for i in range(10000):
         bm += benchmark_word_sense_disambiguation(choose_a_random_number)
     return bm
 
+
 if __name__ == "__main__":
-    #stacked_barplot_example()
+    # stacked_barplot_example()
     print_results_to_png()
     quit()
-
-
 
     # wizard_vicuna_7B = LlamaCpp(
     #    model_path=WIZARD_VICUNA7B_PATH,
