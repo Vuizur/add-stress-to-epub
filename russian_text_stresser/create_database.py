@@ -23,6 +23,7 @@ class DatabaseCreator:
     def __init__(self, htmldump_path):
         self.dictionary_creator = RussianDictionaryCreator()
         self.wiktionary_parser = HTMLDumpParser(htmldump_path)
+        # TODO: This is broken.
 
     def create_database(self):
         TEMPORARY_DB_FOLDER = "D:/temporary_dictionary_dbs-new"
@@ -121,5 +122,5 @@ class DatabaseCreator:
 
 
 if __name__ == "__main__":
-    database_creator = DatabaseCreator("ruwiktionary-new") # The path probably is not needed (?)
+    database_creator = DatabaseCreator("D:/ruwiktionary-new") # The path probably is not needed (?)
     database_creator.create_database()
