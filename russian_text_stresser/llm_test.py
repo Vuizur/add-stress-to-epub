@@ -1,5 +1,6 @@
-from langchain.llms import LlamaCpp, HuggingFacePipeline
-from langchain.prompts import PromptTemplate
+#from langchain.llms import LlamaCpp, HuggingFacePipeline
+#from langchain.prompts import PromptTemplate
+from llama_cpp import Llama
 
 WIZARDVICUNA7B_PROMPT = """### Instruction: {question}
 
@@ -18,7 +19,7 @@ User: {question}
 Saiga: """
 
 def test_cpp():
-    llm = LlamaCpp(
+    llm = Llama(
         model_path=MANTICORE13B_PATH, 
         n_ctx=2048,
         max_tokens=1024,
@@ -27,7 +28,7 @@ def test_cpp():
     print(llm(request))
 
 def test_saiga():
-    llm = LlamaCpp(
+    llm = Llama(
         model_path=SAIGA7B_PATH,
     )
     request = SAIGA7B_PROMPT.format(question="Пожалуйста, сочини историю про луны!")

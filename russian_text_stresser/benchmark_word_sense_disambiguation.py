@@ -11,13 +11,14 @@ from russian_text_stresser.llm_test import (
     SAIGA7B_PATH,
     SAIGA7B_PROMPT,
 )
-from langchain.llms import LlamaCpp
+#from langchain.llms import LlamaCpp
 from tqdm import tqdm
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import pandas as pd
+from llama_cpp import Llama
 
 
 @dataclass
@@ -202,9 +203,8 @@ SAIGA_7B = LLM(
 
 class LocalLLM:
     def __init__(self, llm: LLM):
-        self.llm = LlamaCpp(
+        self.llm = Llama(
             model_path=llm.path,
-            temperature=0,
             n_ctx=1024,  # Some tasks are too long for the default 512 context window
         )
         self.name = llm.name
@@ -214,7 +214,7 @@ class LocalLLM:
         request = request.replace("Ответ:", "Отвечайте только цифрой.")
         print(request)
         return self.llm(
-            self.prompt.format(question=request),
+            self.prompt.format(question=request), temperature=0
         )
 
 
