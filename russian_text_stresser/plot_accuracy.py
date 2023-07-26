@@ -32,13 +32,17 @@ def plot_accuracy_all_systems():
         }
     )
 
+    # Add a new column containing the quotient of the percentage of correct words and the percentage of incorrect words
+    df["Correct / incorrect"] = (
+        df["Percentage correct words"] / df["Percentage incorrect words"]
+    )
+
     # Sort the dataframe by the percentage of correct words
     df = df.sort_values(by="Percentage correct words", ascending=True)
 
     # Make the size of the font on the x-axis smaller
     plt.rcParams.update({"font.size": 9})
 
-    
     sns.barplot(data=df, x="System", y="Percentage correct words")
 
     plt.savefig("correctness_tests/accuracy_all_systems.png", dpi=500)
@@ -53,9 +57,23 @@ def plot_accuracy_all_systems():
     sns.barplot(data=df, x="System", y="Percentage incorrect words")
     plt.savefig("correctness_tests/incorrect_all_systems.png", dpi=500)
 
+    print(df)
+
 
 def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
-    filtered = df[["System", "Percentage correct words", "Percentage unstressed words",	"Percentage incorrect words"]]
+    stuff_to_potentially_filter =         [
+            "System",
+            "Percentage correct words",
+            "Percentage unstressed words",
+            "Percentage incorrect words",
+        ]
+    stuff_to_potentially_filter = [x for x in stuff_to_potentially_filter if x in df.columns]
+    # Calculate intersection of the columns of the dataframe and the list of columns to potentially filter, keeping order intact
+    
+
+    filtered = df[
+        stuff_to_potentially_filter
+    ]
     # Rename the columns
     filtered = filtered.rename(
         columns={
@@ -96,8 +114,10 @@ def plot_accuracy_my_systems():
 
     sns.set(style="whitegrid")
 
-    bp = sns.barplot(data=df, x="System", y="Percentage correct words", hue="System", dodge=False)
-    #bp.legend_.remove()
+    bp = sns.barplot(
+        data=df, x="System", y="Percentage correct words", hue="System", dodge=False
+    )
+    # bp.legend_.remove()
     bp.legend(loc="lower right")
 
     bp.set(xticklabels=[])
@@ -109,7 +129,11 @@ def plot_accuracy_my_systems():
     plt.savefig("correctness_tests/accuracy_my_systems.svg")
 
     # Print to latex
-    print(filter_relevant_columns_for_latex(df).to_latex(index=False, escape=True, float_format="{:.2f}".format))
+    print(
+        filter_relevant_columns_for_latex(df).to_latex(
+            index=False, escape=True, float_format="{:.2f}".format
+        )
+    )
 
     # Now calculate the change of the percentage compared to the previous system
     # and print it to latex
@@ -133,8 +157,10 @@ def plot_accuracy_my_systems():
     print(diff_df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
     # Now divide the diff correct by the diff incorrect
-    diff_df["Diff correct / incorrect"] = diff_df["Δ % Correct"] / diff_df["Δ % Incorrect"]
-    print(diff_df)    
+    diff_df["Diff correct / incorrect"] = (
+        diff_df["Δ % Correct"] / diff_df["Δ % Incorrect"]
+    )
+    print(diff_df)
 
 
 def plot_chatgpt_minibenchmark():
@@ -151,7 +177,9 @@ def plot_chatgpt_minibenchmark():
     df = df.sort_values(by="Percentage of correctly stressed tokens", ascending=True)
 
     # Plot
-    sns.barplot(data=df, x="System", y="Percentage of correctly stressed tokens")#, hue="System", dodge=False)
+    sns.barplot(
+        data=df, x="System", y="Percentage of correctly stressed tokens"
+    )  # , hue="System", dodge=False)
     plt.savefig("correctness_tests/accuracy_chatgpt.png", dpi=400)
 
     # Rename the columns
@@ -166,6 +194,7 @@ def plot_chatgpt_minibenchmark():
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
+
 def plot_fixing_russtress():
     # Load benchmark_results.tsv
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
@@ -174,7 +203,9 @@ def plot_fixing_russtress():
     # Keep only russtress and russtress_fixed
     df = df[df["System"].isin(["russtress", "russtress_fixed"])]
     # Rename russtress_fixed to russtress-fixed
-    df["System"] = df["System"].replace({"russtress": "Russtress", "russtress_fixed": "Russtress-fixed"})
+    df["System"] = df["System"].replace(
+        {"russtress": "Russtress", "russtress_fixed": "Russtress-fixed"}
+    )
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
@@ -182,5 +213,5 @@ def plot_fixing_russtress():
 if __name__ == "__main__":
     plot_accuracy_all_systems()
     #plot_accuracy_my_systems()
-    #plot_chatgpt_minibenchmark()
-    #plot_fixing_russtress()
+    # plot_chatgpt_minibenchmark()
+    # plot_fixing_russtress()
