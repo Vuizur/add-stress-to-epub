@@ -57,7 +57,11 @@ def plot_accuracy_all_systems():
     sns.barplot(data=df, x="System", y="Percentage incorrect words")
     plt.savefig("correctness_tests/incorrect_all_systems.png", dpi=500)
 
-    print(df)
+    plt.clf()
+    sns.barplot(data=df, x="System", y="Correct / incorrect")
+    plt.savefig("correctness_tests/correct_incorrect_all_systems.png", dpi=500)
+
+
 
 
 def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
@@ -66,6 +70,7 @@ def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
             "Percentage correct words",
             "Percentage unstressed words",
             "Percentage incorrect words",
+            "Correct / incorrect"
         ]
     stuff_to_potentially_filter = [x for x in stuff_to_potentially_filter if x in df.columns]
     # Calculate intersection of the columns of the dataframe and the list of columns to potentially filter, keeping order intact
