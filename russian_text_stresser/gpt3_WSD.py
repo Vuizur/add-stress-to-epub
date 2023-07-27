@@ -2,7 +2,7 @@ from collections import namedtuple
 import re
 from pydantic.dataclasses import dataclass
 import os
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, Union
 from confection import BaseModel
 import openai
 import sqlite3
@@ -14,9 +14,68 @@ from stressed_cyrillic_tools import (
 )
 from ruwiktionary_htmldump_parser import HTMLDumpParser
 from helper_methods import load_spacy_min
-
+from llm_test import (
+    MANTICORE13B_PATH,
+    MANTICORE_PROMPT,
+    SAIGA7B_PATH,
+    SAIGA7B_PROMPT,
+    WIZARD_VICUNA7B_PATH,
+    WIZARDVICUNA7B_PROMPT,
+)
+from llama_cpp import Llama
 from russian_dictionary import RussianDictionary
 from pydantic.json import pydantic_encoder
+
+
+# An enum for the different LLMs that also contains the path to the model and the prompt template
+@dataclass
+class LLM:
+    name: str
+    path: str
+    prompt: str
+
+
+WIZARD_VICUNA_7B = LLM(
+    name="wizard_vicuna_7B",
+    path=WIZARD_VICUNA7B_PATH,
+    prompt=WIZARDVICUNA7B_PROMPT,
+)
+
+MANTICORE_13B = LLM(
+    name="manticore_13B",
+    path=MANTICORE13B_PATH,
+    prompt=MANTICORE_PROMPT,
+)
+
+SAIGA_7B = LLM(
+    name="saiga_7B",
+    path=SAIGA7B_PATH,
+    prompt=SAIGA7B_PROMPT,
+)
+
+WIZARD_L2_13B = LLM(
+    name="wizard_l2_13B",
+    path=r"D:\Programs\one-click-installers\text-generation-webui\models\wizardlm-13b-v1.2.ggmlv3.q4_0.bin",
+    prompt=WIZARDVICUNA7B_PROMPT,
+)
+
+
+class LocalLLM:
+    def __init__(self, llm: LLM):
+        self.llm = Llama(
+            model_path=llm.path,
+            n_ctx=1024,  # Some tasks are too long for the default 512 context window
+        )
+        self.name = llm.name
+        self.prompt = llm.prompt
+
+    def generate(self, request: str) -> str:
+        request = request.replace("Ответ:", "Отвечайте только цифрой.")
+        print(request)
+        return self.llm(self.prompt.format(question=request), temperature=0)["choices"][
+            0
+        ]["text"]
+
 
 # JSON has format like this
 # {
@@ -33,6 +92,7 @@ from pydantic.json import pydantic_encoder
 #    "grammar_info": "Существительное, неодушевлённое, мужской род, 2-е склонение (тип склонения мн. <м 1b>  по классификации А. А. Зализняка); формы ед. ч. не используются.",
 #    "IPA": "vʲɪˈsɨ"
 # },
+
 
 # Entry = TypedDict(
 #    "Entry",
@@ -87,7 +147,6 @@ class RuWiktionary:
             with open(russian_wiktionary_json_path, "r", encoding="utf-8") as f:
                 all_words = json.load(f)
                 for word in all_words:
-
                     self.cursor.execute(
                         "INSERT INTO words (word, word_lower_unstressed, definitions, grammar_info, IPA, pos, aspect) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         (
@@ -211,9 +270,9 @@ class RuWiktionary:
         else:
             return [row[0] for row in rows]
 
-    #def get_words_with_only_one_choice(self) -> list[str]:
+    # def get_words_with_only_one_choice(self) -> list[str]:
     #    """Returns a list of words with only one choice in the database"""
-#
+    #
     #    # named dict that contains (word_lower_unstressed, list of stress options)
     #    stress_options = defaultdict(list)
     #    StressOptions = named(
@@ -242,12 +301,15 @@ def find_correct_choice(llm_answer: str, options: list[str]) -> str:
     # For this we lowercase everything, but keep the stress
     else:
         options_without_leading_number = [option.split(" ", 1)[1] for option in options]
-        options_containing_only_word = [option.split(" (", 1)[0] for option in options_without_leading_number]
-        
+        options_containing_only_word = [
+            option.split(" (", 1)[0] for option in options_without_leading_number
+        ]
+
         for i, option in enumerate(options_containing_only_word):
             if option.lower() in llm_answer.lower():
                 return options[i]
         return None
+
 
 @dataclass
 class DisambiguationTask:
@@ -261,30 +323,33 @@ class DisambiguationTask:
         # First, we check if the llm_answer contains one number and only one number equal to the index (starting from 1) of the correct choice
         # If it does, we return the correct choice
         # If it doesn't, we return None
-        #possible_numbers = range(1, len(self.choices) + 1)
-        #numbers_in_llm_answer = [
+        # possible_numbers = range(1, len(self.choices) + 1)
+        # numbers_in_llm_answer = [
         #    number for number in possible_numbers if number in llm_answer
-        #]
-        #if len(numbers_in_llm_answer) == 1:
+        # ]
+        # if len(numbers_in_llm_answer) == 1:
         #    return self.choices[numbers_in_llm_answer[0] - 1]
 
 
 class WordSenseDisambiguator:
     def __init__(
-        self, russian_wiktionary_json_path: str = "ruwiktdata_cleaned.json"
+        self,
+        local_llm: LocalLLM,
+        russian_wiktionary_json_path: str = "ruwiktdata_cleaned.json",
     ) -> None:
         # If openai-key.txt is not found, message the user to create it
-        if not os.path.exists("openai-key.txt"):
-            raise FileNotFoundError(
-                "Please create openai-key.txt and put your OpenAI API key in it"
-            )
-        with open("openai-key.txt", "r", encoding="utf-8") as f:
-            openai.api_key = f.readline().strip()
+        # if not os.path.exists("openai-key.txt"):
+        #    raise FileNotFoundError(
+        #        "Please create openai-key.txt and put your OpenAI API key in it"
+        #    )
+        # with open("openai-key.txt", "r", encoding="utf-8") as f:
+        #    openai.api_key = f.readline().strip()
         self.russian_wiktionary = RuWiktionary(russian_wiktionary_json_path)
         self.disambiguation_tasks = []
         self.words_where_aspect_matters = set(
             self.russian_wiktionary.get_words_where_aspect_matters()
         )
+        self.local_llm = local_llm
 
     def get_cleaned_up_grammar_info(self, entry: Entry) -> str:
         pos = get_pos_from_grammar_info(entry.grammar_info)
@@ -346,6 +411,7 @@ class WordSenseDisambiguator:
         context = unaccentify(context)
 
         valid_entries = self.russian_wiktionary.get_entries(word)
+        print(f"Valid entries for {word}: {valid_entries}")
         if valid_entries is None or len(valid_entries) == 0:
             return None
         elif self.only_one_choice_exists(word, valid_entries):
@@ -368,19 +434,28 @@ class WordSenseDisambiguator:
 Фраза: "{context}"
 Вопрос: Какое определение слова "{word}" здесь правильное?
 {options}
-Ответ:"""
+Отвечайте только цифрой."""
+            # Ответ:"""
 
-            disamb_task =  DisambiguationTask(
-                    generated_string=question,
-                    choices=valid_entries,
-                )
-            # Append to the list of disambiguation tasks
-            self.disambiguation_tasks.append(
-               disamb_task
+            disamb_task = DisambiguationTask(
+                generated_string=question,
+                choices=valid_entries,
             )
+            print(f"Disambiguation task: {disamb_task}")
+            # Append to the list of disambiguation tasks
+            # self.disambiguation_tasks.append(
+            #   disamb_task
+            # )
 
+            # Get the answer from the language model
+            llm_answer = self.local_llm.generate(disamb_task.generated_string)
 
-            print(question)
+            print(f"LLM answer: {llm_answer}")
+
+            correct_choice = find_correct_choice(llm_answer, disamb_task.choices)
+            print(f"Correct choice: {correct_choice}")
+
+            return correct_choice
 
     def detect_and_fix_missing_stressed_words(self, text: str) -> str:
         """Uses GPT3-based word sense disambiguation to try to fix missing stressed words"""
@@ -407,7 +482,19 @@ class WordSenseDisambiguator:
             )
 
 
+def test_detect_and_fix_missing_stressed_words():
+    wsd = WordSenseDisambiguator(LocalLLM(WIZARD_VICUNA_7B))
+    # Load text from stressed_text.txt
+    with open("stressed_text.txt", "r", encoding="utf-8") as f:
+        text = f.read()
+
+    wsd.detect_and_fix_missing_stressed_words(text)
+
+
 if __name__ == "__main__":
+    test_detect_and_fix_missing_stressed_words()
+
+    quit()
     # hd = HTMLDumpParser(None, "ruwiktdata_int.json", "ruwiktdata_cleaned.json")
     # hd.clean_entries()
     # quit()

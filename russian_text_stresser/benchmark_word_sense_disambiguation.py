@@ -1,17 +1,8 @@
 import csv
 from dataclasses import dataclass
 from collections.abc import Callable
-from russian_text_stresser.gpt3_WSD import find_correct_choice
+from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM, find_correct_choice
 import re
-from russian_text_stresser.llm_test import (
-    WIZARD_VICUNA7B_PATH,
-    WIZARDVICUNA7B_PROMPT,
-    MANTICORE13B_PATH,
-    MANTICORE_PROMPT,
-    SAIGA7B_PATH,
-    SAIGA7B_PROMPT,
-)
-#from langchain.llms import LlamaCpp
 from tqdm import tqdm
 import random
 import seaborn as sns
@@ -174,58 +165,7 @@ def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_nam
         )
 
 
-# An enum for the different LLMs that also contains the path to the model and the prompt template
-@dataclass
-class LLM:
-    name: str
-    path: str
-    prompt: str
-
-
-WIZARD_VICUNA_7B = LLM(
-    name="wizard_vicuna_7B",
-    path=WIZARD_VICUNA7B_PATH,
-    prompt=WIZARDVICUNA7B_PROMPT,
-)
-
-MANTICORE_13B = LLM(
-    name="manticore_13B",
-    path=MANTICORE13B_PATH,
-    prompt=MANTICORE_PROMPT,
-)
-
-SAIGA_7B = LLM(
-    name="saiga_7B",
-    path=SAIGA7B_PATH,
-    prompt=SAIGA7B_PROMPT,
-)
-
-WIZARD_L2_13B = LLM(
-    name="wizard_l2_13B",
-    path= r"D:\Programs\one-click-installers\text-generation-webui\models\wizardlm-13b-v1.2.ggmlv3.q4_0.bin",
-    prompt=WIZARDVICUNA7B_PROMPT,
-)
-
-
-class LocalLLM:
-    def __init__(self, llm: LLM):
-        self.llm = Llama(
-            model_path=llm.path,
-            n_ctx=1024,  # Some tasks are too long for the default 512 context window
-        )
-        self.name = llm.name
-        self.prompt = llm.prompt
-
-    def generate(self, request: str) -> str:
-        request = request.replace("Ответ:", "Отвечайте только цифрой.")
-        print(request)
-        return self.llm(
-            self.prompt.format(question=request), temperature=0
-        )["choices"][0]["text"]
-
-
 def print_results_to_png():
-
     # Read the data from the tsv file
     data = pd.read_csv("llm_benchmark_results.tsv", sep="\t")
 
@@ -295,15 +235,13 @@ if __name__ == "__main__":
     # stacked_barplot_example()
 
     llama_2_13B = LocalLLM(WIZARD_L2_13B)
-    #print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
+    # print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
     benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
     print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
 
     quit()
     print_results_to_png()
 
-
-    
     quit()
 
     # wizard_vicuna_7B = LlamaCpp(
@@ -312,7 +250,6 @@ if __name__ == "__main__":
     # wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
     # manticore_13B = LocalLLM(MANTICORE_13B)
     # saiga_7B = LocalLLM(SAIGA_7B)
-
 
     # benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
     # print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
