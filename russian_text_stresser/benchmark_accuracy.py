@@ -18,7 +18,7 @@ from stressed_cyrillic_tools import (
     remove_yo,
     has_only_one_syllable,
     has_cyrillic_letters,
-    is_unhelpfully_unstressed
+    is_unhelpfully_unstressed,
 )
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
@@ -110,7 +110,6 @@ class AnalysisResults:
     # Overload the + operator to make it easier to combine results
 
     def __add__(self, other):
-
         if isinstance(self.file_path, str):
             self.file_path = [self.file_path]
         if isinstance(other.file_path, str):
@@ -444,8 +443,10 @@ def perform_benchmark_for_my_solutions_old() -> None:
         benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
         print(f"Time for {file_path}: {time.time() - t0}")
 
-def try_to_fix_russtress_text(stresser: Accent, stressed_text: str, spacy_min: Language) -> str:
-    
+
+def try_to_fix_russtress_text(
+    stresser: Accent, stressed_text: str, spacy_min: Language
+) -> str:
     fixed_text = ""
     # Check if there are any words that are not stressed
     doc = spacy_min(stressed_text)
@@ -454,31 +455,38 @@ def try_to_fix_russtress_text(stresser: Accent, stressed_text: str, spacy_min: L
         if (
             has_cyrillic_letters(token.text)
             and not has_acute_accent_or_only_one_syllable(token.text)
-            and not "ё" in token.text and not "Ё" in token.text
+            and not "ё" in token.text
+            and not "Ё" in token.text
             and token.i != 0
             and token.nbor(-1).text != "-"
         ):
             print("Unstressed word found: ", token.text)
-            print("Retrying a text of the following length: ", len(doc[token.i :].text_with_ws))
+            print(
+                "Retrying a text of the following length: ",
+                len(doc[token.i :].text_with_ws),
+            )
             # Get all text after the current token
             text_to_retry = unaccentify(doc[token.i :].text_with_ws)
             # Stress it
-            stressed_text_to_retry = stresser.put_stress(
-                text_to_retry
-            ).replace("'", "\u0301")
+            stressed_text_to_retry = stresser.put_stress(text_to_retry).replace(
+                "'", "\u0301"
+            )
             # Replace the old text with the new text
             # However, we need to check again
-            return fixed_text + try_to_fix_russtress_text(stresser, stressed_text_to_retry, spacy_min)
+            return fixed_text + try_to_fix_russtress_text(
+                stresser, stressed_text_to_retry, spacy_min
+            )
         else:
             fixed_text += token.text_with_ws
     return fixed_text
+
 
 def stress_text_with_russtress(text: str, stresser: Accent, try_to_fix=True):
     stressed_text = stresser.put_stress(text).replace("'", "\u0301")
     if try_to_fix:
         nlp = load_spacy_min()
         nlp.add_pipe("sentencizer")
-        #stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
+        # stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
         doc = nlp(stressed_text)
         fixed_text = ""
         for sent in doc.sents:
@@ -501,7 +509,6 @@ def perform_benchmark_for_russtress(try_to_fix=True) -> None:
 
     def stress_text(text: str) -> str:
         return stress_text_with_russtress(text, stresser, try_to_fix)
-        
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
 
@@ -667,7 +674,7 @@ def print_benchmark_result_tsv():
         "results_tempdb_1_with_openrussian",
         "results_tempdb_2_with_ruwiktionary",
         "results_tempdb_3_with_ruwikipedia",
-        "results_my_plus_russtress"
+        "results_my_plus_russtress",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -829,6 +836,7 @@ def stress_with_my_solution_and_russtress_fixed(text: str) -> str:
 
     return final_text
 
+
 def perform_benchmark_for_my_solution_plus_russtress():
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
@@ -837,16 +845,18 @@ def perform_benchmark_for_my_solution_plus_russtress():
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
 
-    benchmark_everything_in_folder(base_path, result_path, stress_with_my_solution_and_russtress_fixed)
+    benchmark_everything_in_folder(
+        base_path, result_path, stress_with_my_solution_and_russtress_fixed
+    )
 
 
 if __name__ == "__main__":
-    #perform_benchmark_for_my_solution_plus_russtress()
-    #print(stress_with_my_solution_and_russtress_fixed("Я только хочу это попробовать."))
-    #perform_benchmark_for_russtress(try_to_fix=True)
+    # perform_benchmark_for_my_solution_plus_russtress()
+    # print(stress_with_my_solution_and_russtress_fixed("Я только хочу это попробовать."))
+    # perform_benchmark_for_russtress(try_to_fix=True)
 
-    #perform_chatgpt_mini_benchmark()
-    #quit()
+    # perform_chatgpt_mini_benchmark()
+    # quit()
 
     print_benchmark_result_tsv()
 
