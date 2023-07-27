@@ -9,9 +9,18 @@ class RussianTextStresser:
         db_file: str = "russian_dict.db",
         simple_cases_file: Optional[str] = "simple_cases.pkl",
         use_large_model=False,
+        large_language_model_path: Optional[str] = None,
     ) -> None:
         self.rd = RussianDictionary(db_file, simple_cases_file)
         self._nlp = load_spacy_full(use_large_model)
+        if large_language_model_path is not None:
+            self.disambiguate = True
+            from russian_text_stresser.gpt3_WSD import WordSenseDisambiguator
+            from llama_cpp import Llama
+            self.large_language_model_path = large_language_model_path
+            self.llama = Llama(large_language_model_path, 1024)
+        else:
+            self.disambiguate = False
 
     def stress_text(self, text: str) -> str:
         if len(text) > 0:
@@ -36,7 +45,7 @@ class RussianTextStresser:
                             fusion_str
                         )
 
-                        if is_acute_accented(fusion_str_stressed):
+                        if is_acute_accented(fusion_str_stressed): # TODO: Maybe also check ё
                             result_text += fusion_str_stressed + doc[i + 2].whitespace_
                             skip_elements = 2
                             continue
