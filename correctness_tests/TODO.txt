@@ -1,0 +1,30 @@
+Previous works:
+Schlussfolgerungen darstellen
+
+Flowcharts, falls Verlauf nicht linear
+
+Für ChatGPT: Minibenchmark
+
+Externen und internen Vergleich aufteilen
+
+Menge der Daten in DB aufschreiben.
+
+Hypothesen vorher aufstellen, das Experimentkapitel wird dann (*diese überprüfen?)
+
+Experimente:
+
+1 Methodik: Durchführung, Daten, Preprocessing, welches Programm, welche hardware, welche Experimente möchte ich machen, ?
+
+2 Experimentdurchführung
+* Ergebnisse beschreiben. 
+"Accuracyvalues" darstellen, z. B. biases beschreiben, (z.b, spacy-Tokenizing), 
+
+3 Diskussion
+Ergebnisse beschreiben: Meins ist besser, weil...
+Hypothesen aufstellen
+(Eventuell auch neues Diagramm mit wichtigsten Findings oder einfach zurück verweisen)
+###
+
+Grid dahinter legen, um Unterschiede zu erkennen
+
+Lieber mehr Diagramme als zu viele Balken in einem Diagramm
