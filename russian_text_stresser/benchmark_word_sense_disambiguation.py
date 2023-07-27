@@ -200,6 +200,12 @@ SAIGA_7B = LLM(
     prompt=SAIGA7B_PROMPT,
 )
 
+WIZARD_L2_13B = LLM(
+    name="wizard_l2_13B",
+    path= r"D:\Programs\one-click-installers\text-generation-webui\models\wizardlm-13b-v1.2.ggmlv3.q4_0.bin",
+    prompt=WIZARDVICUNA7B_PROMPT,
+)
+
 
 class LocalLLM:
     def __init__(self, llm: LLM):
@@ -215,7 +221,7 @@ class LocalLLM:
         print(request)
         return self.llm(
             self.prompt.format(question=request), temperature=0
-        )
+        )["choices"][0]["text"]
 
 
 def print_results_to_png():
@@ -287,7 +293,17 @@ def simulate_random_numbers_10000_times():
 
 if __name__ == "__main__":
     # stacked_barplot_example()
+
+    llama_2_13B = LocalLLM(WIZARD_L2_13B)
+    #print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
+    benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
+    print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
+
+    quit()
     print_results_to_png()
+
+
+    
     quit()
 
     # wizard_vicuna_7B = LlamaCpp(
@@ -296,6 +312,7 @@ if __name__ == "__main__":
     # wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
     # manticore_13B = LocalLLM(MANTICORE_13B)
     # saiga_7B = LocalLLM(SAIGA_7B)
+
 
     # benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
     # print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
