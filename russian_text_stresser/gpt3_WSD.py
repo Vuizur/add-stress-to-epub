@@ -1,4 +1,5 @@
 from collections import namedtuple
+from pprint import pprint
 import re
 from pydantic.dataclasses import dataclass
 import os
@@ -318,17 +319,19 @@ class DisambiguationTask:
     generated_string: str
     choices: list[Entry]
 
-    def find_correct_choice(self, llm_answer: str) -> Entry:
+    def find_correct_entry(self, llm_answer: str) -> Optional[Entry]:
         """Returns the correct choice based on the answer from the language model"""
-        # First, we check if the llm_answer contains one number and only one number equal to the index (starting from 1) of the correct choice
-        # If it does, we return the correct choice
-        # If it doesn't, we return None
-        # possible_numbers = range(1, len(self.choices) + 1)
-        # numbers_in_llm_answer = [
-        #    number for number in possible_numbers if number in llm_answer
-        # ]
-        # if len(numbers_in_llm_answer) == 1:
-        #    return self.choices[numbers_in_llm_answer[0] - 1]
+        number = re.findall(r"\d+", llm_answer)[0]
+        try:
+            return self.choices[int(number) - 1]
+        except IndexError:
+            fitting_entries = [
+                entry for entry in self.choices if entry.word in llm_answer
+            ]
+            if len(fitting_entries) == 1:
+                return fitting_entries[0]
+            else:
+                return None
 
 
 class WordSenseDisambiguator:
@@ -411,7 +414,7 @@ class WordSenseDisambiguator:
         context = unaccentify(context)
 
         valid_entries = self.russian_wiktionary.get_entries(word)
-        print(f"Valid entries for {word}: {valid_entries}")
+        pprint(f"Valid entries for {word}: {valid_entries}")
         if valid_entries is None or len(valid_entries) == 0:
             return None
         elif self.only_one_choice_exists(word, valid_entries):
@@ -450,26 +453,54 @@ class WordSenseDisambiguator:
             # Get the answer from the language model
             llm_answer = self.local_llm.generate(disamb_task.generated_string)
 
-            print(f"LLM answer: {llm_answer}")
+            pprint(f"LLM answer: {llm_answer}")
 
-            correct_choice = find_correct_choice(llm_answer, disamb_task.choices)
-            print(f"Correct choice: {correct_choice}")
+            correct_entry = disamb_task.find_correct_entry(llm_answer)
+            if correct_entry is None:
+                print("llm answer does not contain a number")
+                print("llm answer:", llm_answer)
+                return None
+            else:
+                # Find in entry matching word
+                matching_word = self.find_in_entry_matching_word(word, correct_entry)[0]
+
+                correct_choice = RussianDictionary.write_stressed_word(
+                    word, matching_word
+                )
+            pprint(f"Correct choice: {correct_choice}")
+
+            # Print everything to disk for debugging
+            with open("disambiguation_tasks.txt", "a", encoding="utf-8") as f:
+                f.write(f"Context: {context}\n")
+                f.write(f"Question: {question}\n")
+                f.write(f"LLM answer: {llm_answer}\n")
+                f.write(f"Correct choice: {correct_choice}\n\n")
 
             return correct_choice
 
     def detect_and_fix_missing_stressed_words(self, text: str) -> str:
-        """Uses GPT3-based word sense disambiguation to try to fix missing stressed words"""
+        """Uses LLM-based word sense disambiguation to try to fix missing stressed words"""
         nlp = load_spacy_min()
         nlp.add_pipe("sentencizer")
         doc = nlp(text)
+        fixed_text = ""
         # Iterate over sentences
         for sent in doc.sents:
             # Iterate over words
             for word in sent:
-                if has_acute_accent_or_only_one_syllable(word.text):
-                    continue
+                if (
+                    not has_acute_accent_or_only_one_syllable(word.text)
+                    and not "ё" in word.text
+                    and not "Ё" in word.text
+                ):
+                    disambiguated_word = self.disambiguate(word.text, sent.text.strip())
+                    if disambiguated_word is not None:
+                        fixed_text += disambiguated_word + word.whitespace_
+
+                else:
+                    fixed_text += word.text_with_ws
                 # If the word is not stressed, try to fix it
-                self.disambiguate(word.text, sent.text)
+        return fixed_text
 
     def export_disambiguation_tasks_to_json(self):
         with open("disambiguation_tasks.json", "w", encoding="utf-8") as f:
@@ -488,7 +519,10 @@ def test_detect_and_fix_missing_stressed_words():
     with open("stressed_text.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
-    wsd.detect_and_fix_missing_stressed_words(text)
+    # Keep first 6000 characters
+    text = text[:6000]
+
+    print(wsd.detect_and_fix_missing_stressed_words(text))
 
 
 if __name__ == "__main__":
