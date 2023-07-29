@@ -31,12 +31,7 @@ transliterate = "^1.10.2"
 russian-stress-benchmark = {git = "https://github.com/Vuizur/russian-stress-benchmark", optional = true}
 russ = {version = "^0.0.2", optional = true}
 #numpy = "1.23.5" # russtress cannot handle newer versions, but if you uncomment this it breaks everything thanks to poetry
-msgpack = {version = "^1.0.4", optional = true}
-filelock = {version = "^3.9.0", optional = true}
 pymorphy2-dicts-ru = "^2.4.417127.4579844"
-importlib-metadata = {version = "^6.0.0", optional = true}
-jsonschema = {version = "^4.17.3", optional = true}
-pyrsistent = {version = "^0.19.3", optional = true}
 tensorflow-io-gcs-filesystem = {version = "0.31.0", optional = true} # Another thing that needs to be locked when using poetry, awesome :/
 transformers = {version = "^4.29.0", optional = true}
 llama-cpp-python = "^0.1.52"
@@ -52,8 +47,6 @@ pyinstaller = "^5.3"
 GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
 benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem", "seaborn"]
-#https://github.com/python-poetry/poetry/issues/3957
-#poetry-workaround = ["msgpack", "filelock", "importlib-metadata", "jsonschema", "pyrsistent", "charset-normalizer"]
 word_sense_disambiguation = ["llama-cpp-python", "transformers", "openai"]
 server = ["litestar"]
 
