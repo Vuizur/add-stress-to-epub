@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Any, Optional
 from russian_text_stresser.helper_methods import is_unimportant, load_spacy_full
 from stressed_cyrillic_tools import is_acute_accented
 from russian_text_stresser.russian_dictionary import RussianDictionary
+from russian_text_stresser.benchmark_word_sense_disambiguation import LocalLLM
+from russian_text_stresser.gpt3_WSD import WordSenseDisambiguator
+
 
 class RussianTextStresser:
     def __init__(
@@ -9,18 +12,14 @@ class RussianTextStresser:
         db_file: str = "russian_dict.db",
         simple_cases_file: Optional[str] = "simple_cases.pkl",
         use_large_model=False,
-        large_language_model_path: Optional[str] = None,
+        llm: Optional[LocalLLM] = None, #
     ) -> None:
         self.rd = RussianDictionary(db_file, simple_cases_file)
         self._nlp = load_spacy_full(use_large_model)
-        if large_language_model_path is not None:
-            self.disambiguate = True
-            from russian_text_stresser.gpt3_WSD import WordSenseDisambiguator
-            from llama_cpp import Llama
-            self.large_language_model_path = large_language_model_path
-            self.llama = Llama(large_language_model_path, 1024)
+        if llm is not None:
+            self.wsd = WordSenseDisambiguator(llm)
         else:
-            self.disambiguate = False
+            self.wsd = None
 
     def stress_text(self, text: str) -> str:
         if len(text) > 0:
@@ -54,6 +53,9 @@ class RussianTextStresser:
                         token.text, token.pos_, token.morph
                     )
                     result_text += str_wrd + token.whitespace_
+
+            if self.wsd is not None:
+                result_text = self.wsd.detect_and_fix_missing_stressed_words(result_text)
             return result_text
         else:
             return ""

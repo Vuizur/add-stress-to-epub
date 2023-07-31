@@ -1,11 +1,14 @@
 # coding=utf-8
 
+from datetime import timedelta
 import json
 import pickle
 import sqlite3
+from time import time
 
 # from benchmark_accuracy import benchmark_accuracy
 from stressed_cyrillic_tools import remove_accent_if_only_one_syllable, unaccentify
+from gpt3_WSD import WIZARD_L2_13B, LocalLLM
 from text_stresser import RussianTextStresser
 from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import (
     RussianDictionaryCreator,
@@ -102,13 +105,20 @@ if __name__ == "__main__":
     #doc = nlp(SENTENCE)
     #displacy.serve(doc, style="dep")
 
+    
+
     TEXT = "политые тягучим темно-фиолетовым соусом"
     TEXT = "фиолетовым"
     TEXT = "темно-фиолетовым"
     TEXT = "Твои глаза очень красивые."
+    TEXT = unaccentify("В конце́ 1811 го́да жил в своём поме́стье[2] Ненара́дове до́брый Гаври́ла Гаври́лович Р**.")
+    print(TEXT)
     #TEXT = " фиолетовым"
-    rts = RussianTextStresser()
+    t0 = time()
+    rts = RussianTextStresser(llm=LocalLLM(WIZARD_L2_13B))
+
     print(rts.stress_text(TEXT))
+    print(f"Time for my solution with WSD: {timedelta(seconds=time() - t0)}")
    
    
     quit()
