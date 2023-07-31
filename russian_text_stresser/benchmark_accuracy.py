@@ -857,6 +857,7 @@ def perform_benchmark_my_solution_wsd():
 
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
+    t0 = time.time()
 
     rts = RussianTextStresser(llm=LocalLLM(WIZARD_L2_13B))
 
@@ -866,8 +867,12 @@ def perform_benchmark_my_solution_wsd():
     benchmark_everything_in_folder(
         base_path, result_path, stress_with_my_solution_wsd
     )
+    from datetime import timedelta
+
+    print(f"Time for my solution with WSD: {timedelta(seconds=time.time() - t0)}")
 
 if __name__ == "__main__":
+
     perform_benchmark_my_solution_wsd()
     quit()
     # perform_benchmark_for_my_solution_plus_russtress()

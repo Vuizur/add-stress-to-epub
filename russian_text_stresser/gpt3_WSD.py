@@ -12,6 +12,7 @@ from stressed_cyrillic_tools import (
     unaccentify,
     remove_yo,
     has_acute_accent_or_only_one_syllable,
+    has_cyrillic_letters
 )
 from ruwiktionary_htmldump_parser import HTMLDumpParser
 from helper_methods import load_spacy_min
@@ -503,13 +504,16 @@ class WordSenseDisambiguator:
             # Iterate over words
             for word in sent:
                 if (
-                    not has_acute_accent_or_only_one_syllable(word.text)
+                    has_cyrillic_letters(word.text)
+                    and not has_acute_accent_or_only_one_syllable(word.text)
                     and not "ё" in word.text
                     and not "Ё" in word.text
                 ):
                     disambiguated_word = self.disambiguate(word.text, sent.text.strip())
                     if disambiguated_word is not None:
                         fixed_text += disambiguated_word + word.whitespace_
+                    else:
+                        fixed_text += word.text_with_ws
 
                 else:
                     fixed_text += word.text_with_ws
@@ -538,7 +542,7 @@ def test_detect_and_fix_missing_stressed_words():
     text = "Гости встали из-за стола, совершенно примиренные с m-me de Staël."
 
     print(wsd.detect_and_fix_missing_stressed_words(text))
-
+    
 
 if __name__ == "__main__":
     test_detect_and_fix_missing_stressed_words()
