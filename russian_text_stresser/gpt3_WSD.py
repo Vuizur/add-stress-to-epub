@@ -448,8 +448,7 @@ class WordSenseDisambiguator:
                 ]
             )
 
-            question = f"""
-Фраза: "{context}"
+            question = f"""Фраза: "{context}"
 Вопрос: Какое определение слова "{word}" здесь правильное?
 {options}
 Отвечайте только цифрой."""
