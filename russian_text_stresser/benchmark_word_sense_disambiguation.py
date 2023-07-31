@@ -1,7 +1,7 @@
 import csv
 from dataclasses import dataclass
 from collections.abc import Callable
-from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM, find_correct_choice
+from russian_text_stresser.gpt3_WSD import MANTICORE_13B, SAIGA_7B, WIZARD_L2_13B, WIZARD_VICUNA_7B, LocalLLM, find_correct_choice
 import re
 from tqdm import tqdm
 import random
@@ -87,6 +87,7 @@ def benchmark_word_sense_disambiguation(
 
                     try:
                         llm_answer = answer_function(benchmark_task.complete_task)
+                        print(llm_answer)
                     except Exception as e:
                         print("Exception occurred:")
                         print(e)
@@ -240,30 +241,27 @@ if __name__ == "__main__":
     print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
 
     quit()
-    print_results_to_png()
+    #print_results_to_png()
 
-    quit()
+    #quit()
 
-    # wizard_vicuna_7B = LlamaCpp(
-    #    model_path=WIZARD_VICUNA7B_PATH,
-    # )
-    # wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
-    # manticore_13B = LocalLLM(MANTICORE_13B)
-    # saiga_7B = LocalLLM(SAIGA_7B)
+    
+    wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
+    #manticore_13B = LocalLLM(MANTICORE_13B)
+    #saiga_7B = LocalLLM(SAIGA_7B)
 
-    # benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
-    # print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
+    #benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
+    #print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
+    #benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
+    #print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
 
-    # benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
-    # print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
+    #benchmark_results = benchmark_word_sense_disambiguation(
+    #    lambda x: x, instead_return_chatgpt_results=True
+    #)
+    #print_benchmark_results_to_file(benchmark_results, "chatgpt")
 
-    benchmark_results = benchmark_word_sense_disambiguation(
-        lambda x: x, instead_return_chatgpt_results=True
-    )
-    print_benchmark_results_to_file(benchmark_results, "chatgpt")
-
-    # benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
-    # print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
+    benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
+    print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
 
     # benchmark_results = simulate_random_numbers_10000_times()
     # print_benchmark_results_to_file(benchmark_results, "choose_a_random_number")

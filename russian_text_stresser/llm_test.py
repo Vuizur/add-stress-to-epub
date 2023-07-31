@@ -22,7 +22,6 @@ def test_cpp():
     llm = Llama(
         model_path=MANTICORE13B_PATH, 
         n_ctx=2048,
-        max_tokens=1024,
     )
     request = MANTICORE_PROMPT.format(question="Write a cool short story.")
     print(llm(request))

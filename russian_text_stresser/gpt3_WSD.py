@@ -26,6 +26,7 @@ from llm_test import (
 from llama_cpp import Llama
 from russian_dictionary import RussianDictionary
 from pydantic.json import pydantic_encoder
+import traceback
 
 
 # An enum for the different LLMs that also contains the path to the model and the prompt template
@@ -60,6 +61,12 @@ WIZARD_L2_13B = LLM(
     prompt=WIZARDVICUNA7B_PROMPT,
 )
 
+# Debug database
+conn = sqlite3.connect("llmdebug.db")
+cursor = conn.cursor()
+cursor.execute(
+    "CREATE TABLE IF NOT EXISTS debug (id INTEGER PRIMARY KEY, request TEXT, response TEXT, trace TEXT)"
+)
 
 class LocalLLM:
     def __init__(self, llm: LLM):
@@ -72,10 +79,18 @@ class LocalLLM:
 
     def generate(self, request: str) -> str:
         request = request.replace("Ответ:", "Отвечайте только цифрой.")
-        print(request)
-        return self.llm(self.prompt.format(question=request), temperature=0)["choices"][
+        formatted_request = self.prompt.format(question=request)
+        response = self.llm(formatted_request, temperature=0)["choices"][
             0
         ]["text"]
+        # Write to database
+        cursor.execute(
+            "INSERT INTO debug (request, response, trace) VALUES (?, ?, ?)",
+            (formatted_request, response, ''.join(traceback.format_stack())),
+        )
+        conn.commit()
+
+        return response
 
 
 # JSON has format like this
@@ -444,7 +459,7 @@ class WordSenseDisambiguator:
                 generated_string=question,
                 choices=valid_entries,
             )
-            print(f"Disambiguation task: {disamb_task}")
+            #pprint(f"Disambiguation task: {disamb_task}")
             # Append to the list of disambiguation tasks
             # self.disambiguation_tasks.append(
             #   disamb_task
@@ -514,13 +529,14 @@ class WordSenseDisambiguator:
 
 
 def test_detect_and_fix_missing_stressed_words():
-    wsd = WordSenseDisambiguator(LocalLLM(WIZARD_VICUNA_7B))
+    wsd = WordSenseDisambiguator(LocalLLM(WIZARD_L2_13B))
     # Load text from stressed_text.txt
     with open("stressed_text.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
     # Keep first 6000 characters
     text = text[:6000]
+    text = "Гости встали из-за стола, совершенно примиренные с m-me de Staël."
 
     print(wsd.detect_and_fix_missing_stressed_words(text))
 

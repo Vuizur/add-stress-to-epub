@@ -29,6 +29,7 @@ import csv
 from russ.stress.predictor import StressPredictor
 import cProfile
 from spacy import Language
+from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM
 
 
 def add_defaultdicts(dict1, dict2):
@@ -849,8 +850,26 @@ def perform_benchmark_for_my_solution_plus_russtress():
         base_path, result_path, stress_with_my_solution_and_russtress_fixed
     )
 
+def perform_benchmark_my_solution_wsd():
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_my_wsd"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    rts = RussianTextStresser(llm=LocalLLM(WIZARD_L2_13B))
+
+    def stress_with_my_solution_wsd(text: str) -> str:
+        return rts.stress_text(text)
+
+    benchmark_everything_in_folder(
+        base_path, result_path, stress_with_my_solution_wsd
+    )
 
 if __name__ == "__main__":
+    perform_benchmark_my_solution_wsd()
+    quit()
     # perform_benchmark_for_my_solution_plus_russtress()
     # print(stress_with_my_solution_and_russtress_fixed("Я только хочу это попробовать."))
     # perform_benchmark_for_russtress(try_to_fix=True)
