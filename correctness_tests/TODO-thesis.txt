@@ -6,11 +6,11 @@
 * Spacy-section beenden
 * Bilder
 * Experiment about combining our system and Russtress (because the latter is better at stuff our program is bad at)
-* Calculate correct to wrong ratio for all systems and plot it
 * Can udar perform yofication?
 * Additional comments about other systems that cannot be quantified
 * Write down WSD disambiguation more in detail
 * Accuracy by part of speech
+* System combination (write up)
 
 vanishing gradient problem?
 
@@ -19,3 +19,5 @@ beste ergebnisse fett in tabelle
 llms grob besprechen, etwas über transformers (nicht ins feine detail)
 
 Wo soll ich allgemeine Kommentare über andere Systeme einstellen (können nicht yofication, zerstören formattierung)
+
+Ich kann bezug auf die Experimente nehmen, oder?
