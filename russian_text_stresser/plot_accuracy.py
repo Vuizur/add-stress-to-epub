@@ -2,6 +2,30 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+REPLACE_DICT ={
+            "reynolds": "Reynolds",
+            "russtress": "Russtress",
+            "russtress_fixed": "Russtress-f",
+            "random": "Random",
+            "russiangram_with_yo_fixed": "RussianGram",
+            "russ": "Russ",
+            "tempdb_3_with_ruwikipedia": "Our system",
+            "my_wsd": "Our system + WSD",
+            "my_plus_russtress" : "Our system + Russtress",
+        }
+
+def rename_systems(df: pd.DataFrame) -> pd.DataFrame:
+
+    df["System"] = df["System"].replace(
+        REPLACE_DICT
+    )
+    return df
+
+def create_correct_per_incorrect_column(df: pd.DataFrame) -> pd.DataFrame:
+    df["Correct / incorrect"] = (
+        df["Percentage correct words"] / df["Percentage incorrect words"]
+    )
+    return df
 
 def plot_accuracy_all_systems():
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
@@ -20,22 +44,10 @@ def plot_accuracy_all_systems():
         )
     ]
 
-    # Rename the system names
-    df["System"] = df["System"].replace(
-        {
-            "reynolds": "Reynolds",
-            "russtress_fixed": "Russtress-f",
-            "random": "Random",
-            "russiangram_with_yo_fixed": "RussianGram",
-            "russ": "Russ",
-            "tempdb_3_with_ruwikipedia": "Our system",
-        }
-    )
+    df = rename_systems(df)
 
     # Add a new column containing the quotient of the percentage of correct words and the percentage of incorrect words
-    df["Correct / incorrect"] = (
-        df["Percentage correct words"] / df["Percentage incorrect words"]
-    )
+    df = create_correct_per_incorrect_column(df)
 
     # Sort the dataframe by the percentage of correct words
     df = df.sort_values(by="Percentage correct words", ascending=True)
@@ -62,7 +74,15 @@ def plot_accuracy_all_systems():
     plt.savefig("correctness_tests/correct_incorrect_all_systems.png", dpi=500)
 
 
-
+def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.rename(
+        columns={
+            "Percentage correct words": "% Correct",
+            "Percentage unstressed words": "% Unstressed",
+            "Percentage incorrect words": "% Incorrect",
+        }
+    )
+    return df
 
 def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
     stuff_to_potentially_filter =         [
@@ -80,14 +100,13 @@ def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
         stuff_to_potentially_filter
     ]
     # Rename the columns
-    filtered = filtered.rename(
-        columns={
-            "Percentage correct words": "% Correct",
-            "Percentage unstressed words": "% Unstressed",
-            "Percentage incorrect words": "% Incorrect",
-        }
-    )
+    filtered = rename_columns(filtered)
     return filtered
+
+def print_df_to_latex(df: pd.DataFrame) -> None:
+    """Prints the dataframe to latex, keeping only 2 decimal places"""
+    df = df.round(2)
+    print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
 
 def plot_accuracy_my_systems():
@@ -158,8 +177,7 @@ def plot_accuracy_my_systems():
             "Diff incorrect": "Δ % Incorrect",
         }
     )
-    diff_df = diff_df.round(2)
-    print(diff_df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
+    print_df_to_latex(diff_df)
 
     # Now divide the diff correct by the diff incorrect
     diff_df["Diff correct / incorrect"] = (
@@ -214,9 +232,34 @@ def plot_fixing_russtress():
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
+def plot_really_all_systems():
+
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+
+    # Only keep systems that are in REPLACE_DICT
+    df = df[
+        df["System"].isin(
+            REPLACE_DICT.keys()
+        )
+    ]
+    df = create_correct_per_incorrect_column(df)
+
+    df = rename_systems(df)
+
+    df = filter_relevant_columns_for_latex(df)
+
+
+    df = rename_columns(df)
+
+    # Keep only columns System, % Correct, % Unstressed, % Incorrect, Correct / incorrect
+
+    print(df)
+
+    print_df_to_latex(df)
 
 if __name__ == "__main__":
-    plot_accuracy_all_systems()
+    plot_really_all_systems()
+    #plot_accuracy_all_systems()
     #plot_accuracy_my_systems()
     # plot_chatgpt_minibenchmark()
     # plot_fixing_russtress()
