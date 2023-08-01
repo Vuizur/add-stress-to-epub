@@ -676,6 +676,7 @@ def print_benchmark_result_tsv():
         "results_tempdb_2_with_ruwiktionary",
         "results_tempdb_3_with_ruwikipedia",
         "results_my_plus_russtress",
+        "results_my_wsd",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -850,6 +851,7 @@ def perform_benchmark_for_my_solution_plus_russtress():
         base_path, result_path, stress_with_my_solution_and_russtress_fixed
     )
 
+
 def perform_benchmark_my_solution_wsd():
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
@@ -864,17 +866,16 @@ def perform_benchmark_my_solution_wsd():
     def stress_with_my_solution_wsd(text: str) -> str:
         return rts.stress_text(text)
 
-    benchmark_everything_in_folder(
-        base_path, result_path, stress_with_my_solution_wsd
-    )
+    benchmark_everything_in_folder(base_path, result_path, stress_with_my_solution_wsd)
     from datetime import timedelta
 
     print(f"Time for my solution with WSD: {timedelta(seconds=time.time() - t0)}")
 
+
 if __name__ == "__main__":
 
-    perform_benchmark_my_solution_wsd()
-    quit()
+    # perform_benchmark_my_solution_wsd()
+    # quit()
     # perform_benchmark_for_my_solution_plus_russtress()
     # print(stress_with_my_solution_and_russtress_fixed("Я только хочу это попробовать."))
     # perform_benchmark_for_russtress(try_to_fix=True)
