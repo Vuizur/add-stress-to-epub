@@ -232,16 +232,43 @@ def plot_fixing_russtress():
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
-def plot_really_all_systems():
+def filter_relevant_pos_columns_and_add_correct_per_incorrecct(df: pd.DataFrame, pos: str) -> pd.DataFrame:
+    """Filters the relevant columns for the given part of speech and adds a column with the quotient of correct and incorrect words"""
+    df = df[
+        [
+            "System",
+            f"Correct: {pos}",
+            f"Unstressed: {pos}",
+            f"Incorrect: {pos}",
+        ]
+    ]
+    df = df.rename(
+        columns={
+            f"Correct: {pos}": "% Correct",
+            f"Unstressed: {pos}": "% Unstressed",
+            f"Incorrect: {pos}": "% Incorrect",
+        }
+    )
+    df["Correct / incorrect"] = (
+        df["% Correct"] / df["% Incorrect"]
+    )
+    return df
 
-    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
-
+def filter_relevant_systems(df: pd.DataFrame) -> pd.DataFrame:
     # Only keep systems that are in REPLACE_DICT
     df = df[
         df["System"].isin(
             REPLACE_DICT.keys()
         )
     ]
+    return df
+
+def plot_really_all_systems():
+
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+
+    df = filter_relevant_systems(df)
+    
     df = create_correct_per_incorrect_column(df)
 
     df = rename_systems(df)
@@ -257,8 +284,19 @@ def plot_really_all_systems():
 
     print_df_to_latex(df)
 
+def plot_table_by_pos():
+    # Plot tables for the parts of speech NOUN, VERB, ADJ, PROPN
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    df = filter_relevant_systems(df)
+    df = rename_systems(df)
+    for pos in ["NOUN", "VERB", "ADJ", "PROPN"]:
+        df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrecct(df, pos)
+        print(pos)
+        print(df_filtered)
+
 if __name__ == "__main__":
-    plot_really_all_systems()
+    plot_table_by_pos()
+    #plot_really_all_systems()
     #plot_accuracy_all_systems()
     #plot_accuracy_my_systems()
     # plot_chatgpt_minibenchmark()
