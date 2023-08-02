@@ -677,6 +677,7 @@ def print_benchmark_result_tsv():
         "results_tempdb_3_with_ruwikipedia",
         "results_my_plus_russtress",
         "results_my_wsd",
+        "results_my_wsd_plus_russtress_fixed",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -872,7 +873,68 @@ def perform_benchmark_my_solution_wsd():
     print(f"Time for my solution with WSD: {timedelta(seconds=time.time() - t0)}")
 
 
+def fusion_my_solution_wsd_results_with_russtress_fixed():
+    root_folder_1 = "correctness_tests/results_my_wsd"
+    output_folder = "correctness_tests/results_my_wsd_plus_russtress_fixed"
+
+    nlp = load_spacy_min()
+
+    for root, dirs, files in os.walk(root_folder_1):
+        for file in files:
+            if file.endswith(".txt") or file.endswith(".ref"):
+                # Open file
+                with open(os.path.join(root, file), "r", encoding="utf-8") as f:
+                    path = Path(root)
+                    # split the path into its components
+                    path_components = path.parts
+                    first_component, _, second_component = path_components
+
+                    # create a new path
+                    new_path = Path(
+                        *(
+                            first_component,
+                            "results_russtress_fixed",
+                            second_component,
+                            file,
+                        )
+                    )
+                    with open(new_path, "r", encoding="utf-8") as f2:
+
+                        relative_path = os.path.relpath(root, root_folder_1)
+
+                        my_text_tokenized = nlp(f.read())
+                        russtress_text_tokenized = nlp(f2.read())
+                        # Iterate over both texts in parallel
+                        final_text = ""
+                        # Throw error if number of tokens is not the same
+                        if len(my_text_tokenized) != len(russtress_text_tokenized):
+                            raise Exception(
+                                f"Number of tokens in my solution and russtress-fixed differ: {len(my_text_tokenized)} vs {len(russtress_text_tokenized)}"
+                            )
+                        for my_token, russtress_token in zip(
+                            my_text_tokenized, russtress_text_tokenized
+                        ):
+                            if is_unhelpfully_unstressed(my_token.text):
+                                final_text += russtress_token.text_with_ws
+                            else:
+                                final_text += my_token.text_with_ws
+
+                        # print(relative_path)
+
+                        # stressed_text = stress_function(text)
+                        output_path = os.path.join(output_folder, relative_path, file)
+                        # Create output path if it doesn't exist
+                        if not os.path.exists(os.path.dirname(output_path)):
+                            os.makedirs(os.path.dirname(output_path))
+                        # Write result to output file
+                        with open(output_path, "w", encoding="utf-8") as f:
+                            f.write(final_text)
+
+
 if __name__ == "__main__":
+
+    # fusion_my_solution_wsd_results_with_russtress_fixed()
+    # quit()
 
     # perform_benchmark_my_solution_wsd()
     # quit()
