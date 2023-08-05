@@ -2,30 +2,32 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-REPLACE_DICT ={
-            "reynolds": "Reynolds",
-            "russtress": "Russtress",
-            "russtress_fixed": "Russtress-f",
-            "random": "Random",
-            "russiangram_with_yo_fixed": "RussianGram",
-            "russ": "Russ",
-            "tempdb_3_with_ruwikipedia": "Our system",
-            "my_wsd": "Our system + WSD",
-            "my_plus_russtress" : "Our system + Russtress",
-        }
+REPLACE_DICT = {
+    "reynolds": "Reynolds",
+    "russtress": "Russtress",
+    "russtress_fixed": "Russtress-f",
+    "random": "Random",
+    "russiangram_with_yo_fixed": "RussianGram",
+    "russ": "Russ",
+    "tempdb_3_with_ruwikipedia": "Our system",
+    "my_wsd": "Our system + WSD",
+    "my_plus_russtress": "Our system + Russtress-f",
+    "my_wsd_plus_russtress_fixed": "Our system + WSD + Russtress-f",
+}
+
 
 def rename_systems(df: pd.DataFrame) -> pd.DataFrame:
 
-    df["System"] = df["System"].replace(
-        REPLACE_DICT
-    )
+    df["System"] = df["System"].replace(REPLACE_DICT)
     return df
+
 
 def create_correct_per_incorrect_column(df: pd.DataFrame) -> pd.DataFrame:
     df["Correct / incorrect"] = (
         df["Percentage correct words"] / df["Percentage incorrect words"]
     )
     return df
+
 
 def plot_accuracy_all_systems():
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
@@ -84,24 +86,25 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     )
     return df
 
-def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
-    stuff_to_potentially_filter =         [
-            "System",
-            "Percentage correct words",
-            "Percentage unstressed words",
-            "Percentage incorrect words",
-            "Correct / incorrect"
-        ]
-    stuff_to_potentially_filter = [x for x in stuff_to_potentially_filter if x in df.columns]
-    # Calculate intersection of the columns of the dataframe and the list of columns to potentially filter, keeping order intact
-    
 
-    filtered = df[
-        stuff_to_potentially_filter
+def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
+    stuff_to_potentially_filter = [
+        "System",
+        "Percentage correct words",
+        "Percentage unstressed words",
+        "Percentage incorrect words",
+        "Correct / incorrect",
     ]
+    stuff_to_potentially_filter = [
+        x for x in stuff_to_potentially_filter if x in df.columns
+    ]
+    # Calculate intersection of the columns of the dataframe and the list of columns to potentially filter, keeping order intact
+
+    filtered = df[stuff_to_potentially_filter]
     # Rename the columns
     filtered = rename_columns(filtered)
     return filtered
+
 
 def print_df_to_latex(df: pd.DataFrame) -> None:
     """Prints the dataframe to latex, keeping only 2 decimal places"""
@@ -232,7 +235,10 @@ def plot_fixing_russtress():
     df = df.round(2)
     print(df.to_latex(index=False, escape=True, float_format="{:.2f}".format))
 
-def filter_relevant_pos_columns_and_add_correct_per_incorrecct(df: pd.DataFrame, pos: str) -> pd.DataFrame:
+
+def filter_relevant_pos_columns_and_add_correct_per_incorrect(
+    df: pd.DataFrame, pos: str
+) -> pd.DataFrame:
     """Filters the relevant columns for the given part of speech and adds a column with the quotient of correct and incorrect words"""
     df = df[
         [
@@ -249,32 +255,27 @@ def filter_relevant_pos_columns_and_add_correct_per_incorrecct(df: pd.DataFrame,
             f"Incorrect: {pos}": "% Incorrect",
         }
     )
-    df["Correct / incorrect"] = (
-        df["% Correct"] / df["% Incorrect"]
-    )
+    df["Correct / incorrect"] = df["% Correct"] / df["% Incorrect"]
     return df
+
 
 def filter_relevant_systems(df: pd.DataFrame) -> pd.DataFrame:
     # Only keep systems that are in REPLACE_DICT
-    df = df[
-        df["System"].isin(
-            REPLACE_DICT.keys()
-        )
-    ]
+    df = df[df["System"].isin(REPLACE_DICT.keys())]
     return df
+
 
 def plot_really_all_systems():
 
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
 
     df = filter_relevant_systems(df)
-    
+
     df = create_correct_per_incorrect_column(df)
 
     df = rename_systems(df)
 
     df = filter_relevant_columns_for_latex(df)
-
 
     df = rename_columns(df)
 
@@ -284,20 +285,25 @@ def plot_really_all_systems():
 
     print_df_to_latex(df)
 
+
 def plot_table_by_pos():
     # Plot tables for the parts of speech NOUN, VERB, ADJ, PROPN
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
     df = filter_relevant_systems(df)
     df = rename_systems(df)
     for pos in ["NOUN", "VERB", "ADJ", "PROPN"]:
-        df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrecct(df, pos)
+        df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrect(
+            df, pos
+        )
         print(pos)
-        print(df_filtered)
+        #print(df_filtered)
+        print_df_to_latex(df_filtered)
+
 
 if __name__ == "__main__":
     plot_table_by_pos()
-    #plot_really_all_systems()
-    #plot_accuracy_all_systems()
-    #plot_accuracy_my_systems()
+    # plot_really_all_systems()
+    # plot_accuracy_all_systems()
+    # plot_accuracy_my_systems()
     # plot_chatgpt_minibenchmark()
     # plot_fixing_russtress()
