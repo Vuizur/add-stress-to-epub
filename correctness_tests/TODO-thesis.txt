@@ -5,15 +5,14 @@
 * RuGPT benchmark
 * Spacy-section beenden/verfeinern
 * Bilder
-* Experiment about combining our system and Russtress (because the latter is better at stuff our program is bad at)
 * Can udar perform yofication?
 * Additional comments about other systems that cannot be quantified
 * Write down WSD disambiguation more in detail
 * Accuracy by part of speech
 * System combination (write up)
 * WSD intro section
-* Table with _all_ data
-* Accuracy for POS, pick most important ones
+* Fix up WSD benchmark
+* Ask about unclear words in WSD benchmark
 
 vanishing gradient problem?
 
