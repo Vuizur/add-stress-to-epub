@@ -1,10 +1,8 @@
-from collections import namedtuple
 from pprint import pprint
 import re
 from pydantic.dataclasses import dataclass
 import os
 from typing import Optional, TypedDict, Union
-from confection import BaseModel
 import sqlite3
 import json
 from stressed_cyrillic_tools import (
@@ -13,7 +11,6 @@ from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
     has_cyrillic_letters
 )
-from ruwiktionary_htmldump_parser import HTMLDumpParser
 from helper_methods import load_spacy_min
 from llm_test import (
     MANTICORE13B_PATH,

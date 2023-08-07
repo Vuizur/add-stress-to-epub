@@ -32,7 +32,8 @@ def create_correct_per_incorrect_column(df: pd.DataFrame) -> pd.DataFrame:
 def plot_accuracy_all_systems():
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
 
-    # Only keep the systems reynolds, russtress, random, russiangram_with_yo_fixed, russ, tempdb_3_with_ruwikipedia
+    # Only keep the systems reynolds, russtress, random, russiangram_with_yo_fixed,
+    # russ, tempdb_3_with_ruwikipedia
     df = df[
         df["System"].isin(
             [
@@ -48,7 +49,8 @@ def plot_accuracy_all_systems():
 
     df = rename_systems(df)
 
-    # Add a new column containing the quotient of the percentage of correct words and the percentage of incorrect words
+    # Add a new column containing the quotient of the percentage of correct words and
+    # the percentage of incorrect words
     df = create_correct_per_incorrect_column(df)
 
     # Sort the dataframe by the percentage of correct words
@@ -98,7 +100,8 @@ def filter_relevant_columns_for_latex(df: pd.DataFrame) -> pd.DataFrame:
     stuff_to_potentially_filter = [
         x for x in stuff_to_potentially_filter if x in df.columns
     ]
-    # Calculate intersection of the columns of the dataframe and the list of columns to potentially filter, keeping order intact
+    # Calculate intersection of the columns of the dataframe and the list of columns to
+    # potentially filter, keeping order intact
 
     filtered = df[stuff_to_potentially_filter]
     # Rename the columns
@@ -116,7 +119,8 @@ def plot_accuracy_my_systems():
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
 
     # Only keep the rows with the system columns
-    # equal to tempdb_0_enwiktionary_only, tempdb_1_with_openrussian, tempdb_2_with_ruwiktionary, tempdb_3_with_ruwikipedia
+    # equal to tempdb_0_enwiktionary_only, tempdb_1_with_openrussian,
+    # tempdb_2_with_ruwiktionary, tempdb_3_with_ruwikipedia
 
     df = df[
         df["System"].isin(
@@ -239,7 +243,8 @@ def plot_fixing_russtress():
 def filter_relevant_pos_columns_and_add_correct_per_incorrect(
     df: pd.DataFrame, pos: str
 ) -> pd.DataFrame:
-    """Filters the relevant columns for the given part of speech and adds a column with the quotient of correct and incorrect words"""
+    """Filters the relevant columns for the given part of speech and adds a column with
+    the quotient of correct and incorrect words"""
     df = df[
         [
             "System",
@@ -279,7 +284,8 @@ def plot_really_all_systems():
 
     df = rename_columns(df)
 
-    # Keep only columns System, % Correct, % Unstressed, % Incorrect, Correct / incorrect
+    # Keep only columns System, % Correct, % Unstressed, % Incorrect,
+    # Correct / incorrect
 
     print(df)
 
@@ -292,11 +298,9 @@ def plot_table_by_pos():
     df = filter_relevant_systems(df)
     df = rename_systems(df)
     for pos in ["NOUN", "VERB", "ADJ", "PROPN"]:
-        df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrect(
-            df, pos
-        )
+        df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrect(df, pos)
         print(pos)
-        #print(df_filtered)
+        # print(df_filtered)
         print_df_to_latex(df_filtered)
 
 
