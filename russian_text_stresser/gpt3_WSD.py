@@ -5,7 +5,6 @@ from pydantic.dataclasses import dataclass
 import os
 from typing import Optional, TypedDict, Union
 from confection import BaseModel
-import openai
 import sqlite3
 import json
 from stressed_cyrillic_tools import (
