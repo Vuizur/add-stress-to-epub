@@ -11,8 +11,8 @@ from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
     has_cyrillic_letters
 )
-from helper_methods import load_spacy_min
-from llm_test import (
+from russian_text_stresser.helper_methods import load_spacy_min
+from russian_text_stresser.llm_test import (
     MANTICORE13B_PATH,
     MANTICORE_PROMPT,
     SAIGA7B_PATH,
@@ -21,7 +21,7 @@ from llm_test import (
     WIZARDVICUNA7B_PROMPT,
 )
 from llama_cpp import Llama
-from russian_dictionary import RussianDictionary
+from russian_text_stresser.russian_dictionary import RussianDictionary
 from pydantic.json import pydantic_encoder
 import traceback
 
