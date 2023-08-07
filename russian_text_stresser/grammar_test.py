@@ -7,7 +7,11 @@ import sqlite3
 from time import time
 
 # from benchmark_accuracy import benchmark_accuracy
-from stressed_cyrillic_tools import remove_accent_if_only_one_syllable, unaccentify
+from stressed_cyrillic_tools import (
+    remove_accent_if_only_one_syllable,
+    unaccentify,
+    is_unhelpfully_unstressed,
+)
 from gpt3_WSD import WIZARD_L2_13B, LocalLLM
 from text_stresser import RussianTextStresser
 from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import (
@@ -147,6 +151,7 @@ def find_words_with_more_than_one_stress_mark():
         if value.count("́") > 2:
             print(value)
 
+
 def find_long_words():
     # Load simple_cases.pkl
     with open("simple_cases.pkl", "rb") as f:
@@ -156,7 +161,8 @@ def find_long_words():
         if len(value) > 99:
             print(value)
 
-# Proposed format for DAWG: 
+
+# Proposed format for DAWG:
 # Using intdawg, save four numbers for each word in one int
 # 1. Stress index
 # 2. Stress index
@@ -164,11 +170,33 @@ def find_long_words():
 # 4. Yo index
 # All other cases get saved in another pickled standard dict
 
+
+def test_text_stresser_with_stressrnn():
+    rts = RussianTextStresser(add_stressrnn=True)
+    print(rts.stress_text("Твои слова ничего не значат."))
+    print(
+        rts.stress_text(
+            "Это уже не важно. Я не хочу больше ничего слышать. Ты говоришь стремные вещи."
+        )
+    )
+
+    text2 = "В строгом смысле слова?"
+
+    from stressrnn import StressRNN
+    srnn = StressRNN()
+    print(srnn.put_stress(text2))
+    print(srnn.put_stress("Твои слова ничего не значат."))
+    print(srnn.put_stress("Она спала?"))
+
+
 if __name__ == "__main__":
+
+
     # find_words_with_more_than_one_yo()
     # find_words_with_more_than_one_stress_mark()
     # test_dawg()
-    find_long_words()
+    # find_long_words()
+    test_text_stresser_with_stressrnn()
     quit()
 
     # SENTENCE = "Natural language processing (NLP) is an interdisciplinary subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language,"
