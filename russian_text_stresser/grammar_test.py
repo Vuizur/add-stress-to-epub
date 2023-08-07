@@ -85,6 +85,7 @@ def test_json_dump():
         # print data
         print(data)
 
+
 def write_simple_cases():
     with open("simple_cases.pkl", "rb") as f:
         simple_cases = pickle.load(f)
@@ -95,60 +96,138 @@ def write_simple_cases():
             f.write(f"{key}: {value}\n")
 
 
+def test_dawg():
+    import dawg
+
+    # Load simple_cases.pkl
+    with open("simple_cases.pkl", "rb") as f:
+        simple_cases: dict[str, str] = pickle.load(f)
+
+    # Create dawg
+    data = []
+    for key, value in simple_cases.items():
+        # Find index of stress
+        stress_index = value.find("́")
+        if stress_index == -1:
+            stress_index = 255
+        # Add to data
+        data.append((key, stress_index))
+    dwg = dawg.IntDAWG(data)
+    # Save dawg
+    dwg.save("simple_cases.dawg")
+
+    # Load dawg
+    dwg2 = dawg.IntDAWG()
+    dwg2.load("simple_cases.dawg")
+    # Test dawg
+    print(dwg2.has_key("машина"))
+    str_index = dwg2["машина"]
+    # print stress index
+    print(str_index)
+    # Print stressed word
+    print("машина"[:str_index] + "́" + "машина"[str_index:])
+
+
+def find_words_with_more_than_one_yo():
+    # Load simple_cases.pkl
+    with open("simple_cases.pkl", "rb") as f:
+        simple_cases: dict[str, str] = pickle.load(f)
+    # Find words with more than one yo
+    for key, value in simple_cases.items():
+        if value.lower().count("ё") > 1:
+            print(value)
+
+
+def find_words_with_more_than_one_stress_mark():
+    # Load simple_cases.pkl
+    with open("simple_cases.pkl", "rb") as f:
+        simple_cases: dict[str, str] = pickle.load(f)
+    # Find words with more than one yo
+    for key, value in simple_cases.items():
+        if value.count("́") > 2:
+            print(value)
+
+def find_long_words():
+    # Load simple_cases.pkl
+    with open("simple_cases.pkl", "rb") as f:
+        simple_cases: dict[str, str] = pickle.load(f)
+    # Find words with more than one yo
+    for key, value in simple_cases.items():
+        if len(value) > 99:
+            print(value)
+
+# Proposed format for DAWG: 
+# Using intdawg, save four numbers for each word in one int
+# 1. Stress index
+# 2. Stress index
+# 3. Stress index (Or maybe yo index?)
+# 4. Yo index
+# All other cases get saved in another pickled standard dict
+
 if __name__ == "__main__":
+    # find_words_with_more_than_one_yo()
+    # find_words_with_more_than_one_stress_mark()
+    # test_dawg()
+    find_long_words()
+    quit()
 
-    #SENTENCE = "Natural language processing (NLP) is an interdisciplinary subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language,"
-    #SENTENCE = "This is a short sentence"
-    #nlp = load_spacy_full()
-    #from spacy import displacy
+    # SENTENCE = "Natural language processing (NLP) is an interdisciplinary subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language,"
+    # SENTENCE = "This is a short sentence"
+    # nlp = load_spacy_full()
+    # from spacy import displacy
 
-    #doc = nlp(SENTENCE)
-    #displacy.serve(doc, style="dep")
-
-    
+    # doc = nlp(SENTENCE)
+    # displacy.serve(doc, style="dep")
 
     TEXT = "политые тягучим темно-фиолетовым соусом"
     TEXT = "фиолетовым"
     TEXT = "темно-фиолетовым"
     TEXT = "Твои глаза очень красивые."
-    TEXT = unaccentify("В конце́ 1811 го́да жил в своём поме́стье[2] Ненара́дове до́брый Гаври́ла Гаври́лович Р**.")
+    TEXT = unaccentify(
+        "В конце́ 1811 го́да жил в своём поме́стье[2] Ненара́дове до́брый Гаври́ла Гаври́лович Р**."
+    )
     print(TEXT)
-    #TEXT = " фиолетовым"
+    # TEXT = " фиолетовым"
     t0 = time()
     rts = RussianTextStresser(llm=LocalLLM(WIZARD_L2_13B))
 
     print(rts.stress_text(TEXT))
     print(f"Time for my solution with WSD: {timedelta(seconds=time() - t0)}")
-   
-   
+
     quit()
 
     # Unaccentify txt file in C:\Users\hanne\Documents\Programme\add-stress-to-epub\correctness_tests\stressed_russian_texts\commercial\devochka.txt
-    with open("correctness_tests/stressed_russian_texts/commercial/devochka.txt", "r", encoding="utf-8") as f:
+    with open(
+        "correctness_tests/stressed_russian_texts/commercial/devochka.txt",
+        "r",
+        encoding="utf-8",
+    ) as f:
         text = f.read()
         print(unaccentify(text))
 
     quit()
 
     # Load simple_cases.pkl
-    #rd = RussianTextStresser()
-    #print(rd.stress_text("еж"))
-#
-#
-    #quit()
-    #nlp = load_spacy_full()
-    #for pipe in nlp.pipe_names:
+    # rd = RussianTextStresser()
+    # print(rd.stress_text("еж"))
+    #
+    #
+    # quit()
+    # nlp = load_spacy_full()
+    # for pipe in nlp.pipe_names:
     #    print(nlp.get_pipe_config(pipe))
 
-    #quit()
-    #str = "Пусти́те."
+    # quit()
+    # str = "Пусти́те."
 
-    #nlp = load_spacy_min()
+    # nlp = load_spacy_min()
     nlp = load_spacy_full()
     str = "два часа"
     doc = nlp(str)
     for token in doc:
-        print(token.text, token.pos_, token.tag_, token.lemma_, token.morph, token.is_stop)
+        print(
+            token.text, token.pos_, token.tag_, token.lemma_, token.morph, token.is_stop
+        )
 
     # for each char in str, print isalpha() and isdigit()
     # for char in str:
