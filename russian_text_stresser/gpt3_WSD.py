@@ -2,7 +2,7 @@ from pprint import pprint
 import re
 from pydantic.dataclasses import dataclass
 import os
-from typing import Optional, TypedDict, Union
+from typing import Optional
 import sqlite3
 import json
 from stressed_cyrillic_tools import (
@@ -20,7 +20,6 @@ from russian_text_stresser.llm_test import (
     WIZARD_VICUNA7B_PATH,
     WIZARDVICUNA7B_PROMPT,
 )
-from llama_cpp import Llama
 from russian_text_stresser.russian_dictionary import RussianDictionary
 from pydantic.json import pydantic_encoder
 import traceback
@@ -67,6 +66,8 @@ cursor.execute(
 
 class LocalLLM:
     def __init__(self, llm: LLM):
+        from llama_cpp import Llama
+
         self.llm = Llama(
             model_path=llm.path,
             n_ctx=1024,  # Some tasks are too long for the default 512 context window
