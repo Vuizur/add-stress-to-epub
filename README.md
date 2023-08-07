@@ -73,14 +73,12 @@ This will print `Твои́ слова́ ничего́ не зна́чат.`
 If you have feedback or suggestions, please tell me. I have only tested it for some ebooks, so there could be bugs left. If you find a word that is being stressed incorrectly or if a word is on (English) Wiktionary but still not being stressed, then open an issue. I will maybe maintain a list of words that confuse the algorithm (pretty rare but happens), so that there is rather no stress than a wrong one.
 
 If you are interested in modifying the program: The database used in this project has been created using my other project here: https://github.com/Vuizur/ebook_dictionary_creator 
+
 ### Limitations
 In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
 ### Acknowledgements
-The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project.
-
-### The future
-I so far have not found a good source for the Russian Wiktionary data and use the English Wiktionary data instead. The Wiktextract project will likely try to extract Russian entries somewhere in the next months or so, so I'll add this data once it is available.
+The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project, the Russian Wiktionary and Wikipedia.
 
 ### Similar projects
 
