@@ -1,11 +1,17 @@
-from litestar import Litestar, get
+from litestar import Litestar, get, post
 from russian_text_stresser.text_stresser import RussianTextStresser
+from litestar.config.cors import CORSConfig
+from pydantic import BaseModel
+
+cors_config = CORSConfig(allow_origins=["*"])
+
+class StressRequest(BaseModel):
+    text: str
 
 stresser = RussianTextStresser()
 
+@post("/stress_text/")
+async def stress_text(data: StressRequest) -> str:
+    return stresser.stress_text(data.text)
 
-@get("/stress_text/{text:str}")
-async def stress_text(text: str) -> 0:
-    return stresser.stress_text(text)
-
-app = Litestar([stress_text])
+app = Litestar([stress_text], cors_config=cors_config)
