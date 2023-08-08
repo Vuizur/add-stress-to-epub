@@ -5,7 +5,10 @@ from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
 )
 from russian_text_stresser.russian_dictionary import RussianDictionary
-from russian_text_stresser.gpt3_WSD import WordSenseDisambiguator
+try:
+    from russian_text_stresser.gpt3_WSD import LocalLLM, WordSenseDisambiguator
+except ImportError:
+    pass
 
 
 class RussianTextStresser:

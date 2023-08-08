@@ -23,8 +23,11 @@ from stressed_cyrillic_tools import (
 from text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
 from russian_stress_benchmark import benchmark_everything_in_folder
-from pprint import pprint
-from russtress import Accent
+
+try:
+    from russtress import Accent
+except ImportError:
+    pass
 import csv
 from russ.stress.predictor import StressPredictor
 import cProfile
@@ -419,7 +422,7 @@ def perform_benchmark_for_my_solution() -> None:
     # benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
 
-def perform_benchmark_for_my_solutions_old() -> None:
+def perform_benchmark_for_my_solutions_old(benchmark_yo=False) -> None:
     old_file_paths = [
         "russian_dict_old_downloadable.db",
         "tempdb_0_enwiktionary_only.db",
@@ -446,7 +449,7 @@ def perform_benchmark_for_my_solutions_old() -> None:
 
 
 def try_to_fix_russtress_text(
-    stresser: Accent, stressed_text: str, spacy_min: Language
+    stresser: "Accent", stressed_text: str, spacy_min: Language
 ) -> str:
     fixed_text = ""
     # Check if there are any words that are not stressed
@@ -482,7 +485,7 @@ def try_to_fix_russtress_text(
     return fixed_text
 
 
-def stress_text_with_russtress(text: str, stresser: Accent, try_to_fix=True):
+def stress_text_with_russtress(text: str, stresser: "Accent", try_to_fix=True):
     stressed_text = stresser.put_stress(text).replace("'", "\u0301")
     if try_to_fix:
         nlp = load_spacy_min()
@@ -931,7 +934,25 @@ def fusion_my_solution_wsd_results_with_russtress_fixed():
                             f.write(final_text)
 
 
+def create_unstressed_text_folder(remove_yo=False):
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "unstressed_texts"
+
+    if remove_yo:
+        result_folder += "_NOYO"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    benchmark_everything_in_folder(base_path, result_path, lambda x: x, remove_yo)
+
+
 if __name__ == "__main__":
+    create_unstressed_text_folder()
+    create_unstressed_text_folder(remove_yo=True)
+
+    quit()
 
     # fusion_my_solution_wsd_results_with_russtress_fixed()
     # quit()

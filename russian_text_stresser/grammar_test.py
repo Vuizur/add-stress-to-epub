@@ -10,14 +10,13 @@ from time import time
 from stressed_cyrillic_tools import (
     remove_accent_if_only_one_syllable,
     unaccentify,
-    is_unhelpfully_unstressed,
 )
 from gpt3_WSD import WIZARD_L2_13B, LocalLLM
 from text_stresser import RussianTextStresser
 from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import (
     RussianDictionaryCreator,
 )
-from helper_methods import load_spacy_min, load_spacy_full
+from russian_text_stresser.helper_methods import load_spacy_full
 
 
 def find_hard_to_detect_case_words():
