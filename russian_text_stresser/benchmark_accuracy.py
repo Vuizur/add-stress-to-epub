@@ -688,6 +688,7 @@ def print_benchmark_result_tsv():
         "results_my_wsd_plus_russtress_fixed",
         "results_tempdb_3_with_ruwikipedia_noyo",
         "results_reynolds_noyo",
+        "results_russiangram_without_yo_fixed",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -965,7 +966,7 @@ if __name__ == "__main__":
     #    "correctness_tests/results_russiangram_without_yo_fixed",
     # )
 
-    quit()
+    # quit()
 
     # fusion_my_solution_wsd_results_with_russtress_fixed()
     # quit()
