@@ -80,3 +80,5 @@ russian_text_stresser/ru_core_news_lg-3.4.0/
 *.ref
 *.png
 *.svg
+*.dawg
+api-specs.ts
