@@ -69,6 +69,7 @@ def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison
             if i >= len(doc1):
                 writer.writerow(["", "", esc_nl(token.text), token.pos_])
 
+
 @dataclass
 class StressOptions:
     canonical_form: str
@@ -76,7 +77,6 @@ class StressOptions:
     pos: str
     case_tags: list[str]
     form_of_word_id: int
-
 
 
 def print_stressed_text_with_grammar_analysis(text: str):
@@ -88,12 +88,15 @@ def print_stressed_text_with_grammar_analysis(text: str):
 
     # enumerate through both docs in parallel
     for token, stressed_token in zip(original_doc, stressed_doc):
-        stress_options = rts.rd._cur.execute("""
+        stress_options = rts.rd._cur.execute(
+            """
             SELECT w.word_id, w.pos, w.canonical_form, fow.form_of_word_id, ct.tag_text FROM word w 
             LEFT JOIN form_of_word fow ON w.word_id = fow.word_id 
             JOIN case_tags ct ON ct.form_of_word_id = fow.form_of_word_id
             WHERE w.word_lower_and_without_yo = ?
-        """, (token.text.lower(),)).fetchall()
+        """,
+            (token.text.lower(),),
+        ).fetchall()
 
         stress_option_objs: list[StressOptions] = []
         # Convert to stress options
@@ -115,14 +118,18 @@ def print_stressed_text_with_grammar_analysis(text: str):
                 )
 
         print(
-            f"{token.text} {token.pos_} {token.morph} # {stressed_token.text} //" + "|".join(
-                f" {option.canonical_form} {option.pos} {option.case_tags}" for option in stress_option_objs
+            f"{token.text} {token.pos_} {token.morph} # {stressed_token.text} //"
+            + "|".join(
+                f" {option.canonical_form} {option.pos} {option.case_tags}"
+                for option in stress_option_objs
             )
         )
 
 
 if __name__ == "__main__":
-    text = "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
+    text = (
+        "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
+    )
     text2 = "Вот видишь, – сказала она, – мне курить вредно, я уже падаю."
     text3 = "И если вдруг тебе казалось, что твоя сестра и её муж угадывали твои мысли, то такой приём называется «холодное чтение»."
     text4 = "Чем ближе к огороду, тем аллеи становились запущеннее, темнее и уже; на одной из них, прятавшейся в густой заросли диких груш, кислиц, молодых дубков, хмеля, целые облака мелких чёрных мошек окружили Ольгу Михайловну; она закрыла руками лицо и стала насильно воображать маленького человечка…"
