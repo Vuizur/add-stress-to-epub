@@ -1,6 +1,3 @@
-* Benchmark with ё removed
-    * Run Reynolds on WSL
-    * Run ours
 * Llama 2 benchmark
 * RuGPT benchmark
 * Spacy-section beenden/verfeinern
@@ -13,6 +10,7 @@
 * WSD intro section - check up
 * Fix up WSD benchmark
 * Ask about unclear words in WSD benchmark
+* Redo all graphics and tables with Russiangram
 
 vanishing gradient problem?
 
