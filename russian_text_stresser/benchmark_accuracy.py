@@ -441,10 +441,15 @@ def perform_benchmark_for_my_solutions_old(benchmark_yo=False) -> None:
         orig_folder = "stressed_russian_texts"
         result_folder = f"results_{file_path.replace('.db', '')}"
 
+        if benchmark_yo:
+            result_folder += "_noyo"
+
         base_path = f"{base_folder}/{orig_folder}"
         result_path = f"{base_folder}/{result_folder}"
         t0 = time.time()
-        benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+        benchmark_everything_in_folder(
+            base_path, result_path, ts.stress_text, rmv_yo=benchmark_yo
+        )
         print(f"Time for {file_path}: {time.time() - t0}")
 
 
@@ -681,6 +686,8 @@ def print_benchmark_result_tsv():
         "results_my_plus_russtress",
         "results_my_wsd",
         "results_my_wsd_plus_russtress_fixed",
+        "results_tempdb_3_with_ruwikipedia_noyo",
+        "results_reynolds_noyo",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -949,8 +956,14 @@ def create_unstressed_text_folder(remove_yo=False):
 
 
 if __name__ == "__main__":
-    create_unstressed_text_folder()
-    create_unstressed_text_folder(remove_yo=True)
+    # perform_benchmark_for_my_solutions_old(benchmark_yo=True)
+    #
+    # quit()
+
+    # fix_russiangram_folder(
+    #    "correctness_tests/results_russiangram_without_yo",
+    #    "correctness_tests/results_russiangram_without_yo_fixed",
+    # )
 
     quit()
 
