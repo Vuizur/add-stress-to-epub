@@ -304,8 +304,42 @@ def plot_table_by_pos():
         print_df_to_latex(df_filtered)
 
 
+def plot_yofication_results():
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    # Filter systems
+    # tempdb_3_with_ruwikipedia_noyo, reynolds_noyo, russiangram_without_yo_fixed
+    df = df[
+        df["System"].isin(
+            [
+                "tempdb_3_with_ruwikipedia_noyo",
+                "reynolds_noyo",
+                "russiangram_without_yo_fixed",
+            ]
+        )
+    ]
+
+    # Rename systems
+    df["System"] = df["System"].replace(
+        {
+            "tempdb_3_with_ruwikipedia_noyo": "Our system",
+            "reynolds_noyo": "Reynolds",
+            "russiangram_without_yo_fixed": "RussianGram",
+        }
+    )
+
+    # Filter relevant columns
+    df = create_correct_per_incorrect_column(df)
+    df = filter_relevant_columns_for_latex(df)
+
+    df = rename_columns(df)
+
+    print_df_to_latex(df)
+    # print(df)
+
+
 if __name__ == "__main__":
-    plot_table_by_pos()
+    plot_yofication_results()
+    # plot_table_by_pos()
     # plot_really_all_systems()
     # plot_accuracy_all_systems()
     # plot_accuracy_my_systems()
