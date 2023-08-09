@@ -300,16 +300,15 @@ def plot_table_by_pos():
     for pos in ["NOUN", "VERB", "ADJ", "PROPN"]:
         df_filtered = filter_relevant_pos_columns_and_add_correct_per_incorrect(df, pos)
         print(pos)
-        # print(df_filtered)
         print_df_to_latex(df_filtered)
 
 
 def plot_yofication_results():
-    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    orig_df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
     # Filter systems
     # tempdb_3_with_ruwikipedia_noyo, reynolds_noyo, russiangram_without_yo_fixed
-    df = df[
-        df["System"].isin(
+    df = orig_df[
+        orig_df["System"].isin(
             [
                 "tempdb_3_with_ruwikipedia_noyo",
                 "reynolds_noyo",
@@ -334,7 +333,41 @@ def plot_yofication_results():
     df = rename_columns(df)
 
     print_df_to_latex(df)
-    # print(df)
+
+    # Get the systems from orig_df: tempdb_3_with_ruwikipedia, reynolds, russiangram_with_yo_fixed
+    prev_df = orig_df[
+        orig_df["System"].isin(
+            [
+                "tempdb_3_with_ruwikipedia",
+                "reynolds",
+                "russiangram_with_yo_fixed",
+            ]
+        )
+    ].copy()
+
+    prev_df = create_correct_per_incorrect_column(prev_df)
+    prev_df = filter_relevant_columns_for_latex(prev_df)
+    prev_df = rename_columns(prev_df)
+    prev_df = rename_systems(prev_df)
+    print(prev_df)
+
+    df.set_index("System", inplace=True)
+    prev_df.set_index("System", inplace=True)
+
+    print(df)
+    print(prev_df)
+
+    change_df = df - prev_df
+    # Rename columns
+    change_df = change_df.rename(
+        columns={
+            "% Correct": "Δ % Correct",
+            "% Unstressed": "Δ % Unstressed",
+            "% Incorrect": "Δ % Incorrect",
+            "Correct / incorrect": "Δ Correct / incorrect",
+        }
+    )
+    print(change_df)
 
 
 if __name__ == "__main__":
