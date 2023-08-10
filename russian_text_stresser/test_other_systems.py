@@ -1,9 +1,9 @@
 # from russtress import Accent
 import transliterate
 
-from text_stresser import RussianTextStresser
+from russian_text_stresser.text_stresser import RussianTextStresser
 
-
+from russtress import Accent
 
 def test_russtress():
     accent = Accent()

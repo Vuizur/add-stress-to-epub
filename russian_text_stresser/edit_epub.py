@@ -1,4 +1,4 @@
-from ebook_stresser import EbookStresser
+from russian_text_stresser.ebook_stresser import EbookStresser
 from argparse import ArgumentParser
 
 if __name__ == "__main__":

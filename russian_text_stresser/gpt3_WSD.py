@@ -297,7 +297,7 @@ class RuWiktionary:
         self.conn.close()
 
 
-def find_correct_choice(llm_answer: str, options: list[str]) -> str:
+def find_correct_choice(llm_answer: str, options: list[str]) -> Optional[str]:
     """Returns the correct choice based on the answer from the language model"""
     # First, we check if the llm_answer contains one number and only one number equal to the index (starting from 1) of the correct choice
     # If it does, we return the correct choice
