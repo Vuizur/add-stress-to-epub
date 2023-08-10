@@ -22,7 +22,7 @@ lxml = ">=4.9.1"
 mwxml = {version = ">=0.3.3", optional = true}
 openai = {version = ">=0.24.0", optional = true}
 pymorphy2 = ">=0.9.1"
-python = "^3.8, <3.12"
+python = "^3.9, <3.12"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
 spacy = "3.6.*"
 stressed-cyrillic-tools = ">=0.1.10"
