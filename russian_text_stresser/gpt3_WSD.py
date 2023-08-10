@@ -133,7 +133,7 @@ def get_pos_from_grammar_info(grammar_info: str) -> str:
     return grammar_info.replace(",", " ").replace(";", " ").split(" ")[0]
 
 
-def get_aspect_from_grammar_info(grammar_info: str) -> str | None:
+def get_aspect_from_grammar_info(grammar_info: str) -> Optional[str]:
     if "несовершенный вид" in grammar_info:
         return "несовершенный"
     elif "совершенный вид" in grammar_info:
