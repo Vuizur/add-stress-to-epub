@@ -5,6 +5,7 @@ from pathlib import Path
 import pstats
 import random
 import time
+from typing import Union
 from debug_helpers import (
     esc_nl,
     print_spacy_doc_difference,
@@ -26,6 +27,10 @@ from russian_stress_benchmark import benchmark_everything_in_folder
 
 try:
     from russtress import Accent
+except ImportError:
+    pass
+try:
+    from stressrnn import StressRNN
 except ImportError:
     pass
 import csv
@@ -490,8 +495,11 @@ def try_to_fix_russtress_text(
     return fixed_text
 
 
-def stress_text_with_russtress(text: str, stresser: "Accent", try_to_fix=True):
-    stressed_text = stresser.put_stress(text).replace("'", "\u0301")
+def stress_text_with_russtress(text: str, stresser: Union["Accent","StressRNN"], try_to_fix=True):
+    if isinstance(stresser, StressRNN):
+        stressed_text = stresser.put_stress(text, stress_symbol="'").replace("'", "\u0301")
+    else:
+        stressed_text = stresser.put_stress(text).replace("'", "\u0301")
     if try_to_fix:
         nlp = load_spacy_min()
         nlp.add_pipe("sentencizer")
@@ -520,6 +528,21 @@ def perform_benchmark_for_russtress(try_to_fix=True) -> None:
         return stress_text_with_russtress(text, stresser, try_to_fix)
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
+
+def perform_benchmark_for_stressrnn() -> None:
+    stresser = StressRNN()
+    base_folder = "correctness_tests"
+    orig_folder = "stressed_russian_texts"
+    result_folder = "results_stressrnn"
+
+    base_path = f"{base_folder}/{orig_folder}"
+    result_path = f"{base_folder}/{result_folder}"
+
+    def stress_text(text: str) -> str:
+        return stress_text_with_russtress(text, stresser, try_to_fix=False)
+    
+    benchmark_everything_in_folder(base_path, result_path, stress_text)
+
 
 
 class RandomStresser:
@@ -689,6 +712,7 @@ def print_benchmark_result_tsv():
         "results_tempdb_3_with_ruwikipedia_noyo",
         "results_reynolds_noyo",
         "results_russiangram_without_yo_fixed",
+        "results_stressrnn",
     ]
     ALL_POS = get_all_pos()
     ALL_POS.sort()
@@ -715,6 +739,7 @@ def print_benchmark_result_tsv():
         )
 
         for benchmarked_system_path in BENCHMARKED_SYSTEMS_PATHS:
+            print(f"Benchmarking {benchmarked_system_path}...")
             # Get the name of the benchmarked system (delete results_ from the beginning)
             system_name = benchmarked_system_path[8:]
             # Get the statistics
@@ -957,6 +982,13 @@ def create_unstressed_text_folder(remove_yo=False):
 
 
 if __name__ == "__main__":
+    #srnn = StressRNN()
+#
+    #print(srnn.put_stress("Я только хочу это попробовать.", stress_symbol="'"))
+
+
+    perform_benchmark_for_stressrnn()
+
     # perform_benchmark_for_my_solutions_old(benchmark_yo=True)
     #
     # quit()
