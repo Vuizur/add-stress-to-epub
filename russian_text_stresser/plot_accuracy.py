@@ -315,7 +315,7 @@ def plot_yofication_results():
                 "russiangram_without_yo_fixed",
             ]
         )
-    ]
+    ].copy()
 
     # Rename systems
     df["System"] = df["System"].replace(
@@ -349,13 +349,9 @@ def plot_yofication_results():
     prev_df = filter_relevant_columns_for_latex(prev_df)
     prev_df = rename_columns(prev_df)
     prev_df = rename_systems(prev_df)
-    print(prev_df)
 
     df.set_index("System", inplace=True)
     prev_df.set_index("System", inplace=True)
-
-    print(df)
-    print(prev_df)
 
     change_df = df - prev_df
     # Rename columns
@@ -367,12 +363,13 @@ def plot_yofication_results():
             "Correct / incorrect": "Δ Correct / incorrect",
         }
     )
-    print(change_df)
+    print(change_df.to_latex(escape=True, float_format="{:.2f}".format))
+    # Print to latex, in table System | Δ % Correct | Δ % Unstressed | Δ % Incorrect | Δ Correct / incorrect
 
 
 if __name__ == "__main__":
-    plot_yofication_results()
-    # plot_table_by_pos()
+    # plot_yofication_results()
+    plot_table_by_pos()
     # plot_really_all_systems()
     # plot_accuracy_all_systems()
     # plot_accuracy_my_systems()
