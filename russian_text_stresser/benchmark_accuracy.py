@@ -6,12 +6,12 @@ import pstats
 import random
 import time
 from typing import Union
-from debug_helpers import (
+from russian_text_stresser.debug_helpers import (
     esc_nl,
     print_spacy_doc_difference,
     print_two_docs_with_pos_next_to_another,
 )
-from helper_methods import load_spacy_full, load_spacy_min
+from russian_text_stresser.helper_methods import load_spacy_full, load_spacy_min
 from stressed_cyrillic_tools import (
     has_acute_accent_or_only_one_syllable,
     remove_accent_if_only_one_syllable,
@@ -21,7 +21,7 @@ from stressed_cyrillic_tools import (
     has_cyrillic_letters,
     is_unhelpfully_unstressed,
 )
-from text_stresser import RussianTextStresser
+from russian_text_stresser.text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
 from russian_stress_benchmark import benchmark_everything_in_folder
 
