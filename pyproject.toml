@@ -16,35 +16,35 @@ version = "0.1.1"
 
 [tool.poetry.dependencies]
 PyQt6 = {version = "^6.3.1", optional = true}
-beautifulsoup4 = "^4.11.1"
+beautifulsoup4 = ">=4.11.1"
 ebook-dictionary-creator = {git = "https://github.com/Vuizur/ebook_dictionary_creator", optional = true}
-lxml = "^4.9.1"
-mwxml = {version = "^0.3.3", optional = true}
+lxml = ">=4.9.1"
+mwxml = {version = ">=0.3.3", optional = true}
 openai = {version = ">=0.24.0", optional = true}
-pymorphy2 = "^0.9.1"
+pymorphy2 = ">=0.9.1"
 python = "^3.8, <3.12"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
 spacy = "3.6.*"
-stressed-cyrillic-tools = "^0.1.10"
-russtress = {version = "^0.1.4", optional = true}
-transliterate = "^1.10.2"
+stressed-cyrillic-tools = ">=0.1.10"
+russtress = {version = ">=0.1.4", optional = true}
+transliterate = ">=1.10.2"
 russian-stress-benchmark = {git = "https://github.com/Vuizur/russian-stress-benchmark", optional = true}
-russ = {version = "^0.0.2", optional = true}
+russ = {version = ">=0.0.2", optional = true}
 #numpy = "1.23.5" # russtress cannot handle newer versions, but if you uncomment this it breaks everything thanks to poetry
-pymorphy2-dicts-ru = "^2.4.417127.4579844"
+pymorphy2-dicts-ru = ">=2.4.417127.4579844"
 tensorflow-io-gcs-filesystem = {version = "0.31.0", optional = true} # Another thing that needs to be locked when using poetry, awesome :/
-transformers = {version = "^4.29.0", optional = true}
-llama-cpp-python = "^0.1.52"
-seaborn = {version = "^0.12.2", optional = true}
-litestar = {extras = ["cli"], version = "^2.0.0b4", optional = true}
+transformers = {version = ">=4.29.0", optional = true}
+llama-cpp-python = ">=0.1.52"
+seaborn = {version = ">=0.12.2", optional = true}
+litestar = {extras = ["cli"], version = ">=2.0.0b4", optional = true}
 stressrnn = {git = "https://github.com/Vuizur/StressRNN", optional = true}
 tensorflow = {version = ">=2.10.0", optional = true}
 
 [tool.poetry.dev-dependencies]
-black = "^22.6.0"
-mypy = "^0.971"
+black = ">=22.6.0"
+mypy = ">=0.971"
 pyinstaller = ">=5.3"
-pytest = "^7.4.0"
+pytest = ">=7.4.0"
 
 [tool.poetry.extras]
 GUI = ["PyQt6"]
