@@ -128,8 +128,8 @@ def add_word_to_db_if_not_there(canonical_form: str, cur: sqlite3.Cursor):
 
 
 def add_ruwiktionary_data_to_db(
-    database_path="russian_dict.db", ruwiktionary_json="ruwiktionary_words_fixed.json"
-):
+    database_path: str ="russian_dict.db", ruwiktionary_json: str="ruwiktionary_words_fixed.json"
+) -> None:
     # TODO: Pay attention that some words have also two stress marks.
     con = sqlite3.connect(database_path)
     cur = con.cursor()

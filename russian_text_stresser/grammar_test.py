@@ -99,7 +99,7 @@ def write_simple_cases():
             f.write(f"{key}: {value}\n")
 
 
-def test_dawg():
+def test_dawg() -> None:
     import dawg
 
     # Load simple_cases.pkl
@@ -131,7 +131,7 @@ def test_dawg():
     print("машина"[:str_index] + "́" + "машина"[str_index:])
 
 
-def find_words_with_more_than_one_yo():
+def find_words_with_more_than_one_yo() -> None:
     # Load simple_cases.pkl
     with open("simple_cases.pkl", "rb") as f:
         simple_cases: dict[str, str] = pickle.load(f)
@@ -141,7 +141,7 @@ def find_words_with_more_than_one_yo():
             print(value)
 
 
-def find_words_with_more_than_one_stress_mark():
+def find_words_with_more_than_one_stress_mark() -> None:
     # Load simple_cases.pkl
     with open("simple_cases.pkl", "rb") as f:
         simple_cases: dict[str, str] = pickle.load(f)

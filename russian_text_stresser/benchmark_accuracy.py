@@ -36,7 +36,7 @@ except ImportError:
 import csv
 from russ.stress.predictor import StressPredictor
 import cProfile
-from spacy import Language
+from spacy.language import Language
 from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM
 
 
@@ -118,7 +118,7 @@ class AnalysisResults:
 
     # Overload the + operator to make it easier to combine results
 
-    def __add__(self, other):
+    def __add__(self, other: "AnalysisResults"):
         if isinstance(self.file_path, str):
             self.file_path = [self.file_path]
         if isinstance(other.file_path, str):
@@ -691,7 +691,7 @@ def get_all_pos(
     return list(all_pos)
 
 
-def print_benchmark_result_tsv():
+def print_benchmark_result_tsv() -> None:
     BASE_PATH = "correctness_tests"
     BENCHMARKED_SYSTEMS_PATHS: list[str] = [
         "results_reynolds",

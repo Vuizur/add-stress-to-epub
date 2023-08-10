@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from stressed_cyrillic_tools import unaccentify
 import csv
+from spacy.tokens import Doc
 
 from russian_text_stresser.text_stresser import RussianTextStresser
 
 
-def create_histogram_from_spacy_document(doc) -> dict[str, int]:
+def create_histogram_from_spacy_document(doc: Doc) -> dict[str, int]:
     """Creates a histogram of the words in a spacy document."""
     histogram = {}
     for token in doc:
@@ -16,9 +17,9 @@ def create_histogram_from_spacy_document(doc) -> dict[str, int]:
     return histogram
 
 
-def diff_histograms(histogram1: dict[str, int], histogram2: dict[str, int]):
+def diff_histograms(histogram1: dict[str, int], histogram2: dict[str, int]) -> dict[str, int]:
     """Returns a histogram of the differences between two histograms."""
-    diff_histogram = {}
+    diff_histogram: dict[str, int] = {}
     for key in histogram1:
         if key in histogram2:
             diff_histogram[key] = histogram1[key] - histogram2[key]
@@ -30,7 +31,7 @@ def diff_histograms(histogram1: dict[str, int], histogram2: dict[str, int]):
     return diff_histogram
 
 
-def print_spacy_doc_difference(doc1, doc2):
+def print_spacy_doc_difference(doc1: Doc, doc2: Doc):
     """Prints the differences between two spacy documents."""
     histogram1 = create_histogram_from_spacy_document(doc1)
     histogram2 = create_histogram_from_spacy_document(doc2)
@@ -45,7 +46,7 @@ def esc_nl(s: str):
     return s.replace("\r", "\\r").replace("\n", "\\n")
 
 
-def print_two_docs_with_pos_next_to_another(doc1, doc2, filename="pos_comparison.tsv"):
+def print_two_docs_with_pos_next_to_another(doc1: Doc, doc2: Doc, filename: str="pos_comparison.tsv"):
     # This function iterates through two spacy documents
     # For each token it print <token> <pos> <token> <pos> to a tsv file
 
@@ -83,12 +84,12 @@ def print_stressed_text_with_grammar_analysis(text: str):
     """Prints a sentence with stress and grammar analysis."""
     rts = RussianTextStresser(use_large_model=False)
     stressed_text = rts.stress_text(text)
-    original_doc = rts._nlp(text)
-    stressed_doc = rts._nlp(stressed_text)
+    original_doc = rts._nlp(text) # type: ignore
+    stressed_doc = rts._nlp(stressed_text) # type: ignore
 
     # enumerate through both docs in parallel
     for token, stressed_token in zip(original_doc, stressed_doc):
-        stress_options = rts.rd._cur.execute(
+        stress_options = rts.rd._cur.execute( # type: ignore
             """
             SELECT w.word_id, w.pos, w.canonical_form, fow.form_of_word_id, ct.tag_text FROM word w 
             LEFT JOIN form_of_word fow ON w.word_id = fow.word_id 

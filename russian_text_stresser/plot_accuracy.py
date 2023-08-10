@@ -17,7 +17,6 @@ REPLACE_DICT = {
 
 
 def rename_systems(df: pd.DataFrame) -> pd.DataFrame:
-
     df["System"] = df["System"].replace(REPLACE_DICT)
     return df
 
@@ -271,7 +270,6 @@ def filter_relevant_systems(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_really_all_systems():
-
     df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
 
     df = filter_relevant_systems(df)
