@@ -421,7 +421,7 @@ class WordSenseDisambiguator:
             len(self.find_in_entry_matching_word(word, entry)) > 1 for entry in entries
         )
 
-    def disambiguate(self, word: str, context: str, word_index: int = 1) -> None | str:
+    def disambiguate(self, word: str, context: str, word_index: int = 1) -> Optional[str]:
         """Returns the correctly stressed word. If there is no possible disambiguation, returns None"""
 
         context = unaccentify(context)
