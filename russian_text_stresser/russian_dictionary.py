@@ -192,7 +192,7 @@ ON
 
     # Returns (result_word, bool: true if is_unique/not_in_database)
     def get_correct_yo_form(
-        self, word: str, pos: str = None, morph=None
+        self, word: str, pos: Optional[str] = None, morph=None
     ) -> Tuple[str, bool]:
         # is the word lowercased in the dictionary
         word_lower = word.lower()

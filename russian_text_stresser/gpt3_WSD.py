@@ -133,7 +133,7 @@ def get_pos_from_grammar_info(grammar_info: str) -> str:
     return grammar_info.replace(",", " ").replace(";", " ").split(" ")[0]
 
 
-def get_aspect_from_grammar_info(grammar_info: str) -> str | None:
+def get_aspect_from_grammar_info(grammar_info: str) -> Optional[str]:
     if "несовершенный вид" in grammar_info:
         return "несовершенный"
     elif "совершенный вид" in grammar_info:
@@ -421,7 +421,7 @@ class WordSenseDisambiguator:
             len(self.find_in_entry_matching_word(word, entry)) > 1 for entry in entries
         )
 
-    def disambiguate(self, word: str, context: str, word_index: int = 1) -> None | str:
+    def disambiguate(self, word: str, context: str, word_index: int = 1) -> Optional[str]:
         """Returns the correctly stressed word. If there is no possible disambiguation, returns None"""
 
         context = unaccentify(context)

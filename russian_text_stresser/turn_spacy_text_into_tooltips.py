@@ -44,6 +44,7 @@ def turn_morph_into_html(morph: str):
     morphs = morph.split("|")
     for morph in morphs:
         # map "Case=Nom"
+        raise NotImplementedError
         
 
 def turn_spacy_text_into_tooltips(text: str):
