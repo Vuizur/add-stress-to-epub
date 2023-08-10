@@ -11,8 +11,8 @@ from stressed_cyrillic_tools import (
     remove_accent_if_only_one_syllable,
     unaccentify,
 )
-from gpt3_WSD import WIZARD_L2_13B, LocalLLM
-from text_stresser import RussianTextStresser
+from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM
+from russian_text_stresser.text_stresser import RussianTextStresser
 from ebook_dictionary_creator.e_dictionary_creator.dictionary_creator import (
     RussianDictionaryCreator,
 )
