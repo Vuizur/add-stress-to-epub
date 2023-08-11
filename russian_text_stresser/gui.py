@@ -9,11 +9,11 @@ import pathlib
 
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     os.environ["PYMORPHY2_DICT_PATH"] = str(
-        pathlib.Path(sys._MEIPASS).joinpath("pymorphy2_dicts_ru/data")
+        pathlib.Path(sys._MEIPASS).joinpath("pymorphy2_dicts_ru/data") # type: ignore
     )
 
 
-def is_tool(name):
+def is_tool(name: str) -> bool:
     """Check whether `name` is on PATH and marked as executable."""
 
     from shutil import which
@@ -25,7 +25,7 @@ class StressThread(QtCore.QThread):
 
     book_stressed = QtCore.pyqtSignal(object)
 
-    def __init__(self, parent, input_path, output_path):
+    def __init__(self, parent, input_path: str, output_path: str):
         QtCore.QThread.__init__(self, parent)
         self.input_path = input_path
         self.output_path = output_path
@@ -37,8 +37,8 @@ class StressThread(QtCore.QThread):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, *args, obj=None, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+    def __init__(self, *args, obj=None, **kwargs): # type: ignore
+        super(MainWindow, self).__init__(*args, **kwargs) # type: ignore	
         self.setupUi(self)
         self.setWindowTitle("Stress Adder Tool")
         self.selectInputButton.clicked.connect(self.open)

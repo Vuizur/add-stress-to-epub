@@ -1,9 +1,10 @@
 from pathlib import Path
+from spacy import load
+from spacy.language import Language
+from spacy.tokens import Token
 
-from spacy import Language, load
 
-
-def load_spacy_full(large_model = False) -> Language:
+def load_spacy_full(large_model: bool = False) -> Language:
     bundle_dir = Path(__file__).parent.absolute()
     if large_model:
         return load(bundle_dir / "ru_core_news_lg-3.6.0", exclude=["lemmatizer", "ner"])
@@ -33,7 +34,7 @@ def load_spacy_min() -> Language:
     )
 
 
-def is_unimportant(token):
+def is_unimportant(token: Token) -> bool:
     return (
         token.pos_ == "PUNCT"
         or token.pos_ == "SYM"

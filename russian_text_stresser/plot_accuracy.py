@@ -144,7 +144,7 @@ def plot_accuracy_my_systems():
 
     sns.set(style="whitegrid")
 
-    bp = sns.barplot(
+    bp = sns.barplot( # type: ignore
         data=df, x="System", y="Percentage correct words", hue="System", dodge=False
     )
     # bp.legend_.remove()

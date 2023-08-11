@@ -30,7 +30,7 @@ try:
 except ImportError:
     pass
 try:
-    from stressrnn import StressRNN
+    from stressrnn.stressrnn import StressRNN
 except ImportError:
     pass
 import csv

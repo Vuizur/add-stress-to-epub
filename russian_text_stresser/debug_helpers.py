@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from stressed_cyrillic_tools import unaccentify
 import csv
-from spacy.tokens import Doc
+from spacy.tokens import Token
+from spacy.tokens.doc import Doc
 
 from russian_text_stresser.text_stresser import RussianTextStresser
 
 
 def create_histogram_from_spacy_document(doc: Doc) -> dict[str, int]:
     """Creates a histogram of the words in a spacy document."""
-    histogram = {}
+    histogram: dict[str, int] = {}
     for token in doc:
         if token.text in histogram:
             histogram[unaccentify(token.text)] += 1
@@ -46,7 +47,7 @@ def esc_nl(s: str):
     return s.replace("\r", "\\r").replace("\n", "\\n")
 
 
-def print_two_docs_with_pos_next_to_another(doc1: Doc, doc2: Doc, filename: str="pos_comparison.tsv"):
+def print_two_docs_with_pos_next_to_another(doc1: list[Token], doc2: list[Token], filename: str="pos_comparison.tsv"):
     # This function iterates through two spacy documents
     # For each token it print <token> <pos> <token> <pos> to a tsv file
 
