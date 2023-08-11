@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt6 import QtCore
 from PyQt6 import QtGui
@@ -25,7 +26,7 @@ class StressThread(QtCore.QThread):
 
     book_stressed = QtCore.pyqtSignal(object)
 
-    def __init__(self, parent, input_path: str, output_path: str):
+    def __init__(self, parent: Any, input_path: str, output_path: str):
         QtCore.QThread.__init__(self, parent)
         self.input_path = input_path
         self.output_path = output_path
@@ -37,7 +38,7 @@ class StressThread(QtCore.QThread):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, *args, obj=None, **kwargs): # type: ignore
+    def __init__(self, *args, obj: Any=None, **kwargs): # type: ignore
         super(MainWindow, self).__init__(*args, **kwargs) # type: ignore	
         self.setupUi(self)
         self.setWindowTitle("Stress Adder Tool")

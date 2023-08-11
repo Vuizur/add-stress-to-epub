@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import json
 import pickle
 import sqlite3
@@ -9,11 +8,6 @@ from stressed_cyrillic_tools import (
 )
 
 # This file contains several helper functions to delete unnecessary data from the database or that update it with new data
-
-@dataclass
-class PossibleForms:
-    # TODO: Finish/remove
-    unpronounced_word: dict
 
 
 def find_words_that_only_have_one_meaning(cur: sqlite3.Cursor):

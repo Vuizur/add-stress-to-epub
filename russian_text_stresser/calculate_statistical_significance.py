@@ -2,7 +2,7 @@
 import scipy.stats as stats
 import pandas
 
-def calculate_statistical_significance(n1: int, n2: int, c1: int, c2: int, alternative_hypothesis="greater"):
+def calculate_statistical_significance(n1: int, n2: int, c1: int, c2: int, alternative_hypothesis: str="greater"):
     """
     Calculates the statistical significance of the difference in accuracy between two programs.
     
@@ -24,7 +24,7 @@ def calculate_statistical_significance(n1: int, n2: int, c1: int, c2: int, alter
     """
     # Calculate the proportion of correct classifications for each program
     p1 = c1 / n1 # Program 1
-    p2 = c2 / n2 # Program 2
+    # p2 = c2 / n2 # Program 2
 
     # Perform the binomial test using the binom_test function
     # Choose program 1 as the reference program
@@ -50,6 +50,7 @@ if __name__ == "__main__":
         print("Our program correct words:", our_program_correct_words)
 
         # Now we iterate over all the rows and calculate the p-value for each program
+        
         for index, row in data.iterrows():
             # Get the program name
             program_name = row["System"]

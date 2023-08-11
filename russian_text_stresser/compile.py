@@ -5,7 +5,7 @@ import shutil, errno
 
 # This is for publishing the app as executable on Windows
 
-def copy_folder(src, dst):
+def copy_folder(src: str, dst: str) -> None:
     try:
         shutil.copytree(src, dst)
     except OSError as exc:  # python >2.5

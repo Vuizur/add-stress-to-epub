@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 from russian_text_stresser.helper_methods import is_unimportant, load_spacy_full
 from stressed_cyrillic_tools import (
     is_acute_accented,
@@ -16,7 +16,7 @@ class RussianTextStresser:
         self,
         db_file: str = "russian_dict.db",
         simple_cases_file: Optional[str] = "simple_cases.pkl",
-        use_large_model=False,
+        use_large_model: bool =False,
         llm: Optional["LocalLLM"] = None,  #
         add_stressrnn: bool = False,
         stressrnn_threshold: float = 0.8,
@@ -29,7 +29,7 @@ class RussianTextStresser:
             self.wsd = None
         if add_stressrnn:
             try:
-                from stressrnn import StressRNN
+                from stressrnn.stressrnn import StressRNN
 
                 self.stress_rnn = StressRNN()
             except ImportError:
