@@ -5,10 +5,9 @@ from pathlib import Path
 import pstats
 import random
 import time
-from typing import Union
+from typing import Any, Union
 from russian_text_stresser.debug_helpers import (
     esc_nl,
-    print_spacy_doc_difference,
     print_two_docs_with_pos_next_to_another,
 )
 from russian_text_stresser.helper_methods import load_spacy_full, load_spacy_min
@@ -23,7 +22,7 @@ from stressed_cyrillic_tools import (
 )
 from russian_text_stresser.text_stresser import RussianTextStresser
 from spacy.tokens.token import Token
-from russian_stress_benchmark import benchmark_everything_in_folder
+from russian_stress_benchmark.benchmark import benchmark_everything_in_folder
 
 try:
     from russtress import Accent
@@ -40,7 +39,7 @@ from spacy.language import Language
 from russian_text_stresser.gpt3_WSD import WIZARD_L2_13B, LocalLLM
 
 
-def add_defaultdicts(dict1, dict2):
+def add_defaultdicts(dict1: defaultdict[Any, Any], dict2: defaultdict[Any, Any]):
     for key in dict2:
         dict1[key] += dict2[key]
     return dict1
@@ -334,17 +333,17 @@ class AccuracyCalculator:
                     )
         return results
 
-    def print_accuracy(self, original_file_path, auto_stressed_file_path):
-        analysis_res = self.calc_accuracy(original_file_path, auto_stressed_file_path)
+    def print_accuracy(self, original_file_path: str, auto_stressed_file_path: str) -> None:
+        analysis_res: AnalysisResults = self.calc_accuracy(original_file_path, auto_stressed_file_path)
         print(f"Number of tokens: {analysis_res.orig_doc_length}")
         print(
-            f"Percentage correctly stressed tokens: {analysis_res.percentage_correctly_stressed_tokens}"
+            f"Percentage correctly stressed tokens: {analysis_res.get_percentage_correctly_stressed_tokens()}"
         )
         print(
-            f"Percentage unstressed tokens: {analysis_res.percentage_unstressed_tokens}"
+            f"Percentage unstressed tokens: {analysis_res.get_percentage_unstressed_tokens()}"
         )
         print(
-            f"Percentage incorrectly stressed tokens: {analysis_res.percentage_incorrectly_stressed_tokens}"
+            f"Percentage incorrectly stressed tokens: {analysis_res.get_percentage_incorrectly_stressed_tokens()}"
         )
 
 
@@ -372,7 +371,7 @@ def fix_russiangram_text(text: str) -> str:
 def fix_russiangram_folder(input_folder: str, output_folder: str) -> None:
     """Fixes all files in a folder and its subfolders"""
     # Iterate over all files in the folder and its subfolders
-    for root, dirs, files in os.walk(input_folder):
+    for root, _, files in os.walk(input_folder):
         for file in files:
             if file.endswith(".txt") or file.endswith(".ref"):
                 file_path = os.path.join(root, file)
@@ -391,7 +390,7 @@ def print_statistics_over_data(folder_path: str):
 
     token_num = 0
     # Iterate over all files in the folder and its subfolders
-    for root, dirs, files in os.walk(folder_path):
+    for root, _, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".txt") or file.endswith(".ref"):
                 file_path = os.path.join(root, file)
@@ -424,7 +423,7 @@ def perform_benchmark_for_my_solution() -> None:
     s = pstats.Stats("Profile.prof")
     s.strip_dirs().sort_stats("time").print_stats()
 
-    # benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
+    benchmark_everything_in_folder(base_path, result_path, ts.stress_text)
 
 
 def perform_benchmark_for_my_solutions_old(benchmark_yo=False) -> None:
@@ -495,25 +494,29 @@ def try_to_fix_russtress_text(
     return fixed_text
 
 
-def stress_text_with_russtress(text: str, stresser: Union["Accent","StressRNN"], try_to_fix=True):
-    if isinstance(stresser, StressRNN):
-        stressed_text = stresser.put_stress(text, stress_symbol="'").replace("'", "\u0301")
+def stress_text_with_russtress(
+    text: str, stresser: Union["Accent", "StressRNN"], try_to_fix: bool=True
+):
+    if isinstance(stresser, StressRNN): # type: ignore
+        stressed_text = stresser.put_stress(text, stress_symbol="'").replace(
+            "'", "\u0301"
+        )
     else:
         stressed_text = stresser.put_stress(text).replace("'", "\u0301")
-    if try_to_fix:
+    if try_to_fix and isinstance(stresser, Accent): # type: ignore
         nlp = load_spacy_min()
         nlp.add_pipe("sentencizer")
         # stressed_text = try_to_fix_russtress_text(stresser, stressed_text, nlp)
         doc = nlp(stressed_text)
         fixed_text = ""
         for sent in doc.sents:
-            fixed_text += try_to_fix_russtress_text(stresser, sent.text_with_ws, nlp)
+            fixed_text += try_to_fix_russtress_text(stresser, sent.text_with_ws, nlp) # type: ignore
         return fixed_text
     return stressed_text
 
 
-def perform_benchmark_for_russtress(try_to_fix=True) -> None:
-    stresser = Accent()
+def perform_benchmark_for_russtress(try_to_fix: bool =True) -> None:
+    stresser = Accent() # type: ignore
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "results_russtress"
@@ -529,8 +532,9 @@ def perform_benchmark_for_russtress(try_to_fix=True) -> None:
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
 
+
 def perform_benchmark_for_stressrnn() -> None:
-    stresser = StressRNN()
+    stresser = StressRNN() # type: ignore
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "results_stressrnn"
@@ -540,9 +544,8 @@ def perform_benchmark_for_stressrnn() -> None:
 
     def stress_text(text: str) -> str:
         return stress_text_with_russtress(text, stresser, try_to_fix=False)
-    
-    benchmark_everything_in_folder(base_path, result_path, stress_text)
 
+    benchmark_everything_in_folder(base_path, result_path, stress_text)
 
 
 class RandomStresser:
@@ -563,7 +566,7 @@ class RandomStresser:
             return word
         else:
             # calculate the vowel indexes (аоэуыяеёюи)
-            indexes = []
+            indexes: list[int] = []
             for i, char in enumerate(word):
                 if char.lower() in "аоэуыяеёюи":
                     indexes.append(i)
@@ -673,12 +676,12 @@ def print_stressmistake_to_tsv(mistakes: list[StressMistake], tsv_path: str) -> 
 
 
 def get_all_pos(
-    stressed_text_path="correctness_tests/stressed_russian_texts",
+    stressed_text_path: str="correctness_tests/stressed_russian_texts",
 ) -> list[str]:
     """Gets all the POS tags in the corpus."""
     nlp = load_spacy_full()
-    all_pos = set()
-    for root, dirs, files in os.walk(stressed_text_path):
+    all_pos: set[str] = set()
+    for root, _, files in os.walk(stressed_text_path):
         for file in files:
             if file.endswith(".txt") or file.endswith(".ref"):
                 file_path = os.path.join(root, file)
@@ -915,7 +918,7 @@ def fusion_my_solution_wsd_results_with_russtress_fixed():
 
     nlp = load_spacy_min()
 
-    for root, dirs, files in os.walk(root_folder_1):
+    for root, _, files in os.walk(root_folder_1):
         for file in files:
             if file.endswith(".txt") or file.endswith(".ref"):
                 # Open file
@@ -935,7 +938,6 @@ def fusion_my_solution_wsd_results_with_russtress_fixed():
                         )
                     )
                     with open(new_path, "r", encoding="utf-8") as f2:
-
                         relative_path = os.path.relpath(root, root_folder_1)
 
                         my_text_tokenized = nlp(f.read())
@@ -967,7 +969,7 @@ def fusion_my_solution_wsd_results_with_russtress_fixed():
                             f.write(final_text)
 
 
-def create_unstressed_text_folder(remove_yo=False):
+def create_unstressed_text_folder(remove_yo: bool=False):
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "unstressed_texts"
@@ -982,10 +984,9 @@ def create_unstressed_text_folder(remove_yo=False):
 
 
 if __name__ == "__main__":
-    #srnn = StressRNN()
-#
-    #print(srnn.put_stress("Я только хочу это попробовать.", stress_symbol="'"))
-
+    # srnn = StressRNN()
+    #
+    # print(srnn.put_stress("Я только хочу это попробовать.", stress_symbol="'"))
 
     perform_benchmark_for_stressrnn()
 

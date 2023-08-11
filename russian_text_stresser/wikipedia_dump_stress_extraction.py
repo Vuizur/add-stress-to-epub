@@ -6,6 +6,7 @@ import time
 from stressed_cyrillic_tools import remove_yo
 
 from helper_methods import load_spacy_min
+from spacy.tokens import Doc
 
 # \xa0 is the no-break space
 
@@ -14,7 +15,7 @@ FINE_GRAINED_PATTERN = re.compile(
 )
 
 
-def get_stressed_words_spacy(stressed_words: list, doc):
+def get_stressed_words_spacy(stressed_words: list[str], doc: Doc):
     for token in doc:
         tk_text = token.text
         if "\u0301" in tk_text:
@@ -22,7 +23,7 @@ def get_stressed_words_spacy(stressed_words: list, doc):
     return stressed_words
 
 
-def get_stressed_words_regex(stressed_words: list, text: str):
+def get_stressed_words_regex(stressed_words: list[str], text: str):
     # This is needed because otherwise the string will not be split on backslashes
     # text = r"{}".format(text)
     # text = r"%s" % text
@@ -31,7 +32,7 @@ def get_stressed_words_regex(stressed_words: list, text: str):
             stressed_words.append(word)
 
 
-def get_stressed_words_split(stressed_words: list, text: str):
+def get_stressed_words_split(stressed_words: list[str], text: str):
     if text == None:
         return
     for temp_text in text.split(" "):
@@ -55,7 +56,7 @@ def get_words_with_yo(yo_words: list, text: str):
                     yo_words.append(word)
 
 
-def get_words_with_yo_with_stats(yo_database_cursor, text: str):
+def get_words_with_yo_with_stats(yo_database_cursor: sqlite3.Cursor, text: str):
     if text == None:
         return
     for temp_text in text.split(" "):
@@ -121,7 +122,7 @@ CREATE INDEX IF NOT EXISTS yo_stats_without_yo_index ON yo_stats (without_yo);
 
 
 def extract_efficient(
-    extraction_mode: str = "STRESS", wordlist_path: str = "ruwiki_wordlist.txt", DUMP_PATH = "D:/ruwiki-20220820-pages-articles-multistream.xml"
+    extraction_mode: str = "STRESS", wordlist_path: str = "ruwiki_wordlist.txt", DUMP_PATH: str = "D:/ruwiki-20220820-pages-articles-multistream.xml"
 ):
     """The extraction mode can be either "STRESS" or "YO\" """
     # EXTRACTION_MODE = "YO"

@@ -1,6 +1,5 @@
 import subprocess
 from os import path, listdir, remove, rename, walk
-from os.path import isfile
 from zipfile import ZipFile
 from bs4 import BeautifulSoup
 from shutil import make_archive, rmtree
@@ -41,7 +40,7 @@ class EbookStresser:
         with ZipFile(input_file_path, "r") as zip_ref:
             zip_ref.extractall(self._extraction_path)
 
-        for subdir, dirs, files in walk(self._extraction_path):
+        for subdir, _, files in walk(self._extraction_path):
             for file in files:
                 filepath = path.join(subdir, file)
                 if filepath.endswith(".xhtml") or filepath.endswith(".html"):

@@ -151,7 +151,7 @@ def add_ruwiktionary_data_to_db(
 
 
 def add_wikipedia_data_to_db(
-    database_path="russian_dict.db", wikipedia_wordlist="wikipedia_words.txt"
+    database_path: str="russian_dict.db", wikipedia_wordlist: str="wikipedia_words.txt"
 ):
     wordstress_word_mapping: dict[str, set[str]] = {}
 

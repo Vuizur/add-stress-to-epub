@@ -20,7 +20,7 @@ import shutil
 
 
 class DatabaseCreator:
-    def __init__(self, htmldump_path):
+    def __init__(self, htmldump_path: str):
         self.dictionary_creator = RussianDictionaryCreator()
         self.wiktionary_parser = HTMLDumpParser(htmldump_path)
         # TODO: This is broken.
