@@ -1,16 +1,20 @@
 import csv
 from dataclasses import dataclass
 from collections.abc import Callable
-from russian_text_stresser.gpt3_WSD import MANTICORE_13B, SAIGA_7B, WIZARD_L2_13B, WIZARD_VICUNA_7B, LocalLLM, find_correct_choice
+from russian_text_stresser.gpt3_WSD import (
+    MANTICORE_13B,
+    SAIGA_7B,
+    WIZARD_L2_13B,
+    WIZARD_VICUNA_7B,
+    LocalLLM,
+    find_correct_choice,
+)
 import re
 from tqdm import tqdm
 import random
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import pandas as pd
-from llama_cpp import Llama
-
 
 @dataclass
 class BenchmarkTask:
@@ -34,7 +38,7 @@ class BenchmarkResults:
             * 100
         )
 
-    def __add__(self, other):
+    def __add__(self, other: "BenchmarkResults"):
         return BenchmarkResults(
             correct_answers=self.correct_answers + other.correct_answers,
             incorrect_answers=self.incorrect_answers + other.incorrect_answers,
@@ -62,7 +66,7 @@ def get_chatGPT_benchmark_results(
 
 
 def benchmark_word_sense_disambiguation(
-    answer_function: Callable[[str], str], instead_return_chatgpt_results=False
+    answer_function: Callable[[str], str], instead_return_chatgpt_results: bool = False
 ) -> BenchmarkResults:
     # Load the file "chosen_tasks.txt"
     with open("chosen_tasks.txt", "r", encoding="utf-8") as f:
@@ -180,44 +184,6 @@ def print_results_to_png():
     plt.savefig("results.png")
 
 
-def stacked_barplot_example():
-    # load dataset
-    tips = sns.load_dataset("tips")
-
-    # set plot style: grey grid in the background:
-    sns.set(style="darkgrid")
-
-    # set the figure size
-    plt.figure(figsize=(14, 14))
-
-    # top bar -> sum all values(smoker=No and smoker=Yes) to find y position of the bars
-    total = tips.groupby("day")["total_bill"].sum().reset_index()
-
-    # bar chart 1 -> top bars (group of 'smoker=No')
-    bar1 = sns.barplot(x="day", y="total_bill", data=total, color="darkblue")
-
-    # bottom bar ->  take only smoker=Yes values from the data
-    smoker = tips[tips.smoker == "Yes"]
-
-    # bar chart 2 -> bottom bars (group of 'smoker=Yes')
-    bar2 = sns.barplot(
-        x="day",
-        y="total_bill",
-        data=smoker,
-        estimator=sum,
-        errorbar=None,
-        color="lightblue",
-    )
-
-    # add legend
-    top_bar = mpatches.Patch(color="darkblue", label="smoker = No")
-    bottom_bar = mpatches.Patch(color="lightblue", label="smoker = Yes")
-    plt.legend(handles=[top_bar, bottom_bar])
-
-    # show the graph
-    plt.savefig("stacked_barplot_with_matplotlib_Python.svg")
-
-
 def choose_a_random_number(task: str) -> str:
     # Identify all numbers in the task
     numbers = re.findall(r"\d+\.", task)
@@ -233,7 +199,6 @@ def simulate_random_numbers_10000_times():
 
 
 if __name__ == "__main__":
-    # stacked_barplot_example()
 
     llama_2_13B = LocalLLM(WIZARD_L2_13B)
     # print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
@@ -241,24 +206,23 @@ if __name__ == "__main__":
     print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
 
     quit()
-    #print_results_to_png()
+    # print_results_to_png()
 
-    #quit()
+    # quit()
 
-    
     wizard_vicuna_7B = LocalLLM(WIZARD_VICUNA_7B)
-    #manticore_13B = LocalLLM(MANTICORE_13B)
-    #saiga_7B = LocalLLM(SAIGA_7B)
+    # manticore_13B = LocalLLM(MANTICORE_13B)
+    # saiga_7B = LocalLLM(SAIGA_7B)
 
-    #benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
-    #print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
-    #benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
-    #print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
+    # benchmark_results = benchmark_word_sense_disambiguation(manticore_13B.generate)
+    # print_benchmark_results_to_file(benchmark_results, manticore_13B.name)
+    # benchmark_results = benchmark_word_sense_disambiguation(saiga_7B.generate)
+    # print_benchmark_results_to_file(benchmark_results, saiga_7B.name)
 
-    #benchmark_results = benchmark_word_sense_disambiguation(
+    # benchmark_results = benchmark_word_sense_disambiguation(
     #    lambda x: x, instead_return_chatgpt_results=True
-    #)
-    #print_benchmark_results_to_file(benchmark_results, "chatgpt")
+    # )
+    # print_benchmark_results_to_file(benchmark_results, "chatgpt")
 
     benchmark_results = benchmark_word_sense_disambiguation(wizard_vicuna_7B.generate)
     print_benchmark_results_to_file(benchmark_results, "wizard_vicuna_7B")
