@@ -16,7 +16,7 @@ import random
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from russian_text_stresser.plot_accuracy import print_df_to_latex
 
 @dataclass
 class BenchmarkTask:
@@ -230,18 +230,51 @@ def perform_full_benchmark():
     chatgpt_bm_results = get_chatGPT_benchmark_results(load_chosen_tasks())
     print_benchmark_results_to_file(chatgpt_bm_results, "ChatGPT")
 
+def print_wsd_benchmark_result():
+    df = pd.read_csv("correctness_tests/llm_benchmark_results.tsv", sep="\t")
+    df = df.sort_values(by=["Percentage"], ascending=True)
+
+    print(df)
+
+    # Rename column Name to Model
+    df = df.rename(columns={"Name": "Model"})
+    # Rename model names
+    df["Model"] = df["Model"].replace(
+        {
+            "wizard_vicuna_7B": "Wizard Vicuña 7B",
+            "manticore_13B": "Manticore 13B",
+            "saiga_7B": "Saiga 7B",
+            "wizard_l2_13B": "Wizard Llama2 13B",
+        }
+    )
+    # Only keep the model name and the percentage
+    df = df[["Model", "Percentage"]]
+
+    # Plot with seaborn
+    bp = sns.barplot(data=df, x="Model", y="Percentage", hue="Model", dodge=False)
+
+    bp.legend(loc="lower right")
+    bp.set(xticklabels=[])
+
+    # Show the plot
+    plt.savefig("correctness_tests/results_wsd.png", dpi=400)
+
+    # Print to latex
+    print_df_to_latex(df)
+
 
 if __name__ == "__main__":
+    print_wsd_benchmark_result()
     # print(load_chosen_tasks())
-    # quit()
+    quit()
 
     # llama_2_13B = LocalLLM(WIZARD_VICUNA_7B)
     # benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
     # print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
     # simulate_random_numbers_10000_times()
-    perform_full_benchmark()
+    #perform_full_benchmark()
 
-    quit()
+    #quit()
     # print_results_to_png()
 
     # quit()
