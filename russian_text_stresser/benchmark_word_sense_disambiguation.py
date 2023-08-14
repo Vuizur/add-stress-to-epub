@@ -74,12 +74,16 @@ def benchmark_word_sense_disambiguation(
         current_benchmark_task = ""
         bm_results = BenchmarkResults()
         benchmark_tasks: list[BenchmarkTask] = []
+        skip_next_task = False
 
         writing_task = False
         # Iterate through lines until you find one that starts with "Фраза:"
         for line in tqdm(chosen_tasks):
             if line.startswith("Фраза:"):
-                if current_benchmark_task != "":
+                if skip_next_task:
+                    skip_next_task = False
+                    continue
+                elif current_benchmark_task != "":
                     # TODO: Refactor this to method
                     benchmark_task = BenchmarkTask(
                         complete_task=current_benchmark_task,
@@ -125,17 +129,12 @@ def benchmark_word_sense_disambiguation(
                 # Try to convert the correct answer to an int
                 try:
                     correct_answer = int(correct_answer)
-                except AttributeError:
+                except (AttributeError,ValueError):
                     print("Could not convert correct answer to int")
                     print(correct_answer)
                     print("For task:")
                     print(current_benchmark_task)
-                    continue
-                except ValueError:
-                    print("Could not convert correct answer to int")
-                    print(correct_answer)
-                    print("For task:")
-                    print(current_benchmark_task)
+                    skip_next_task = True
                     continue
                 # print(current_benchmark_task)
             # Line starts with a number and dot
@@ -198,9 +197,13 @@ def simulate_random_numbers_10000_times():
     return bm
 
 
+def perform_full_benchmark():
+    SYSTEMS = [WIZARD_VICUNA_7B, MANTICORE_13B, SAIGA_7B, WIZARD_L2_13B]
+
+
 if __name__ == "__main__":
 
-    llama_2_13B = LocalLLM(WIZARD_L2_13B)
+    llama_2_13B = LocalLLM(WIZARD_VICUNA_7B)
     # print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
     benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
     print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
