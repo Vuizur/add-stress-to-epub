@@ -1,6 +1,7 @@
 import csv
 from dataclasses import dataclass
 from collections.abc import Callable
+import os
 from russian_text_stresser.gpt3_WSD import (
     MANTICORE_13B,
     SAIGA_7B,
@@ -16,11 +17,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 @dataclass
 class BenchmarkTask:
     complete_task: str
     correct_answer: int
-    chatgpt_answer: str
+    chatgpt_answer: int
     choices: list[str]
 
 
@@ -65,91 +67,103 @@ def get_chatGPT_benchmark_results(
     return bm_results
 
 
-def benchmark_word_sense_disambiguation(
-    answer_function: Callable[[str], str], instead_return_chatgpt_results: bool = False
-) -> BenchmarkResults:
-    # Load the file "chosen_tasks.txt"
+# Has the format:
+"""
+        Фраза: "Брат нам не писал."
+Вопрос: Какое определение слова "писал" здесь правильное?
+1. писа́ть (Глагол) - наносить на бумагу или иной материал графические знаки (буквы, цифры, ноты)
+2. пи́сать (Глагол) - разг. испускать мочу; мочиться
+3. писа́ло (Существительное) - палочка, которой писали на бересте
+Ответ: (1)
+CGPT: (1)
+
+
+Фраза: "Скажи мне: Где здесь туалет? Я хочу писать."
+Вопрос: Какое определение слова "писал" здесь правильное?
+1. писа́ть (Глагол) - наносить на бумагу или иной материал графические знаки (буквы, цифры, ноты)
+2. пи́сать (Глагол) - разг. испускать мочу; мочиться
+Ответ: (2)
+CGPT: (2)
+"""
+
+
+def load_chosen_tasks() -> list[BenchmarkTask]:
     with open("chosen_tasks.txt", "r", encoding="utf-8") as f:
-        chosen_tasks = f.readlines()
-        current_benchmark_task = ""
-        bm_results = BenchmarkResults()
-        benchmark_tasks: list[BenchmarkTask] = []
-        skip_next_task = False
+        text = f.read()
 
-        writing_task = False
-        # Iterate through lines until you find one that starts with "Фраза:"
-        for line in tqdm(chosen_tasks):
-            if line.startswith("Фраза:"):
-                if skip_next_task:
-                    skip_next_task = False
-                    continue
-                elif current_benchmark_task != "":
-                    # TODO: Refactor this to method
-                    benchmark_task = BenchmarkTask(
-                        complete_task=current_benchmark_task,
-                        correct_answer=correct_answer,
-                        choices=choices,
-                        chatgpt_answer=cgpt_answer,
-                    )
-                    benchmark_tasks.append(benchmark_task)
+    tasks = text.split("\n\n")
+    tasks = [task for task in tasks if "Фраза" in task]
 
-                    try:
-                        llm_answer = answer_function(benchmark_task.complete_task)
-                        print(llm_answer)
-                    except Exception as e:
-                        print("Exception occurred:")
-                        print(e)
-                        print("For task:")
-                        print(benchmark_task.complete_task)
-                        llm_answer = ""
-                    choice = find_correct_choice(llm_answer, benchmark_task.choices)
-                    # Extract the number from the choice (e.g. "1." -> 1)
-                    if choice is not None:
-                        choice = int(choice.split(".")[0])
-                        if choice == benchmark_task.correct_answer:
-                            bm_results.correct_answers += 1
-                        else:
-                            bm_results.incorrect_answers += 1
-                    else:
-                        bm_results.not_answered += 1
+    task_list: list[BenchmarkTask] = []
 
-                current_benchmark_task = ""
-                choices: list[str] = []
-                writing_task = True
-            elif line.startswith("Ответ:"):
-                current_benchmark_task += "Ответ:"
-                writing_task = False
-                correct_answer = (
-                    line.split(":")[1]
-                    .strip()
-                    .replace("(", "")
-                    .replace(")", "")
-                    .replace("?", "")
-                )  # Question mark sometimes answers I wanted to check again
-                # Try to convert the correct answer to an int
-                try:
-                    correct_answer = int(correct_answer)
-                except (AttributeError,ValueError):
-                    print("Could not convert correct answer to int")
-                    print(correct_answer)
-                    print("For task:")
-                    print(current_benchmark_task)
-                    skip_next_task = True
-                    continue
-                # print(current_benchmark_task)
-            # Line starts with a number and dot
-            elif re.match(r"^\d+\.", line):
-                choices.append(line)
-            elif line.startswith("CGPT:"):
-                # Get the number from the line using regex. Anything before and after the number is ignored.
-                cgpt_answer = re.search(r"\d+", line).group(0)
-            if writing_task:
-                current_benchmark_task += line
+    # Loop through each task in the text file
+    for task in tasks:
+        stripped_task = task.strip()
+        # Cut of everything behind Ответ:
+        complete_task = stripped_task.split("Ответ:")[0]
+        complete_task += "Отвечайте только цифрой."
 
-        if instead_return_chatgpt_results:
-            return get_chatGPT_benchmark_results(benchmark_tasks)
-        else:
-            return bm_results
+        choices_line: str = re.search(r"\n1\..*\nОтвет", stripped_task, re.DOTALL).group(0).strip()  # type: ignore
+
+        choices_lines = choices_line.split("\n")
+
+        final_choices: list[str] = []
+        for (
+            line
+        ) in (
+            choices_lines
+        ):  # This is needed because the choices can contain line breaks
+            if re.match(r"^\d", line):
+                final_choices.append(line)
+            else:
+                final_choices[-1] += line
+
+        try:
+            answer = re.search(r"\nОтвет: \((\d*\?*)\)", stripped_task).group(1)  # type: ignore
+            answer = int(answer.replace("?", ""))
+        except (AttributeError, ValueError):
+            print(f"Could not find answer for task: {stripped_task}")
+            continue
+
+        chatgpt_answer = re.search(r"\nCGPT: \((\d*)\)", stripped_task).group(1)  # type: ignore
+
+        chatgpt_answer = int(chatgpt_answer)
+
+        # Create a dataclass object with the extracted information
+        task_object = BenchmarkTask(
+            complete_task, answer, chatgpt_answer, final_choices
+        )
+
+        # Append the object to the list
+        task_list.append(task_object)
+
+    # Print the list of dataclass objects
+    return task_list
+
+
+def benchmark_word_sense_disambiguation(
+    answer_function: Callable[[str], str]
+) -> BenchmarkResults:
+    """Benchmark the word sense disambiguation task"""
+    benchmark_tasks = load_chosen_tasks()
+    bm_results = BenchmarkResults()
+    for benchmark_task in tqdm(benchmark_tasks):
+        try:
+            llm_answer = answer_function(benchmark_task.complete_task)
+            choice = find_correct_choice(llm_answer, benchmark_task.choices)
+            if choice is not None:
+                choice = int(choice.split(".")[0])
+                if choice == benchmark_task.correct_answer:
+                    bm_results.correct_answers += 1
+                else:
+                    bm_results.incorrect_answers += 1
+            else:
+                bm_results.not_answered += 1
+        except Exception as e:
+            print(f"Error while processing task: {benchmark_task.complete_task}")
+            print(e)
+            bm_results.not_answered += 1
+    return bm_results
 
 
 def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_name: str):
@@ -157,6 +171,15 @@ def print_benchmark_results_to_file(benchmark_results: BenchmarkResults, llm_nam
     with open(
         "correctness_tests/llm_benchmark_results.tsv", "a", encoding="utf-8", newline=""
     ) as f:
+        # If empty, write the header
+        if os.stat("correctness_tests/llm_benchmark_results.tsv").st_size == 0:
+            writer = csv.writer(
+                f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE
+            )
+            writer.writerow(
+                ["Name", "Correct", "Incorrect", "Not answered", "Percentage"]
+            )
+
         writer = csv.writer(f, delimiter="\t", escapechar="\\", quoting=csv.QUOTE_NONE)
         writer.writerow(
             [
@@ -192,21 +215,31 @@ def choose_a_random_number(task: str) -> str:
 
 def simulate_random_numbers_10000_times():
     bm = BenchmarkResults()
-    for i in range(10000):
+    for _ in range(10000):
         bm += benchmark_word_sense_disambiguation(choose_a_random_number)
     return bm
 
 
 def perform_full_benchmark():
     SYSTEMS = [WIZARD_VICUNA_7B, MANTICORE_13B, SAIGA_7B, WIZARD_L2_13B]
+    print_benchmark_results_to_file(simulate_random_numbers_10000_times(), "Random")
+    for system in SYSTEMS:
+        llm = LocalLLM(system)
+        benchmark_results = benchmark_word_sense_disambiguation(llm.generate)
+        print_benchmark_results_to_file(benchmark_results, llm.name)
+    chatgpt_bm_results = get_chatGPT_benchmark_results(load_chosen_tasks())
+    print_benchmark_results_to_file(chatgpt_bm_results, "ChatGPT")
 
 
 if __name__ == "__main__":
+    # print(load_chosen_tasks())
+    # quit()
 
-    llama_2_13B = LocalLLM(WIZARD_VICUNA_7B)
-    # print(llama_2_13B.generate("Пожалуйста, сочини историю про луны!"))
-    benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
-    print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
+    # llama_2_13B = LocalLLM(WIZARD_VICUNA_7B)
+    # benchmark_results = benchmark_word_sense_disambiguation(llama_2_13B.generate)
+    # print_benchmark_results_to_file(benchmark_results, llama_2_13B.name)
+    # simulate_random_numbers_10000_times()
+    perform_full_benchmark()
 
     quit()
     # print_results_to_png()
