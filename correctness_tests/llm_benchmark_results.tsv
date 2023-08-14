@@ -1,2 +1,7 @@
 Name	Correct	Incorrect	Not answered	Percentage
 Random	170074	219926	0	43.60871794871795
+wizard_vicuna_7B	25	14	0	64.1025641025641
+manticore_13B	31	8	0	79.48717948717949
+saiga_7B	23	16	0	58.97435897435898
+wizard_l2_13B	35	4	0	89.74358974358975
+ChatGPT	39	0	0	100.0
