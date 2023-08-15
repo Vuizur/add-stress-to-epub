@@ -71,3 +71,5 @@ tests/__pycache__/*
 *.txt
 *.tsv
 zz_temp/*
+russian_text_stresser/build/*
+russian_text_stresser/dist/*
