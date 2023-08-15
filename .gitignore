@@ -70,3 +70,4 @@ tests/__pycache__/*
 .tox/
 *.txt
 *.tsv
+zz_temp/*

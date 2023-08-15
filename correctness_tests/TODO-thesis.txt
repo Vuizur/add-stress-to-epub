@@ -9,11 +9,10 @@
 * WSD intro section - check up
 * Fix up WSD benchmark
 * Ask about unclear words in WSD benchmark
-* Redo all graphics and tables with Russiangram
 * Look through all TODO sections in thesis
-* Mention StressRNN and why we did not use it
-* Publish stressed-cyrillic-tools with py.typed
-* PR to Llama-cpp-python with py.typed
+* Vicuña in text
+* Check references
+* Print concrete numbers about resources - fix OpenRUssian
 
 vanishing gradient problem?
 
@@ -24,3 +23,9 @@ llms grob besprechen, etwas über transformers (nicht ins feine detail)
 Wo soll ich allgemeine Kommentare über andere Systeme einstellen (können nicht yofication, zerstören formattierung)
 
 Ich kann bezug auf die Experimente nehmen, oder?
+
+Ein Kapitel über die Chrome extension (proof of concept) - In Anhang?
+
+Ich will ein kurzes Kapitel über die technischen Hintergründe des Setzens von Betonungszeichen schreiben. Lieber im Anhang?
+
+Ist es sinnvoll, Seaborn-Plots und Tabellen für die gleiche Sache in den Text zu packen?
