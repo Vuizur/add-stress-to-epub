@@ -88,7 +88,7 @@ CGPT: (2)
 
 
 def load_chosen_tasks() -> list[BenchmarkTask]:
-    with open("chosen_tasks.txt", "r", encoding="utf-8") as f:
+    with open("correctness_tests/wsd_test_dataset.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
     tasks = text.split("\n\n")
@@ -264,6 +264,9 @@ def print_wsd_benchmark_result():
 
 
 if __name__ == "__main__":
+    simulate_random_numbers_10000_times()
+    quit()
+    print(load_chosen_tasks())
     print_wsd_benchmark_result()
     # print(load_chosen_tasks())
     quit()
