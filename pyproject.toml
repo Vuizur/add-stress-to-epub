@@ -36,12 +36,11 @@ tensorflow-io-gcs-filesystem = {version = "0.31.0", optional = true} # Another t
 transformers = {version = ">=4.29.0", optional = true}
 llama-cpp-python = ">=0.1.52"
 seaborn = {version = ">=0.12.2", optional = true}
-litestar = {extras = ["cli"], version = ">=2.0.0b4", optional = true}
+litestar = {extras = ["cli", "standard"], version = "^2.0.0rc1"}
 stressrnn = {git = "https://github.com/Vuizur/StressRNN", optional = true}
 tensorflow = {version = ">=2.10.0", optional = true}
 pandas = {version = ">=2.0.3", optional = true}
 pandas-stubs = {version = ">=2.0.2.230605", optional = true}
-uvicorn = {version = "^0.23.2", optional = true}
 
 [tool.poetry.dev-dependencies]
 black = ">=22.6.0"
@@ -54,7 +53,7 @@ GUI = ["PyQt6"]
 database-creation = ["ebook-dictionary-creator", "ruwiktionary-htmldump-parser", "mwxml"]
 benchmark = ["russtress", "russian-stress-benchmark", "russ", "tensorflow-io-gcs-filesystem", "seaborn", "pandas", "pandas-stubs"]
 word_sense_disambiguation = ["llama-cpp-python", "transformers", "openai"]
-server = ["litestar", "uvicorn"]
+server = ["litestar"]
 stressrnn = ["stressrnn", "tensorflow"] # For some reason poetry downloads an older tensorflow
 
 [tool.pyright]
