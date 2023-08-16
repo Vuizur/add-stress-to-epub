@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import unicodedata
 from stressed_cyrillic_tools import unaccentify
 import csv
 from spacy.tokens import Token
@@ -127,8 +128,20 @@ def print_stressed_text_with_grammar_analysis(text: str):
             )
         )
 
+# Define a function that takes a string as an argument
+def print_unicode_names(string: str):
+    # Loop through each character in the string
+    for char in string:
+        # Get the name of the unicode codepoint for the character
+        name = unicodedata.name(char)
+        # Print the character and its name
+        print(char, name)
 
 if __name__ == "__main__":
+
+    print_unicode_names("диверсионно-развед́ывательная")
+    quit()
+
     text = (
         "Тогда он сказал ей, что она ему понравилась ещё на первом курсе университета."
     )
