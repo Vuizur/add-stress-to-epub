@@ -27,7 +27,7 @@ jobs:
           # poetry config virtualenvs.create false
           # poetry install --extras "GUI poetry-workaround" --without dev
         run: |
-          poetry install --extras "GUI"
+          poetry install --extras "GUI server" --without dev
           poetry run pip install pyinstaller
           poetry run python ./russian_text_stresser/download_db.py
           poetry run python ./russian_text_stresser/compile.py
