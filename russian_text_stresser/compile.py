@@ -42,6 +42,9 @@ if __name__ == "__main__":
     rename(
         RELEASE_FOLDER_NAME + "/gui.exe", RELEASE_FOLDER_NAME + "/#Stress marker.exe"
     )
+    rename(
+        RELEASE_FOLDER_NAME + "/app.exe", RELEASE_FOLDER_NAME + "/#Chrome extension server.exe"
+    )
     # Make dir russian_text_stresser in release folder if it doesn't exist
     if not os.path.exists(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER):
         os.makedirs(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
