@@ -7,7 +7,7 @@ import shutil, errno
 
 def copy_folder(src: str, dst: str) -> None:
     try:
-        shutil.copytree(src, dst)
+        shutil.copytree(src, dst, dirs_exist_ok=True)
     except OSError as exc:  # python >2.5
         if exc.errno in (errno.ENOTDIR, errno.EINVAL):
             shutil.copy(src, dst)
@@ -30,20 +30,21 @@ if __name__ == "__main__":
     SIMPLE_CASES_NAME = "simple_cases.pkl"
 
     # subprocess.run(["pyinstaller",  STRESSER_FOLDER + "/gui.spec", "--noconfirm"])
-    subprocess.run(["pyinstaller", "gui.spec", "--noconfirm"])
+    subprocess.run(["pyinstaller", "merged.spec", "--noconfirm"])
     try:
         shutil.rmtree(RELEASE_FOLDER_NAME)
     except Exception as e:
         print(e)
         pass
     copy_folder("dist/gui", RELEASE_FOLDER_NAME)
+    copy_folder("dist/app", RELEASE_FOLDER_NAME)
     # copy_folder(SPACY_FOLDER_NAME, RELEASE_FOLDER_NAME + "/" + SPACY_FOLDER_NAME)
     rename(
         RELEASE_FOLDER_NAME + "/gui.exe", RELEASE_FOLDER_NAME + "/#Stress marker.exe"
     )
     # Make dir russian_text_stresser in release folder if it doesn't exist
     if not os.path.exists(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER):
-        os.mkdir(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
+        os.makedirs(RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
 
     shutil.copy(RUSSIAN_DICT_NAME, RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
     shutil.copy(SIMPLE_CASES_NAME, RELEASE_FOLDER_NAME + "/" + STRESSER_FOLDER)
