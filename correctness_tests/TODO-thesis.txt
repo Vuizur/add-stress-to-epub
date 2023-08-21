@@ -12,7 +12,10 @@
 * Look through all TODO sections in thesis
 * Vicuña in text
 * Check references
-* Print concrete numbers about resources - fix OpenRUssian
+* Print concrete numbers about resources - fix OpenRussian
+* Upload extension with instructions
+* absolute percentage points -> percentage points
+* Generally update README and embed benchmark results
 
 vanishing gradient problem?
 
