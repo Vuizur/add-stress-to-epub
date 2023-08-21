@@ -440,7 +440,6 @@ def perform_benchmark_for_my_solutions_old(benchmark_yo=False) -> None:
             simple_cases = None
         else:
             simple_cases = "simple_cases.pkl"
-        ts = RussianTextStresser(db_file=file_path, simple_cases_file=simple_cases)
         base_folder = "correctness_tests"
         orig_folder = "stressed_russian_texts"
         result_folder = f"results_{file_path.replace('.db', '')}"
@@ -451,6 +450,8 @@ def perform_benchmark_for_my_solutions_old(benchmark_yo=False) -> None:
         base_path = f"{base_folder}/{orig_folder}"
         result_path = f"{base_folder}/{result_folder}"
         t0 = time.time()
+        ts = RussianTextStresser(db_file=file_path, simple_cases_file=simple_cases)
+
         benchmark_everything_in_folder(
             base_path, result_path, ts.stress_text, rmv_yo=benchmark_yo
         )
@@ -534,18 +535,19 @@ def perform_benchmark_for_russtress(try_to_fix: bool =True) -> None:
 
 
 def perform_benchmark_for_stressrnn() -> None:
-    stresser = StressRNN() # type: ignore
     base_folder = "correctness_tests"
     orig_folder = "stressed_russian_texts"
     result_folder = "results_stressrnn"
 
     base_path = f"{base_folder}/{orig_folder}"
     result_path = f"{base_folder}/{result_folder}"
-
+    t0 = time.time()
+    stresser = StressRNN() # type: ignore
     def stress_text(text: str) -> str:
         return stress_text_with_russtress(text, stresser, try_to_fix=False)
 
     benchmark_everything_in_folder(base_path, result_path, stress_text)
+    print(f"Time for stressrnn: {time.time() - t0}")
 
 
 class RandomStresser:
@@ -987,8 +989,10 @@ if __name__ == "__main__":
     # srnn = StressRNN()
     #
     # print(srnn.put_stress("Я только хочу это попробовать.", stress_symbol="'"))
+    perform_benchmark_for_my_solutions_old()
 
     perform_benchmark_for_stressrnn()
+    quit()
 
     # perform_benchmark_for_my_solutions_old(benchmark_yo=True)
     #
