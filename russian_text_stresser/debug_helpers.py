@@ -134,12 +134,16 @@ def print_unicode_names(string: str):
     for char in string:
         # Get the name of the unicode codepoint for the character
         name = unicodedata.name(char)
+        code = ord(char)
         # Print the character and its name
-        print(char, name)
+        print(char, name, f"U+{code:04X}", sep="\t")
 
 if __name__ == "__main__":
 
-    print_unicode_names("диверсионно-развед́ывательная")
+    #print_unicode_names("диверсионно-развед́ывательная")
+    print_unicode_names("avión")
+    decomposed = unicodedata.normalize("NFD", "avión")
+    print_unicode_names(decomposed)
     quit()
 
     text = (
