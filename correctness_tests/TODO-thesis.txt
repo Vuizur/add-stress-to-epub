@@ -5,17 +5,16 @@
     * Integrate table I created
 * Write down WSD disambiguation more in detail
 * Accuracy by part of speech - more detail
-* System combination (write up)
 * WSD intro section - check up
 * Fix up WSD benchmark
-* Ask about unclear words in WSD benchmark
+* (Ask about unclear words in WSD benchmark)
 * Look through all TODO sections in thesis
 * Vicuña in text
 * Check references
-* Print concrete numbers about resources - fix OpenRussian
 * Upload extension with instructions
 * absolute percentage points -> percentage points
 * Generally update README and embed benchmark results
+* Transformer section
 
 vanishing gradient problem?
 
