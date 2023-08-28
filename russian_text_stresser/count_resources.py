@@ -21,12 +21,18 @@ def print_resource_stats():
         words = f.read().splitlines()
         resources.append(Resource('Wikipedia', None, None, len(words)))
     # load openrussian.db
-    conn = sqlite3.connect('openrussian.db')
-    c = conn.cursor()
-    c.execute('SELECT COUNT(*) FROM words')
-    resources.append(Resource('OpenRussian', c.fetchone()[0], None, None))
+    #conn = sqlite3.connect('openrussian.db')
+    #c = conn.cursor()
+    #c.execute('SELECT COUNT(*) FROM words')
+    #resources.append(Resource('OpenRussian', c.fetchone()[0], None, None))
+
+    OPENRUSSIAN_BASE_WORDS = 84077
+    OPENRUSSIAN_INFLECTION_COUNT = 946110
+
+    resources.append(Resource('OpenRussian', OPENRUSSIAN_BASE_WORDS, OPENRUSSIAN_INFLECTION_COUNT, OPENRUSSIAN_BASE_WORDS + OPENRUSSIAN_INFLECTION_COUNT))
+
     # load ruwiktdata_int-old.json
-    with open('ruwiktdata_int-old.json', 'r', encoding='utf-8') as f:
+    with open('ruwiktdata_cleanedЩДВ.json', 'r', encoding='utf-8') as f:
         # Load json file
         data = json.load(f)
         base_words: set[str] = set()
@@ -72,7 +78,8 @@ def print_resource_stats():
     df = pd.DataFrame([res.__dict__ for res in resources])#, columns=['Resource', 'Base words', 'Inflections', 'Total'])
 
 
-    print(df)
+    # Print to latex
+    print(df.to_latex(index=False))
 
 if __name__ == '__main__':
     print_resource_stats()
