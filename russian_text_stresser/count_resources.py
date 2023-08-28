@@ -81,5 +81,15 @@ def print_resource_stats():
     # Print to latex
     print(df.to_latex(index=False))
 
+def convert_ods_to_latex():
+    df = pd.read_excel("correctness_tests/pro-con-table.ods")
+    print(df)
+    # Replace NaN with empty string
+    df = df.fillna('')
+    # Remove column "Notes"
+    df = df.drop(columns=['Notes'])
+    # Print to latex
+    print(df.to_latex(index=False))
 if __name__ == '__main__':
-    print_resource_stats()
+    #print_resource_stats()
+    convert_ods_to_latex()
