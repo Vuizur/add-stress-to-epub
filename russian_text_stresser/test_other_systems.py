@@ -2,9 +2,10 @@
 import transliterate
 
 from russian_text_stresser.text_stresser import RussianTextStresser
-
-from russtress import Accent
-
+try:
+    from russtress import Accent
+except ImportError:
+    pass
 def test_russtress():
     accent = Accent()
     text = "Проставь, пожалуйста, ударения"
@@ -20,6 +21,7 @@ text = "У нашей девочки не было старой обуви на 
 
 if __name__ == "__main__":
     # accentor = Accentor()
+    print(transliterate.translit("хорошо́", reversed=True))
     print(transliterate.translit("Эта река уже чем я ожидал.", reversed=True))
     print(transliterate.translit("часа", reversed=True))
 

@@ -58,22 +58,25 @@ def plot_accuracy_all_systems():
     # Make the size of the font on the x-axis smaller
     plt.rcParams.update({"font.size": 9})
 
-    sns.barplot(data=df, x="System", y="Percentage correct words")
-
+    ax = sns.barplot(data=df, x="System", y="Percentage correct words")
+    ax.bar_label(ax.containers[0], fmt="%.2f")
     plt.savefig("correctness_tests/accuracy_all_systems.png", dpi=500)
 
     # Plot the percentage of unstressed words
     plt.clf()
-    sns.barplot(data=df, x="System", y="Percentage unstressed words")
+    ax = sns.barplot(data=df, x="System", y="Percentage unstressed words")
+    ax.bar_label(ax.containers[0], fmt="%.2f")
     plt.savefig("correctness_tests/unstressed_all_systems.png", dpi=500)
 
     # Plot the percentage of incorrect words
     plt.clf()
-    sns.barplot(data=df, x="System", y="Percentage incorrect words")
+    ax = sns.barplot(data=df, x="System", y="Percentage incorrect words")
+    ax.bar_label(ax.containers[0], fmt="%.2f")
     plt.savefig("correctness_tests/incorrect_all_systems.png", dpi=500)
 
     plt.clf()
-    sns.barplot(data=df, x="System", y="Correct / incorrect")
+    ax = sns.barplot(data=df, x="System", y="Correct / incorrect")
+    ax.bar_label(ax.containers[0], fmt="%.2f")
     plt.savefig("correctness_tests/correct_incorrect_all_systems.png", dpi=500)
 
 
@@ -144,13 +147,18 @@ def plot_accuracy_my_systems():
 
     sns.set(style="whitegrid")
 
-    bp = sns.barplot( # type: ignore
+    bp = sns.barplot(  # type: ignore
         data=df, x="System", y="Percentage correct words", hue="System", dodge=False
     )
     # bp.legend_.remove()
     bp.legend(loc="lower right")
 
     bp.set(xticklabels=[])
+
+    for container in bp.containers:
+        # Add number
+        bp.bar_label(container, fmt="%.2f")
+
     plt.ylim(70, None)
 
     # Rotate x-axis labels
@@ -285,6 +293,12 @@ def plot_really_all_systems():
     # Keep only columns System, % Correct, % Unstressed, % Incorrect,
     # Correct / incorrect
 
+    ### Changes for presentation
+    # Delete the row with the system Russtress
+    df = df[df["System"] != "Russtress"]
+    # Rename the system Russtress-f to Russtress
+    df["System"] = df["System"].replace({"Russtress-f": "Russtress"})
+
     print(df)
 
     print_df_to_latex(df)
@@ -367,9 +381,9 @@ def plot_yofication_results():
 
 if __name__ == "__main__":
     # plot_yofication_results()
-    plot_table_by_pos()
+    # plot_table_by_pos()
     # plot_really_all_systems()
-    # plot_accuracy_all_systems()
+    plot_accuracy_all_systems()
     # plot_accuracy_my_systems()
     # plot_chatgpt_minibenchmark()
     # plot_fixing_russtress()

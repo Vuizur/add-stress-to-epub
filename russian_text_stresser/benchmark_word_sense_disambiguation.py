@@ -250,11 +250,21 @@ def print_wsd_benchmark_result():
     # Only keep the model name and the percentage
     df = df[["Model", "Percentage"]]
 
+    # Rename the column Percentage to Accuracy
+    df = df.rename(columns={"Percentage": "Accuracy"})
+
     # Plot with seaborn
-    bp = sns.barplot(data=df, x="Model", y="Percentage", hue="Model", dodge=False)
+    bp = sns.barplot(data=df, x="Model", y="Accuracy", hue="Model", dodge=False)
 
     bp.legend(loc="lower right")
     bp.set(xticklabels=[])
+
+    # Add numbers of the bars
+    #bp.bar_label(bp.containers[0], fmt="%.1f")
+
+    for container in bp.containers:
+        bp.bar_label(container, fmt="%.2f")
+
 
     # Show the plot
     plt.savefig("correctness_tests/results_wsd.png", dpi=400)
@@ -264,10 +274,11 @@ def print_wsd_benchmark_result():
 
 
 if __name__ == "__main__":
-    simulate_random_numbers_10000_times()
-    quit()
-    print(load_chosen_tasks())
     print_wsd_benchmark_result()
+    #simulate_random_numbers_10000_times()
+    #quit()
+    #print(load_chosen_tasks())
+    #print_wsd_benchmark_result()
     # print(load_chosen_tasks())
     quit()
 
