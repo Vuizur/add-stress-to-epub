@@ -77,8 +77,49 @@ If you are interested in modifying the program: The database used in this projec
 ### Limitations
 In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
+### Benchmark results
+
+#### Setting stress:
+
+| System                         |   % Correct |   % Unstressed |   % Incorrect |   Correct / incorrect |
+|:-------------------------------|------------:|---------------:|--------------:|----------------------:|
+| Reynolds                       |       90.14 |           8.82 |          1.04 |                 86.94 |
+| Russtress                      |       83.84 |          11.71 |          4.45 |                 18.83 |
+| Russtress-f                    |       93.39 |           1.13 |          5.48 |                 17.03 |
+| Random                         |       58.66 |           0.00 |         41.34 |                  1.42 |
+| RussianGram                    |       94.59 |           3.71 |          1.71 |                 55.40 |
+| Russ                           |       85.52 |           0.00 |         14.48 |                  5.90 |
+| Our system                     |       93.11 |           5.85 |          1.04 |                 89.80 |
+| Our system + Russtress-f       |       95.91 |           2.53 |          1.57 |                 61.23 |
+| Our system + WSD               |       94.62 |           4.09 |          1.29 |                 73.19 |
+| Our system + WSD + Russtress-f |       95.83 |           2.51 |          1.65 |                 57.92 |
+
+#### Yofication + setting stress:
+| System      |   % Correct |   % Unstressed |   % Incorrect |   Correct / incorrect |
+|:------------|------------:|---------------:|--------------:|----------------------:|
+| Our system  |       92.64 |           5.85 |          1.52 |                 61.03 |
+| Reynolds    |       89.67 |           8.83 |          1.50 |                 59.60 |
+| RussianGram |       94.36 |           3.62 |          2.02 |                 46.80 |
+
+### Thesis
+
+You can read my thesis about Russian text stressing [here](https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/Masterarbeit.pdf)
+
+Cite as:
+```
+@mastersthesis{krumbiegel2023,
+  author = {Krumbiegel, Hannes},
+  title = {Automated detection of word stress in Russian texts},
+  school = {TU Bergakademie Freiberg},
+  year = {2023},
+  month = {September},
+  type = {Master's thesis}
+}
+```
+
 ### Acknowledgements
 The data is sourced from the English Wiktionary, the SQLite database containing it has been constructed on the base of Tatu Ylonen's parsed Wiktionary that can be found kaikki.org. An additional data source is the OpenRussian project, the Russian Wiktionary and Wikipedia.
+
 
 ### Similar projects
 

@@ -378,12 +378,54 @@ def plot_yofication_results():
     print(change_df.to_latex(escape=True, float_format="{:.2f}".format))
     # Print to latex, in table System | Δ % Correct | Δ % Unstressed | Δ % Incorrect | Δ Correct / incorrect
 
+def print_all_results_to_markdown():
+    df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    df = filter_relevant_systems(df)
+    df = rename_systems(df)
+    df = create_correct_per_incorrect_column(df)
+    df = filter_relevant_columns_for_latex(df)
+    df = rename_columns(df)
+    df = df.round(2)
+    print(df.to_markdown(index=False, floatfmt=".2f"))
+    
+    # Now yofication
+    orig_df = pd.read_csv("correctness_tests/benchmark_results.tsv", sep="\t")
+    # Filter systems
+    # tempdb_3_with_ruwikipedia_noyo, reynolds_noyo, russiangram_without_yo_fixed
+    df = orig_df[
+        orig_df["System"].isin(
+            [
+                "tempdb_3_with_ruwikipedia_noyo",
+                "reynolds_noyo",
+                "russiangram_without_yo_fixed",
+            ]
+        )
+    ].copy()
+
+    # Rename systems
+    df["System"] = df["System"].replace(
+        {
+            "tempdb_3_with_ruwikipedia_noyo": "Our system",
+            "reynolds_noyo": "Reynolds",
+            "russiangram_without_yo_fixed": "RussianGram",
+        }
+    )
+
+    # Filter relevant columns
+    df = create_correct_per_incorrect_column(df)
+    df = filter_relevant_columns_for_latex(df)
+
+    df = rename_columns(df)
+
+    print(df.to_markdown(index=False, floatfmt=".2f"))
+
 
 if __name__ == "__main__":
     # plot_yofication_results()
     # plot_table_by_pos()
     # plot_really_all_systems()
-    plot_accuracy_all_systems()
+    #plot_accuracy_all_systems()
     # plot_accuracy_my_systems()
     # plot_chatgpt_minibenchmark()
     # plot_fixing_russtress()
+    print_all_results_to_markdown()

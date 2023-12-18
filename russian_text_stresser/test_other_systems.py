@@ -27,11 +27,15 @@ if __name__ == "__main__":
 
     
 
-    quit()
+    #quit()
 
     text_stresser = RussianTextStresser()
 
-    stressed_text = text_stresser.stress_text(text)
+    stressed_text = text_stresser.stress_text(TEST_TEXT)
+
+    with open("stressed_text_test.txt", "w", encoding="utf-8") as f:
+        f.write(stressed_text)
+
     print(stressed_text)
     quit()
     # Transliterate text to latin
