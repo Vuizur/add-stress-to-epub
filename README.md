@@ -77,6 +77,10 @@ If you are interested in modifying the program: The database used in this projec
 ### Limitations
 In some cases the stress is omitted because there are multiple options the word could be stressed depending on the context (in the case of замок or все vs всё) or because they don't appear in my current data source, which can be the case for very rare words. Or the grammatical analysis delivered wrong results, which can also happen in rare cases.
 
+### FAQ
+Q: The accents don't get correctly displayed in KOReader, the accented letters are way too small or the accent mark is misplaced.
+A: It's best to disable "Embedded Fonts" in this case. Open the menu by clicking somewhere at the top, then in the menu at the bottom of the page select the settings wheel symbol on the rightmost side. Set here "Embedded Fonts" to "off".
+
 ### Benchmark results
 
 #### Setting stress:
