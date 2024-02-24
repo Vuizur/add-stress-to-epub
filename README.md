@@ -82,6 +82,10 @@ In some cases the stress is omitted because there are multiple options the word 
 
 **A**: It's best to disable "Embedded Fonts" in this case. Open the menu by clicking somewhere at the top, then in the menu at the bottom of the page select the settings wheel symbol on the rightmost side. Set here "Embedded Fonts" to "off".
 
+**Q**: Can I use this with [WordDumb](https://github.com/xxyzz/WordDumb) so that I can see short definitions directly in the ebook?
+
+**A**: Yes! You only need to disable the setting "Use POS". With it enabled it currently does not work, unfortunately.
+
 ### Benchmark results
 
 #### Setting stress:
