@@ -80,7 +80,11 @@ In some cases the stress is omitted because there are multiple options the word 
 ### FAQ
 **Q**: The accents don't get correctly displayed in KOReader, the accented letters are way too small or the accent mark is slightly misplaced. What can I do?
 
-**A**: It's best to disable "Embedded Fonts" in this case. Open the menu by clicking somewhere at the top, then in the menu at the bottom of the page select the settings wheel symbol on the rightmost side. Set here "Embedded Fonts" to "off".
+**A**: This is a bug in koreader. Disable "fallback fonts" by unchecking the box. KOReader tries to fallback even when the font supports Cryillic stress marks.
+
+**Q**: A particular epub has a font that doesn't work!
+
+**A**: It's best to disable "Embedded Fonts" in this case. Open the menu by clicking somewhere at the top, then in the menu at the bottom of the page select the settings wheel symbol on the rightmost side. Set here "Embedded Fonts" to "off". Now you ereader should use the default NotoSans font which supports the accents.
 
 **Q**: Can I use this with [WordDumb](https://github.com/xxyzz/WordDumb) so that I can see short definitions directly in the ebook?
 
