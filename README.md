@@ -84,7 +84,7 @@ In some cases the stress is omitted because there are multiple options the word 
 
 **Q**: Can I use this with [WordDumb](https://github.com/xxyzz/WordDumb) so that I can see short definitions directly in the ebook?
 
-**A**: Yes! You only need to disable the setting "Use POS". With it enabled it currently does not work, unfortunately.
+**A**: Yes! You only need to disable the setting "Use POS". With it enabled it currently does not work, unfortunately. Also make sure to add stress marks first, and then use the Worddumb plugin, not the other way around.
 
 ### Benchmark results
 
