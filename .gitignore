@@ -19,38 +19,23 @@
 .tox/
 
 # Build and distribution
-build/*
-dist/*
-russian_text_stresser/build/*
-russian_text_stresser/dist/*
+**/build/
+**/dist/
 
 # Archives and zips
 russian_dict.zip
 Stress-Marker-win.zip
-idiot_stressed.zip
-correctness_tests.zip
 
 # Data files
 openai-key.txt
-base_words.json
 russian-kaikki.json
 ruwiktdata_cleaned.json
-ruwiktdata_int.json
 wikipedia_words.txt
-russian-kaikki-utf8.json
-disambiguation_text2.txt
-chosen_tasks.txt
-disambiguation_text3.txt
-question.json
 disambiguation_tasks.json
 pos_comparison.tsv
 stress_mistakes.tsv
 Profile.prof
-ruwiktdata_int-old.json
-ruwiktdata_cleaned-old.json
 simple_cases.pkl
-russian_text_stresser/simple_casesOLD.pkl
-api-specs.ts
 
 # Directories
 Stress-Marker-win
