@@ -24,7 +24,7 @@ openai = {version = ">=0.24.0", optional = true}
 pymorphy2 = ">=0.9.1"
 python = "^3.9, <3.15"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
-spacy = "^3.8.11"
+spacy = "^3.8"
 stressed-cyrillic-tools = ">=0.1.10"
 russtress = {version = ">=0.1.4", optional = true}
 transliterate = ">=1.10.2"
