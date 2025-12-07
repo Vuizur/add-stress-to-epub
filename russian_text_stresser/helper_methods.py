@@ -7,7 +7,7 @@ from spacy.tokens import Token
 def load_spacy_full(large_model: bool = False) -> Language:
     bundle_dir = Path(__file__).parent.absolute()
     if large_model:
-        return load(bundle_dir / "ru_core_news_lg-3.6.0", exclude=["lemmatizer", "ner"])
+        return load(bundle_dir / "ru_core_news_lg-3.8.0", exclude=["lemmatizer", "ner"])
     else:
         return load(bundle_dir / "ru_core_news_sm-3.8.0", exclude=["lemmatizer", "ner"])
 

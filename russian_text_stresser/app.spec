@@ -11,7 +11,7 @@ a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[(pymorph_data, 'pymorphy2_dicts_ru/data'), ('ru_core_news_sm-3.6.0', 'russian_text_stresser/ru_core_news_sm-3.6.0')],
+    datas=[(pymorph_data, 'pymorphy2_dicts_ru/data'), ('ru_core_news_sm-3.8.0', 'russian_text_stresser/ru_core_news_sm-3.8.0')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
