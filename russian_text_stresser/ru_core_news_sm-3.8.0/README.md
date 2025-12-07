@@ -5,8 +5,8 @@ Russian pipeline optimized for CPU. Components: tok2vec, morphologizer, parser, 
 | Feature | Description |
 | --- | --- |
 | **Name** | `ru_core_news_sm` |
-| **Version** | `3.6.0` |
-| **spaCy** | `>=3.6.0,<3.7.0` |
+| **Version** | `3.8.0` |
+| **spaCy** | `>=3.8.0,<3.9.0` |
 | **Default Pipeline** | `tok2vec`, `morphologizer`, `parser`, `attribute_ruler`, `lemmatizer`, `ner` |
 | **Components** | `tok2vec`, `morphologizer`, `parser`, `senter`, `attribute_ruler`, `lemmatizer`, `ner` |
 | **Vectors** | 0 keys, 0 unique vectors (0 dimensions) |
@@ -36,18 +36,18 @@ Russian pipeline optimized for CPU. Components: tok2vec, morphologizer, parser, 
 | `TOKEN_P` | 97.28 |
 | `TOKEN_R` | 98.31 |
 | `TOKEN_F` | 97.79 |
-| `POS_ACC` | 98.77 |
-| `MORPH_ACC` | 97.03 |
-| `MORPH_MICRO_P` | 98.68 |
-| `MORPH_MICRO_R` | 97.98 |
-| `MORPH_MICRO_F` | 98.33 |
+| `POS_ACC` | 98.76 |
+| `MORPH_ACC` | 97.10 |
+| `MORPH_MICRO_P` | 98.74 |
+| `MORPH_MICRO_R` | 98.01 |
+| `MORPH_MICRO_F` | 98.37 |
 | `SENTS_P` | 99.89 |
-| `SENTS_R` | 99.89 |
-| `SENTS_F` | 99.89 |
-| `DEP_UAS` | 95.87 |
-| `DEP_LAS` | 94.62 |
-| `TAG_ACC` | 98.77 |
+| `SENTS_R` | 99.83 |
+| `SENTS_F` | 99.86 |
+| `DEP_UAS` | 95.95 |
+| `DEP_LAS` | 94.74 |
+| `TAG_ACC` | 98.76 |
 | `LEMMA_ACC` | 0.00 |
-| `ENTS_P` | 94.88 |
-| `ENTS_R` | 95.09 |
-| `ENTS_F` | 94.98 |
+| `ENTS_P` | 94.05 |
+| `ENTS_R` | 94.68 |
+| `ENTS_F` | 94.36 |
