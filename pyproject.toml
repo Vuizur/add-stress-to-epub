@@ -2,6 +2,11 @@
 authors = ["Hannes Krumbiegel"]
 classifiers = [
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: OS Independent",
   "Development Status :: 4 - Beta",
@@ -22,7 +27,7 @@ lxml = ">=4.9.1"
 mwxml = {version = ">=0.3.3", optional = true}
 openai = {version = ">=0.24.0", optional = true}
 pymorphy2 = ">=0.9.1"
-python = "^3.9, <3.15"
+python = ">=3.10, <3.15"
 ruwiktionary-htmldump-parser = {git = "https://github.com/Vuizur/ruwiktionary-htmldump-parser", optional = true}
 spacy = "^3.8"
 stressed-cyrillic-tools = ">=0.1.10"
